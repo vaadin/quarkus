@@ -7,3 +7,13 @@
 *.classpath
 .vscode
 .settings
+*/frontend/generated/
+*/node_modules/
+*.npmrc
+*package.json
+*pnpm-lock.yaml
+*pnpmfile.js
+*tsconfig.json
+*types.d.ts
+*webpack.*.js
+
