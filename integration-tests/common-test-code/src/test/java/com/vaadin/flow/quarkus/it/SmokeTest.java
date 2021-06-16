@@ -28,7 +28,7 @@ public class SmokeTest extends AbstractChromeTest {
 
         // As we don't have CDI functionality for Route annotations we check that we are in
         // the expected feature.
-        Assertions.assertEquals("no CDI enabled",
+        Assertions.assertEquals("hello quarkus CDI",
                 $(LabelElement.class).first().getText());
     }
 
