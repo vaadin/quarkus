@@ -8,6 +8,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.vaadin.flow.testcategory.ChromeTests;
@@ -20,6 +21,7 @@ import com.vaadin.testbench.annotations.RunOnHub;
 import com.vaadin.testbench.parallel.Browser;
 import com.vaadin.testbench.parallel.BrowserUtil;
 import com.vaadin.testbench.parallel.DefaultBrowserFactory;
+import com.vaadin.testbench.parallel.ParallelRunner;
 
 /**
  * Simplified chrome test that doesn't handle view/IT class paths.
@@ -29,6 +31,7 @@ import com.vaadin.testbench.parallel.DefaultBrowserFactory;
 @RunOnHub
 @BrowserFactory(DefaultBrowserFactory.class)
 @LocalExecution
+@RunWith(ParallelRunner.class)
 public abstract class AbstractChromeTest extends ChromeBrowserTest {
 
     @Rule
@@ -41,14 +44,11 @@ public abstract class AbstractChromeTest extends ChromeBrowserTest {
     }
 
     @BeforeEach
-    public void beforeTest() {
-        ChromeBrowserTest.setChromeDriverPath();
-    }
-
-    @BeforeAll
-    public void setup() throws Exception {
+    public void beforeTest() throws Exception {
         setDesiredCapabilities(Browser.CHROME.getDesiredCapabilities());
-        super.setup();
+        ChromeBrowserTest.setChromeDriverPath();
+        setup();
+        checkIfServerAvailable();
     }
 
     @BrowserConfiguration
