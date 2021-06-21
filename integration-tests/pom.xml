@@ -121,9 +121,6 @@
                 <property>
                     <name>!test.use.hub</name>
                 </property>
-                <!--                <file>-->
-                <!--                    <missing>${basedir}/target/driver_zips</missing>-->
-                <!--                </file>-->
             </activation>
             <build>
                 <plugins>
