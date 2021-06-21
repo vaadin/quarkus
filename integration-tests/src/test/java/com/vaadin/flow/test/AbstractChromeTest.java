@@ -8,30 +8,20 @@ import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.vaadin.flow.testcategory.ChromeTests;
 import com.vaadin.flow.testutil.ChromeBrowserTest;
-import com.vaadin.flow.testutil.LocalExecution;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.annotations.BrowserConfiguration;
-import com.vaadin.testbench.annotations.BrowserFactory;
-import com.vaadin.testbench.annotations.RunOnHub;
 import com.vaadin.testbench.parallel.Browser;
 import com.vaadin.testbench.parallel.BrowserUtil;
-import com.vaadin.testbench.parallel.DefaultBrowserFactory;
-import com.vaadin.testbench.parallel.ParallelRunner;
 
 /**
  * Simplified chrome test that doesn't handle view/IT class paths.
  * Uses Jupiter API
  */
 @Category(ChromeTests.class)
-@RunOnHub
-@BrowserFactory(DefaultBrowserFactory.class)
-@LocalExecution
-@RunWith(ParallelRunner.class)
 public abstract class AbstractChromeTest extends ChromeBrowserTest {
 
     @Rule
