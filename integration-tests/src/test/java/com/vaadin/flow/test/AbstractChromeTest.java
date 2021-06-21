@@ -54,9 +54,4 @@ public abstract class AbstractChromeTest extends ChromeBrowserTest {
         return "/";
     }
 
-    @Override
-    protected int getDeploymentPort() {
-        return 8081;
-    }
-
 }
