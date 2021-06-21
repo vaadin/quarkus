@@ -48,7 +48,6 @@ public abstract class AbstractChromeTest extends ChromeBrowserTest {
         setDesiredCapabilities(Browser.CHROME.getDesiredCapabilities());
         ChromeBrowserTest.setChromeDriverPath();
         setup();
-        checkIfServerAvailable();
     }
 
     @BrowserConfiguration
