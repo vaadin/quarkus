@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -28,7 +29,7 @@ public abstract class AbstractChromeTest extends ChromeBrowserTest {
     public ScreenshotOnFailureRule screenshotOnFailure = new ScreenshotOnFailureRule(
             this, true);
 
-    @AfterAll
+    @AfterEach
     public void tearDown() {
         getDriver().quit();
     }

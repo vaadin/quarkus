@@ -1,14 +1,14 @@
 .idea
-*/.settings
-*/target
+**/.settings
+**/target
 *.iml
 *.project
 *.factorypath
 *.classpath
 .vscode
 .settings
-*/frontend/generated/
-*/node_modules/
+**/frontend/generated/
+**/node_modules/
 *.npmrc
 *package.json
 *pnpm-lock.yaml
@@ -17,3 +17,5 @@
 *types.d.ts
 *webpack.*.js
 
+/integration-tests/driver/
+/integration-tests/driver_zips/
