@@ -26,6 +26,7 @@ import java.util.Set;
 
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinServletService;
 
@@ -38,6 +39,13 @@ public class QuarkusVaadinServletService extends VaadinServletService {
             final BeanManager beanManager) {
         super(servlet, configuration);
         this.beanManager = beanManager;
+        reportUsage();
+    }
+
+    private void reportUsage() {
+        if(!getDeploymentConfiguration().isProductionMode()) {
+            UsageStatistics.markAsUsed("flow/quarkus", null);
+        }
     }
 
     @Override
