@@ -33,7 +33,6 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>flow-jandex</artifactId>
-            <version>${vaadin.flow.version}</version>
         </dependency>
 
         <dependency>
