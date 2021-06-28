@@ -84,34 +84,39 @@ class VaadinQuarkusProcessor {
                             QuarkusVaadinServlet.class.getName())
                     .addMapping("/*").setAsyncSupported(true).build());
         } else {
-            // TODO: check that we don't register 2 of the same mapping
-            for (ClassInfo info : vaadinServlets) {
-                final AnnotationInstance webServletInstance = info
-                        .classAnnotation(DotName.createSimple(
-                                WebServlet.class.getName()));
-                final ServletBuildItem.Builder servletBuildItem = ServletBuildItem
-                        .builder(info.name().toString(),
-                                info.name().toString());
-                // Add url pattern mapping
-                servletBuildItem.addMapping(
-                        webServletInstance.value("urlPatterns").asString());
-                
-                // Add WebInitParam parameters to registration
-                final AnnotationInstance[] initParams = webServletInstance
-                        .value("initParams").asNestedArray();
-                for (AnnotationInstance initParam : initParams) {
-                    servletBuildItem
-                            .addInitParam(initParam.value("name").asString(),
-                                    initParam.value().asString());
-                }
-                final AnnotationValue asyncSupported = webServletInstance
-                        .value("asyncSupported");
-                if(asyncSupported != null) {
-                    servletBuildItem.setAsyncSupported(asyncSupported.asBoolean());
-                }
-                
-                servletProducer.produce(servletBuildItem.build());
+            registerUserServlets(servletProducer, vaadinServlets);
+        }
+    }
+
+    private void registerUserServlets(BuildProducer<ServletBuildItem> servletProducer,
+            Collection<ClassInfo> vaadinServlets) {
+        // TODO: check that we don't register 2 of the same mapping
+        for (ClassInfo info : vaadinServlets) {
+            final AnnotationInstance webServletInstance = info
+                    .classAnnotation(DotName.createSimple(
+                            WebServlet.class.getName()));
+            final ServletBuildItem.Builder servletBuildItem = ServletBuildItem
+                    .builder(info.name().toString(),
+                            info.name().toString());
+            // Add url pattern mapping
+            servletBuildItem.addMapping(
+                    webServletInstance.value("urlPatterns").asString());
+
+            // Add WebInitParam parameters to registration
+            final AnnotationInstance[] initParams = webServletInstance
+                    .value("initParams").asNestedArray();
+            for (AnnotationInstance initParam : initParams) {
+                servletBuildItem
+                        .addInitParam(initParam.value("name").asString(),
+                                initParam.value().asString());
             }
+            final AnnotationValue asyncSupported = webServletInstance
+                    .value("asyncSupported");
+            if(asyncSupported != null) {
+                servletBuildItem.setAsyncSupported(asyncSupported.asBoolean());
+            }
+
+            servletProducer.produce(servletBuildItem.build());
         }
     }
 }
