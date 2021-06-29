@@ -98,25 +98,36 @@ class VaadinQuarkusProcessor {
             final ServletBuildItem.Builder servletBuildItem = ServletBuildItem
                     .builder(info.name().toString(),
                             info.name().toString());
+
             // Add url pattern mapping
             servletBuildItem.addMapping(
                     webServletInstance.value("urlPatterns").asString());
 
-            // Add WebInitParam parameters to registration
-            final AnnotationInstance[] initParams = webServletInstance
-                    .value("initParams").asNestedArray();
-            for (AnnotationInstance initParam : initParams) {
-                servletBuildItem
-                        .addInitParam(initParam.value("name").asString(),
-                                initParam.value().asString());
-            }
-            final AnnotationValue asyncSupported = webServletInstance
-                    .value("asyncSupported");
-            if(asyncSupported != null) {
-                servletBuildItem.setAsyncSupported(asyncSupported.asBoolean());
-            }
+            addWebInitParameters(webServletInstance, servletBuildItem);
+            setAsyncSupportedIfDefined(webServletInstance, servletBuildItem);
 
             servletProducer.produce(servletBuildItem.build());
+        }
+    }
+
+    private void addWebInitParameters(AnnotationInstance webServletInstance,
+            ServletBuildItem.Builder servletBuildItem) {
+        // Add WebInitParam parameters to registration
+        final AnnotationInstance[] initParams = webServletInstance
+                .value("initParams").asNestedArray();
+        for (AnnotationInstance initParam : initParams) {
+            servletBuildItem
+                    .addInitParam(initParam.value("name").asString(),
+                            initParam.value().asString());
+        }
+    }
+
+    private void setAsyncSupportedIfDefined(AnnotationInstance webServletInstance,
+            ServletBuildItem.Builder servletBuildItem) {
+        final AnnotationValue asyncSupported = webServletInstance
+                .value("asyncSupported");
+        if(asyncSupported != null) {
+            servletBuildItem.setAsyncSupported(asyncSupported.asBoolean());
         }
     }
 }
