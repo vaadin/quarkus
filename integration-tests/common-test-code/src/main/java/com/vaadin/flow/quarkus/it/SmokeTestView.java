@@ -34,6 +34,10 @@ public class SmokeTestView extends Div {
     public SmokeTestView() {
         add(new NativeButton("Click me",
                 event -> add(new Label(getLabelText()))));
+
+        // Use custom CSS classes to apply styling. This is defined in
+        // shared-styles.css.
+        addClassName("centered-content");
     }
 
     private String getLabelText() {
