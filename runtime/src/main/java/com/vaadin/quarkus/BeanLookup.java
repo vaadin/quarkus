@@ -17,7 +17,6 @@ package com.vaadin.quarkus;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
@@ -56,10 +55,6 @@ class BeanLookup<T> {
     private static class ServiceLiteral
             extends AnnotationLiteral<VaadinServiceEnabled>
             implements VaadinServiceEnabled {
-    }
-
-    private static class AnyLiteral extends AnnotationLiteral<Any>
-            implements Any {
     }
 
     @FunctionalInterface
