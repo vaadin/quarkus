@@ -61,9 +61,8 @@ public class QuarkusVaadinServlet extends VaadinServlet {
 
     @Override
     public void destroy() {
-        SERVLET_NAME.remove();
         super.destroy();
-
+        SERVLET_NAME.remove();
     }
 
     @Override

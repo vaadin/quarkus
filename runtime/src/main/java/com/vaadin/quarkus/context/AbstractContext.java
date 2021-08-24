@@ -215,6 +215,7 @@ public abstract class AbstractContext implements InjectableContext {
         return state;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void destroyBean(Contextual bean,
             ContextualInstanceInfo<?> contextualInstanceInfo) {
         bean.destroy(contextualInstanceInfo.getContextualInstance(),
