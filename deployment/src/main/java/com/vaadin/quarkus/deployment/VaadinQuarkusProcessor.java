@@ -40,7 +40,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
+import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
+import com.vaadin.quarkus.context.VaadinSessionScopedContext;
 
 class VaadinQuarkusProcessor {
 
@@ -106,6 +108,20 @@ class VaadinQuarkusProcessor {
     CustomScopeBuildItem serviceScope() {
         return new CustomScopeBuildItem(
                 DotName.createSimple(VaadinServiceScoped.class.getName()));
+    }
+
+    @BuildStep
+    ContextConfiguratorBuildItem registerVaadinSessionScopedContext(
+            ContextRegistrationPhaseBuildItem phase) {
+        return new ContextConfiguratorBuildItem(
+                phase.getContext().configure(VaadinSessionScoped.class).normal()
+                        .contextClass(VaadinSessionScopedContext.class));
+    }
+
+    @BuildStep
+    CustomScopeBuildItem sessionScope() {
+        return new CustomScopeBuildItem(
+                DotName.createSimple(VaadinSessionScoped.class.getName()));
     }
 
     private void registerUserServlets(
