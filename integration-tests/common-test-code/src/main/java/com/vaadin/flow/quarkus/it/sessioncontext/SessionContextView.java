@@ -28,7 +28,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 
-@Route("")
+@Route("session")
 public class SessionContextView extends Div {
 
     public static final String SETVALUEBTN_ID = "setvalbtn";

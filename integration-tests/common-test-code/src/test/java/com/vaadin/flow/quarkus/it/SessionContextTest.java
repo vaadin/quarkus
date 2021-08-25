@@ -81,6 +81,11 @@ public class SessionContextTest extends AbstractCdiTest {
         assertTrue(destroyed);
     }
 
+    @Override
+    protected String getTestPath() {
+        return "/session";
+    }
+
     private void assertLabelEquals(String expected) {
         assertTextEquals(expected, SessionContextView.VALUELABEL_ID);
     }
