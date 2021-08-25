@@ -25,6 +25,7 @@ import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
 import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
 import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem;
 import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfiguratorBuildItem;
+import io.quarkus.arc.deployment.CustomScopeBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
@@ -99,6 +100,12 @@ class VaadinQuarkusProcessor {
         return new ContextConfiguratorBuildItem(
                 phase.getContext().configure(VaadinServiceScoped.class).normal()
                         .contextClass(VaadinServiceScopedContext.class));
+    }
+
+    @BuildStep
+    CustomScopeBuildItem serviceScope() {
+        return new CustomScopeBuildItem(
+                DotName.createSimple(VaadinServiceScoped.class.getName()));
     }
 
     private void registerUserServlets(

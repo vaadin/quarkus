@@ -404,45 +404,6 @@ public final class BeanProvider {
         return result;
     }
 
-    /*
-     * public static <T> DependentProvider<T> getDependent(Class<T> type,
-     * Annotation... qualifiers) { BeanManager beanManager = getBeanManager();
-     * return getDependent(beanManager, type, qualifiers); }
-     * 
-     * public static <T> DependentProvider<T> getDependent(BeanManager
-     * beanManager, Class<T> type, Annotation... qualifiers) { Set<Bean<?>>
-     * beans = beanManager.getBeans(type, qualifiers);
-     * 
-     * @SuppressWarnings("unchecked") Bean<T> bean = (Bean<T>)
-     * beanManager.resolve(beans); return createDependentProvider(beanManager,
-     * type, bean); }
-     * 
-     * public static <T> DependentProvider<T> getDependent(String name) {
-     * BeanManager beanManager = getBeanManager(); return
-     * getDependent(beanManager, name); }
-     * 
-     * public static <T> DependentProvider<T> getDependent(BeanManager
-     * beanManager, String name) { Set<Bean<?>> beans =
-     * beanManager.getBeans(name);
-     * 
-     * @SuppressWarnings("unchecked") Bean<T> bean = (Bean<T>)
-     * beanManager.resolve(beans);
-     * 
-     * @SuppressWarnings("unchecked") Class<T> beanClass = (Class<T>)
-     * bean.getBeanClass();
-     * 
-     * return createDependentProvider(beanManager, beanClass, bean); }
-     * 
-     * private static <T> DependentProvider<T> createDependentProvider(
-     * BeanManager beanManager, Class<T> type, Bean<T> bean) {
-     * CreationalContext<T> cc = beanManager.createCreationalContext(bean);
-     * 
-     * @SuppressWarnings("unchecked") T instance = (T)
-     * beanManager.getReference(bean, type, cc);
-     * 
-     * return new DependentProvider<T>(bean, cc, instance); }
-     */
-
     /**
      * Get a set of {@link Bean} definitions by type, regardless of qualifiers.
      *

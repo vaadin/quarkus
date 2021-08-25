@@ -40,11 +40,6 @@ public class ServiceContextTest extends
     }
 
     @Override
-    protected boolean isNormalScoped() {
-        return true;
-    }
-
-    @Override
     protected Class<VaadinServiceScopedContext> getContextType() {
         return VaadinServiceScopedContext.class;
     }

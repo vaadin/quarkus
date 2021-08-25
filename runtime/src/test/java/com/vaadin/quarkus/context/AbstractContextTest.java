@@ -40,6 +40,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+/**
+ * Basic tests for all custom contexts.
+ * 
+ * @param <T>
+ *            bean type
+ * @param <C>
+ *            a context type
+ */
 public abstract class AbstractContextTest<T extends TestBean, C extends AbstractContext> {
 
     private List<UnderTestContext> contexts;
@@ -238,8 +246,6 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
     }
 
     protected abstract UnderTestContext newContextUnderTest();
-
-    protected abstract boolean isNormalScoped();
 
     protected abstract Class<T> getBeanType();
 

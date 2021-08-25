@@ -18,5 +18,12 @@ package com.vaadin.quarkus;
 import javax.enterprise.inject.Any;
 import javax.enterprise.util.AnnotationLiteral;
 
+/**
+ * Literal for the {@link javax.enterprise.inject.Any} annotation.
+ * 
+ * @author Vaadin Ltd
+ * @since 1.0
+ *
+ */
 public class AnyLiteral extends AnnotationLiteral<Any> implements Any {
 }

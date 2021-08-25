@@ -28,7 +28,8 @@ import com.vaadin.flow.server.VaadinSession;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TestQuarkusVaadinServletService extends QuarkusVaadinServletService {
+public class TestQuarkusVaadinServletService
+        extends QuarkusVaadinServletService {
 
     public TestQuarkusVaadinServletService(BeanManager beanManager,
             String servletName) {
