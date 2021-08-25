@@ -44,6 +44,8 @@ public class ServiceTest extends AbstractCdiTest {
     @Test
     public void bootstrapCustomizedByServiceInitEventObserver() {
         getDriver().get(getRootURL() + "/bootstrap");
+        waitForDevServer();
+
         assertTextEquals(BootstrapCustomizer.APPENDED_TXT,
                 BootstrapCustomizer.APPENDED_ID);
     }
