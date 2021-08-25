@@ -522,8 +522,8 @@ public final class BeanProvider {
     /**
      * Performs dependency injection on an instance. Useful for instances which
      * aren't managed by CDI.
-     * <p/>
-     * <b>Attention:</b><br/>
+     * <p>
+     * <b>Attention:</b> <br>
      * The resulting instance isn't managed by CDI; only fields annotated
      * with @Inject get initialized.
      *
