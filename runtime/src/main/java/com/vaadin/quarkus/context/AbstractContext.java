@@ -159,8 +159,8 @@ public abstract class AbstractContext implements InjectableContext {
      * This is a static method to allow various holder objects to cleanup
      * properly in &#064;PreDestroy.
      * 
-     * @param a
-     *            contextual storage
+     * @param storage
+     *            a contextual storage
      * @return a storage map of destroyed objects
      */
     public static Map<Object, ContextualInstanceInfo<?>> destroyAllActive(
