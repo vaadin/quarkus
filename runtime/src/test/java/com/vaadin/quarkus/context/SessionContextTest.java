@@ -18,24 +18,13 @@ package com.vaadin.quarkus.context;
 
 import io.quarkus.test.junit.QuarkusTest;
 
-import com.vaadin.quarkus.annotation.VaadinSessionScoped;
-
 @QuarkusTest
-public class SessionContextTest extends
-        AbstractContextTest<SessionContextTest.SessionScopedTestBean, VaadinSessionScopedContext> {
+public class SessionContextTest
+        extends AbstractContextTest<VaadinSessionScopedContext> {
 
     @Override
     protected UnderTestContext newContextUnderTest() {
         return new SessionUnderTestContext();
-    }
-
-    @Override
-    protected Class<SessionScopedTestBean> getBeanType() {
-        return SessionScopedTestBean.class;
-    }
-
-    @VaadinSessionScoped
-    public static class SessionScopedTestBean extends TestBean {
     }
 
     @Override

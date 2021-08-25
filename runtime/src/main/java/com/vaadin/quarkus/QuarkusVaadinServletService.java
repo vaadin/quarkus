@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import java.util.Optional;
 import java.util.Set;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.di.Instantiator;
@@ -106,8 +107,13 @@ public class QuarkusVaadinServletService extends VaadinServletService {
             // During application shutdown on TomEE 7,
             // beans are lost at this point.
             // Does not throw an exception, but catch anything just to be sure.
-            LoggerFactory.getLogger(QuarkusVaadinServletService.class)
-                    .warn("Error at destroy event distribution with CDI.", e);
+            getLogger().warn("Error at destroy event distribution with CDI.",
+                    e);
         }
     }
+
+    private static Logger getLogger() {
+        return LoggerFactory.getLogger(QuarkusVaadinServletService.class);
+    }
+
 }

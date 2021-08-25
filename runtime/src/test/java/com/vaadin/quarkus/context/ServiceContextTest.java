@@ -24,15 +24,10 @@ import io.quarkus.test.junit.QuarkusTest;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 
 @QuarkusTest
-public class ServiceContextTest extends
-        AbstractContextTest<ServiceContextTest.ServiceScopedTestBean, VaadinServiceScopedContext> {
+public class ServiceContextTest
+        extends AbstractContextTest<VaadinServiceScopedContext> {
     @Inject
     private BeanManager beanManager;
-
-    @Override
-    protected Class<ServiceScopedTestBean> getBeanType() {
-        return ServiceScopedTestBean.class;
-    }
 
     @Override
     protected UnderTestContext newContextUnderTest() {

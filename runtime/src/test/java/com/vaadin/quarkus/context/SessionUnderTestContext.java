@@ -23,6 +23,7 @@ import java.util.Properties;
 import org.mockito.Mockito;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.VaadinSessionState;
 
@@ -59,6 +60,11 @@ public class SessionUnderTestContext implements UnderTestContext {
 
         doCallRealMethod().when(session).addUI(Mockito.any());
         doCallRealMethod().when(session).getUIs();
+
+        Mockito.doAnswer(invocation -> {
+            invocation.getArgument(0, Command.class).execute();
+            return null;
+        }).when(session).access(Mockito.any());
     }
 
     @Override
@@ -80,7 +86,9 @@ public class SessionUnderTestContext implements UnderTestContext {
 
     @Override
     public void destroy() {
-        VaadinSessionScopedContext.destroy(session);
+        if (session != null) {
+            session.getService().fireSessionDestroy(session);
+        }
     }
 
     public VaadinSession getSession() {

@@ -20,7 +20,10 @@ import javax.enterprise.context.spi.Contextual;
 
 import java.lang.annotation.Annotation;
 
+import com.vaadin.flow.server.SessionDestroyEvent;
+import com.vaadin.flow.server.SessionDestroyListener;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.shared.Registration;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 
 /**
@@ -41,7 +44,7 @@ public class VaadinSessionScopedContext extends AbstractContext {
         VaadinSession session = VaadinSession.getCurrent();
         ContextualStorage storage = findContextualStorage(session);
         if (storage == null && createIfNotExist) {
-            storage = new ContextualStorage(false);
+            storage = new SessionContextualStorage(session);
             session.setAttribute(ATTRIBUTE_NAME, storage);
         }
         return storage;
@@ -63,13 +66,6 @@ public class VaadinSessionScopedContext extends AbstractContext {
         return VaadinSession.getCurrent() != null;
     }
 
-    public static void destroy(VaadinSession session) {
-        ContextualStorage storage = findContextualStorage(session);
-        if (storage != null) {
-            AbstractContext.destroyAllActive(storage);
-        }
-    }
-
     /**
      * Guess whether this context is undeployed.
      *
@@ -85,6 +81,33 @@ public class VaadinSessionScopedContext extends AbstractContext {
         // except we get here after the application is undeployed.
         return (VaadinSession.getCurrent() != null
                 && !ContextUtils.isContextActive(VaadinSessionScoped.class));
+    }
+
+    private static class SessionContextualStorage extends ContextualStorage
+            implements SessionDestroyListener {
+
+        private final Registration registration;
+
+        private final VaadinSession session;
+
+        private SessionContextualStorage(VaadinSession session) {
+            super(false);
+            this.session = session;
+            registration = session.getService().addSessionDestroyListener(this);
+        }
+
+        @Override
+        public void sessionDestroy(SessionDestroyEvent event) {
+            if (!session.equals(event.getSession())) {
+                return;
+            }
+            ContextualStorage storage = findContextualStorage(
+                    event.getSession());
+            registration.remove();
+            if (storage != null) {
+                AbstractContext.destroyAllActive(storage);
+            }
+        }
     }
 
 }

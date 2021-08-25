@@ -43,23 +43,21 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 /**
  * Basic tests for all custom contexts.
  * 
- * @param <T>
- *            bean type
  * @param <C>
  *            a context type
  */
-public abstract class AbstractContextTest<T extends TestBean, C extends AbstractContext> {
+public abstract class AbstractContextTest<C extends AbstractContext> {
 
     private List<UnderTestContext> contexts;
 
     @SuppressWarnings("unchecked")
-    private CreationalContext<T> creationalContext = Mockito
+    private CreationalContext<TestBean> creationalContext = Mockito
             .mock(CreationalContext.class);
-    private InjectableBean<T> contextual;
+    private InjectableBean<TestBean> contextual;
 
     private C context;
 
-    private Set<T> destroyedBeans = new HashSet<>();
+    private Set<TestBean> destroyedBeans = new HashSet<>();
 
     private int createdBeans;
 
@@ -101,10 +99,10 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
     public void get_sameContextActive_beanCreatedOnce() {
         createContext().activate();
 
-        T referenceA = context.get(contextual, creationalContext);
+        TestBean referenceA = context.get(contextual, creationalContext);
         referenceA.setState("hello");
         assertEquals("hello", referenceA.getState());
-        T referenceB = context.get(contextual, creationalContext);
+        TestBean referenceB = context.get(contextual, creationalContext);
         assertEquals("hello", referenceB.getState());
         assertEquals(0, destroyedBeans.size());
 
@@ -118,12 +116,12 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
     public void get_newContextActive_newBeanCreated() {
         createContext().activate();
 
-        T referenceA = context.get(contextual, creationalContext);
+        TestBean referenceA = context.get(contextual, creationalContext);
         referenceA.setState("hello");
 
         createContext().activate();
 
-        T referenceB = context.get(contextual, creationalContext);
+        TestBean referenceB = context.get(contextual, creationalContext);
         assertEquals("", referenceB.getState());
         assertEquals(0, destroyedBeans.size());
         assertNotSame(referenceA, referenceB);
@@ -138,13 +136,13 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
     public void destroyContext_beanExistsInContext_beanDestroyed() {
         UnderTestContext contextUnderTestA = createContext();
         contextUnderTestA.activate();
-        T referenceA = context.get(contextual, creationalContext);
+        TestBean referenceA = context.get(contextual, creationalContext);
 
         referenceA.setState("hello");
 
         final UnderTestContext contextUnderTestB = createContext();
         contextUnderTestB.activate();
-        T referenceB = context.get(contextual, creationalContext);
+        TestBean referenceB = context.get(contextual, creationalContext);
 
         referenceB.setState("foo");
 
@@ -161,7 +159,7 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
     public void destroy_beanExistsInContext_beanDestroyed() {
         createContext().activate();
 
-        T referenceA = context.get(contextual, creationalContext);
+        TestBean referenceA = context.get(contextual, creationalContext);
         referenceA.setState("hello");
 
         context.destroy(contextual);
@@ -172,7 +170,7 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
     public void destroyQuarkusContext_beanExistsInContext_beanDestroyed() {
         createContext().activate();
 
-        T referenceA = context.get(contextual, creationalContext);
+        TestBean referenceA = context.get(contextual, creationalContext);
         referenceA.setState("hello");
 
         context.destroy();
@@ -183,7 +181,7 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
     public void destroyAllActive_beanExistsInContext_beanDestroyed() {
         createContext().activate();
 
-        T referenceA = context.get(contextual, creationalContext);
+        TestBean referenceA = context.get(contextual, creationalContext);
         referenceA.setState("hello");
 
         context.destroyAllActive();
@@ -194,7 +192,7 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
     public void destroyAllActive_severalContexts_beanDestroyed() {
         UnderTestContext contextUnderTestA = createContext();
         contextUnderTestA.activate();
-        T referenceA = context.get(contextual, creationalContext);
+        TestBean referenceA = context.get(contextual, creationalContext);
 
         ContextualStorage storageA = context.getContextualStorage(contextual,
                 false);
@@ -203,7 +201,7 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
 
         final UnderTestContext contextUnderTestB = createContext();
         contextUnderTestB.activate();
-        T referenceB = context.get(contextual, creationalContext);
+        TestBean referenceB = context.get(contextual, creationalContext);
 
         referenceB.setState("foo");
 
@@ -223,7 +221,7 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
     public void getState_beanExistsInContext_contextualInstanceAndBeanAreReturned() {
         createContext().activate();
 
-        T reference = context.get(contextual, creationalContext);
+        TestBean reference = context.get(contextual, creationalContext);
         reference.setState("hello");
 
         ContextState state = context.getState();
@@ -247,8 +245,6 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
 
     protected abstract UnderTestContext newContextUnderTest();
 
-    protected abstract Class<T> getBeanType();
-
     protected abstract Class<C> getContextType();
 
     private C createQuarkusContext() {
@@ -256,9 +252,9 @@ public abstract class AbstractContextTest<T extends TestBean, C extends Abstract
                 .cast(ReflectTools.createInstance(getContextType()));
     }
 
-    private T createBean() {
+    private TestBean createBean() {
         createdBeans++;
-        return getBeanType().cast(ReflectTools.createInstance(getBeanType()));
+        return new TestBean();
     }
 
 }
