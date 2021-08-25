@@ -8,12 +8,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import elemental.json.Json;
 import elemental.json.JsonObject;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class ResourceProviderTest {
 
@@ -25,26 +24,26 @@ public class ResourceProviderTest {
         URL applicationResource = resourceProvider
                 .getApplicationResource("resource-provider/some-resource.json");
 
-        Assert.assertNotNull(applicationResource);
+        Assertions.assertNotNull(applicationResource);
 
         List<URL> resources = resourceProvider.getApplicationResources(
                 "resource-provider/some-resource.json");
 
-        Assert.assertEquals(1, resources.size());
+        Assertions.assertEquals(1, resources.size());
 
-        Assert.assertNotNull(resources.get(0));
+        Assertions.assertNotNull(resources.get(0));
 
         URL nonExistent = resourceProvider
                 .getApplicationResource("resource-provider/non-existent.txt");
 
-        Assert.assertNull(nonExistent);
+        Assertions.assertNull(nonExistent);
 
         // =========== resourceProvider.getClientResource
 
         URL clientResource = resourceProvider
                 .getClientResource("resource-provider/some-resource.json");
 
-        Assert.assertNotNull(clientResource);
+        Assertions.assertNotNull(clientResource);
 
         InputStream stream = resourceProvider.getClientResourceAsStream(
                 "resource-provider/some-resource.json");
@@ -52,6 +51,6 @@ public class ResourceProviderTest {
         String content = IOUtils.readLines(stream, StandardCharsets.UTF_8)
                 .stream().collect(Collectors.joining("\n"));
         JsonObject object = Json.parse(content);
-        Assert.assertTrue(object.getBoolean("client-resource"));
+        Assertions.assertTrue(object.getBoolean("client-resource"));
     }
 }

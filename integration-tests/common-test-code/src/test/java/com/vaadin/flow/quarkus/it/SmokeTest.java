@@ -1,9 +1,8 @@
 package com.vaadin.flow.quarkus.it;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
-
 import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -26,8 +25,6 @@ public class SmokeTest extends AbstractChromeTest {
 
         button.click();
 
-        // As we don't have CDI functionality for Route annotations we check that we are in
-        // the expected feature.
         Assertions.assertEquals("hello quarkus CDI",
                 $(LabelElement.class).first().getText());
     }
@@ -42,5 +39,10 @@ public class SmokeTest extends AbstractChromeTest {
 
         Assertions.assertEquals("250px", element.getCssValue("max-width"),
                 "Theme max-width was not applied.");
+    }
+
+    @Override
+    protected String getTestPath() {
+        return "/";
     }
 }

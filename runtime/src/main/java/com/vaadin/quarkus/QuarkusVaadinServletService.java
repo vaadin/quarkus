@@ -21,12 +21,16 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+
 import java.util.Optional;
 import java.util.Set;
+
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.UsageStatistics;
+import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinServletService;
 
@@ -43,15 +47,21 @@ public class QuarkusVaadinServletService extends VaadinServletService {
     }
 
     private void reportUsage() {
-        if(!getDeploymentConfiguration().isProductionMode()) {
+        if (!getDeploymentConfiguration().isProductionMode()) {
             UsageStatistics.markAsUsed("flow/quarkus", null);
         }
     }
 
     @Override
+    public void init() throws ServiceException {
+        addServiceDestroyListener(this::fireCdiDestroyEvent);
+        super.init();
+    }
+
+    @Override
     public Optional<Instantiator> loadInstantiators() throws ServiceException {
-        final Set<Bean<?>> beans = beanManager
-                .getBeans(Instantiator.class, BeanLookup.SERVICE);
+        final Set<Bean<?>> beans = beanManager.getBeans(Instantiator.class,
+                BeanLookup.SERVICE);
         if (beans == null || beans.isEmpty()) {
             throw new ServiceException("Cannot init VaadinService "
                     + "because no CDI instantiator bean found.");
@@ -62,8 +72,9 @@ public class QuarkusVaadinServletService extends VaadinServletService {
             bean = (Bean<Instantiator>) beanManager.resolve(beans);
         } catch (final AmbiguousResolutionException e) {
             throw new ServiceException(
-                    "There are multiple eligible CDI " + Instantiator.class
-                            .getSimpleName() + " beans.", e);
+                    "There are multiple eligible CDI "
+                            + Instantiator.class.getSimpleName() + " beans.",
+                    e);
         }
 
         // Return the contextual instance (rather than CDI proxy) as it will be
@@ -72,15 +83,13 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         // VaadinServiceScopedContext is not active
         final CreationalContext<Instantiator> creationalContext = beanManager
                 .createCreationalContext(bean);
-        final Context context = beanManager
-                .getContext(ApplicationScoped.class); // VaadinServiceScoped
+        final Context context = beanManager.getContext(ApplicationScoped.class); // VaadinServiceScoped
         final Instantiator instantiator = context.get(bean, creationalContext);
 
         if (!instantiator.init(this)) {
-            throw new ServiceException(
-                    "Cannot init VaadinService because " + instantiator
-                            .getClass().getName() + " CDI bean init()"
-                            + " returned false.");
+            throw new ServiceException("Cannot init VaadinService because "
+                    + instantiator.getClass().getName() + " CDI bean init()"
+                    + " returned false.");
         }
         return Optional.of(instantiator);
     }
@@ -88,5 +97,17 @@ public class QuarkusVaadinServletService extends VaadinServletService {
     @Override
     public QuarkusVaadinServlet getServlet() {
         return (QuarkusVaadinServlet) super.getServlet();
+    }
+
+    private void fireCdiDestroyEvent(ServiceDestroyEvent event) {
+        try {
+            beanManager.fireEvent(event);
+        } catch (Exception e) {
+            // During application shutdown on TomEE 7,
+            // beans are lost at this point.
+            // Does not throw an exception, but catch anything just to be sure.
+            LoggerFactory.getLogger(QuarkusVaadinServletService.class)
+                    .warn("Error at destroy event distribution with CDI.", e);
+        }
     }
 }

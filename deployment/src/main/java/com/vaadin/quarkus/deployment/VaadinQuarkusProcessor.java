@@ -16,26 +16,31 @@
 package com.vaadin.quarkus.deployment;
 
 import javax.servlet.annotation.WebServlet;
+
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinServlet;
-import com.vaadin.quarkus.QuarkusVaadinServlet;
-
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.AnnotationValue;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
-
 import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
+import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem;
+import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfiguratorBuildItem;
+import io.quarkus.arc.deployment.CustomScopeBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.undertow.deployment.ServletBuildItem;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationValue;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
+
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinServlet;
+import com.vaadin.quarkus.QuarkusVaadinServlet;
+import com.vaadin.quarkus.annotation.VaadinServiceScoped;
+import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 
 class VaadinQuarkusProcessor {
 
@@ -71,10 +76,11 @@ class VaadinQuarkusProcessor {
         final Collection<ClassInfo> vaadinServlets = indexView
                 .getAllKnownSubclasses(
                         DotName.createSimple(VaadinServlet.class.getName()))
-                .stream().filter(servlet -> !servlet.name().toString()
-                        .equals(QuarkusVaadinServlet.class.getName()) || servlet
-                        .name().toString()
-                        .equals(VaadinServlet.class.getName()))
+                .stream()
+                .filter(servlet -> !servlet.name().toString()
+                        .equals(QuarkusVaadinServlet.class.getName())
+                        || servlet.name().toString()
+                                .equals(VaadinServlet.class.getName()))
                 .collect(Collectors.toList());
 
         // If no VaadinServlet instances found register QuarkusVaadinServlet
@@ -88,16 +94,29 @@ class VaadinQuarkusProcessor {
         }
     }
 
-    private void registerUserServlets(BuildProducer<ServletBuildItem> servletProducer,
+    @BuildStep
+    ContextConfiguratorBuildItem registerVaadinServiceScopedContext(
+            ContextRegistrationPhaseBuildItem phase) {
+        return new ContextConfiguratorBuildItem(
+                phase.getContext().configure(VaadinServiceScoped.class).normal()
+                        .contextClass(VaadinServiceScopedContext.class));
+    }
+
+    @BuildStep
+    CustomScopeBuildItem serviceScope() {
+        return new CustomScopeBuildItem(
+                DotName.createSimple(VaadinServiceScoped.class.getName()));
+    }
+
+    private void registerUserServlets(
+            BuildProducer<ServletBuildItem> servletProducer,
             Collection<ClassInfo> vaadinServlets) {
         // TODO: check that we don't register 2 of the same mapping
         for (ClassInfo info : vaadinServlets) {
-            final AnnotationInstance webServletInstance = info
-                    .classAnnotation(DotName.createSimple(
-                            WebServlet.class.getName()));
+            final AnnotationInstance webServletInstance = info.classAnnotation(
+                    DotName.createSimple(WebServlet.class.getName()));
             final ServletBuildItem.Builder servletBuildItem = ServletBuildItem
-                    .builder(info.name().toString(),
-                            info.name().toString());
+                    .builder(info.name().toString(), info.name().toString());
 
             // Add url pattern mapping
             servletBuildItem.addMapping(
@@ -116,17 +135,17 @@ class VaadinQuarkusProcessor {
         final AnnotationInstance[] initParams = webServletInstance
                 .value("initParams").asNestedArray();
         for (AnnotationInstance initParam : initParams) {
-            servletBuildItem
-                    .addInitParam(initParam.value("name").asString(),
-                            initParam.value().asString());
+            servletBuildItem.addInitParam(initParam.value("name").asString(),
+                    initParam.value().asString());
         }
     }
 
-    private void setAsyncSupportedIfDefined(AnnotationInstance webServletInstance,
+    private void setAsyncSupportedIfDefined(
+            AnnotationInstance webServletInstance,
             ServletBuildItem.Builder servletBuildItem) {
         final AnnotationValue asyncSupported = webServletInstance
                 .value("asyncSupported");
-        if(asyncSupported != null) {
+        if (asyncSupported != null) {
             servletBuildItem.setAsyncSupported(asyncSupported.asBoolean());
         }
     }

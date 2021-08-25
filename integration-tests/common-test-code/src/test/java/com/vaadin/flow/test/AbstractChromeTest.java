@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Rule;
 import org.junit.experimental.categories.Category;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +18,8 @@ import com.vaadin.testbench.parallel.Browser;
 import com.vaadin.testbench.parallel.BrowserUtil;
 
 /**
- * Simplified chrome test that doesn't handle view/IT class paths.
- * Uses Jupiter API
+ * Simplified chrome test that doesn't handle view/IT class paths. Uses Jupiter
+ * API
  */
 @Category(ChromeTests.class)
 public abstract class AbstractChromeTest extends ChromeBrowserTest {
@@ -46,14 +45,10 @@ public abstract class AbstractChromeTest extends ChromeBrowserTest {
         checkIfServerAvailable();
     }
 
+    @Override
     @BrowserConfiguration
     public List<DesiredCapabilities> getBrowsersToTest() {
         return Arrays.asList(BrowserUtil.chrome());
-    }
-
-    @Override
-    protected String getTestPath() {
-        return "/";
     }
 
 }
