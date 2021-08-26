@@ -39,8 +39,12 @@ import org.jboss.jandex.IndexView;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
+import com.vaadin.quarkus.annotation.NormalUIScoped;
+import com.vaadin.quarkus.annotation.UIScoped;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
+import com.vaadin.quarkus.context.NormalUIContextWrapper;
+import com.vaadin.quarkus.context.UIScopedContext;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 import com.vaadin.quarkus.context.VaadinSessionScopedContext;
 
@@ -122,6 +126,28 @@ class VaadinQuarkusProcessor {
     CustomScopeBuildItem sessionScope() {
         return new CustomScopeBuildItem(
                 DotName.createSimple(VaadinSessionScoped.class.getName()));
+    }
+
+    @BuildStep
+    ContextConfiguratorBuildItem registerUIScopedContext(
+            ContextRegistrationPhaseBuildItem phase) {
+        return new ContextConfiguratorBuildItem(
+                phase.getContext().configure(UIScoped.class).normal()
+                        .contextClass(UIScopedContext.class),
+                phase.getContext().configure(NormalUIScoped.class).normal()
+                        .contextClass(NormalUIContextWrapper.class));
+    }
+
+    @BuildStep
+    CustomScopeBuildItem uiScope() {
+        return new CustomScopeBuildItem(
+                DotName.createSimple(UIScoped.class.getName()));
+    }
+
+    @BuildStep
+    CustomScopeBuildItem normalUiScope() {
+        return new CustomScopeBuildItem(
+                DotName.createSimple(NormalUIScoped.class.getName()));
     }
 
     private void registerUserServlets(

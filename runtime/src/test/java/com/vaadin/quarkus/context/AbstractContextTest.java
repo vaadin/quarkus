@@ -16,245 +16,57 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.spi.CreationalContext;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import io.quarkus.arc.InjectableBean;
-import io.quarkus.arc.InjectableContext.ContextState;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import com.vaadin.flow.internal.ReflectTools;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
- * Basic tests for all custom contexts.
+ * Basic tests for all custom abstract contexts.
  * 
  * @param <C>
  *            a context type
  */
-public abstract class AbstractContextTest<C extends AbstractContext> {
-
-    private List<UnderTestContext> contexts;
-
-    @SuppressWarnings("unchecked")
-    private CreationalContext<TestBean> creationalContext = Mockito
-            .mock(CreationalContext.class);
-    private InjectableBean<TestBean> contextual;
-
-    private C context;
-
-    private Set<TestBean> destroyedBeans = new HashSet<>();
-
-    private int createdBeans;
-
-    @SuppressWarnings("unchecked")
-    @BeforeEach
-    public void setUp() {
-        createdBeans = 0;
-        contexts = new ArrayList<>();
-        destroyedBeans.clear();
-
-        contextual = Mockito.mock(InjectableBean.class);
-        Mockito.doAnswer(invocation -> createBean()).when(contextual)
-                .create(creationalContext);
-
-        Mockito.doAnswer(invocation -> {
-            destroyedBeans.add(invocation.getArgument(0));
-            return null;
-        }).when(contextual).destroy(Mockito.any(),
-                Mockito.eq(creationalContext));
-
-        context = createQuarkusContext();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        newContextUnderTest().tearDownAll();
-        contexts = null;
-    }
-
-    @Test
-    public void get_contextNotActive_ExceptionThrown() {
-        Assertions.assertThrows(ContextNotActiveException.class, () -> {
-            C context = createQuarkusContext();
-            context.get(contextual);
-        });
-    }
-
-    @Test
-    public void get_sameContextActive_beanCreatedOnce() {
-        createContext().activate();
-
-        TestBean referenceA = context.get(contextual, creationalContext);
-        referenceA.setState("hello");
-        assertEquals("hello", referenceA.getState());
-        TestBean referenceB = context.get(contextual, creationalContext);
-        assertEquals("hello", referenceB.getState());
-        assertEquals(0, destroyedBeans.size());
-
-        referenceB = context.get(contextual);
-        assertSame(referenceA, referenceB);
-
-        assertEquals(1, createdBeans);
-    }
-
-    @Test
-    public void get_newContextActive_newBeanCreated() {
-        createContext().activate();
-
-        TestBean referenceA = context.get(contextual, creationalContext);
-        referenceA.setState("hello");
-
-        createContext().activate();
-
-        TestBean referenceB = context.get(contextual, creationalContext);
-        assertEquals("", referenceB.getState());
-        assertEquals(0, destroyedBeans.size());
-        assertNotSame(referenceA, referenceB);
-
-        referenceB = context.get(contextual);
-        assertNotSame(referenceA, referenceB);
-
-        assertEquals(2, createdBeans);
-    }
-
-    @Test
-    public void destroyContext_beanExistsInContext_beanDestroyed() {
-        UnderTestContext contextUnderTestA = createContext();
-        contextUnderTestA.activate();
-        TestBean referenceA = context.get(contextual, creationalContext);
-
-        referenceA.setState("hello");
-
-        final UnderTestContext contextUnderTestB = createContext();
-        contextUnderTestB.activate();
-        TestBean referenceB = context.get(contextual, creationalContext);
-
-        referenceB.setState("foo");
-
-        assertEquals(2, createdBeans);
-
-        contextUnderTestA.destroy();
-        assertEquals(1, destroyedBeans.size());
-
-        contextUnderTestB.destroy();
-        assertEquals(2, destroyedBeans.size());
-    }
-
-    @Test
-    public void destroy_beanExistsInContext_beanDestroyed() {
-        createContext().activate();
-
-        TestBean referenceA = context.get(contextual, creationalContext);
-        referenceA.setState("hello");
-
-        context.destroy(contextual);
-        assertEquals(1, destroyedBeans.size());
-    }
-
-    @Test
-    public void destroyQuarkusContext_beanExistsInContext_beanDestroyed() {
-        createContext().activate();
-
-        TestBean referenceA = context.get(contextual, creationalContext);
-        referenceA.setState("hello");
-
-        context.destroy();
-        assertEquals(1, destroyedBeans.size());
-    }
+public abstract class AbstractContextTest<C extends AbstractContext>
+        extends InjectableContextTest<C> {
 
     @Test
     public void destroyAllActive_beanExistsInContext_beanDestroyed() {
         createContext().activate();
 
-        TestBean referenceA = context.get(contextual, creationalContext);
+        TestBean referenceA = getContext().get(contextual, creationalContext);
         referenceA.setState("hello");
 
-        context.destroyAllActive();
-        assertEquals(1, destroyedBeans.size());
+        getContext().destroyAllActive();
+        assertEquals(1, getDestroyedBeans().size());
     }
 
     @Test
     public void destroyAllActive_severalContexts_beanDestroyed() {
         UnderTestContext contextUnderTestA = createContext();
         contextUnderTestA.activate();
-        TestBean referenceA = context.get(contextual, creationalContext);
+        TestBean referenceA = getContext().get(contextual, creationalContext);
 
-        ContextualStorage storageA = context.getContextualStorage(contextual,
-                false);
+        ContextualStorage storageA = getContext()
+                .getContextualStorage(contextual, false);
 
         referenceA.setState("hello");
 
         final UnderTestContext contextUnderTestB = createContext();
         contextUnderTestB.activate();
-        TestBean referenceB = context.get(contextual, creationalContext);
+        TestBean referenceB = getContext().get(contextual, creationalContext);
 
         referenceB.setState("foo");
 
-        ContextualStorage storageB = context.getContextualStorage(contextual,
-                false);
+        ContextualStorage storageB = getContext()
+                .getContextualStorage(contextual, false);
 
-        assertEquals(2, createdBeans);
+        assertEquals(2, getCreatedBeansCount());
 
         AbstractContext.destroyAllActive(storageA);
-        assertEquals(1, destroyedBeans.size());
+        assertEquals(1, getDestroyedBeans().size());
 
         AbstractContext.destroyAllActive(storageB);
-        assertEquals(2, destroyedBeans.size());
-    }
-
-    @Test
-    public void getState_beanExistsInContext_contextualInstanceAndBeanAreReturned() {
-        createContext().activate();
-
-        TestBean reference = context.get(contextual, creationalContext);
-        reference.setState("hello");
-
-        ContextState state = context.getState();
-
-        Map<InjectableBean<?>, Object> instances = state
-                .getContextualInstances();
-        assertNotNull(instances);
-        assertSame(reference, instances.get(contextual));
-    }
-
-    protected UnderTestContext createContext() {
-        UnderTestContext underTestContext = newContextUnderTest();
-        /*
-         * UnderTestContext implementations set fields to Vaadin
-         * CurrentInstance. Need to hold a hard reference to prevent possible
-         * GC, because CurrentInstance works with weak reference.
-         */
-        contexts.add(underTestContext);
-        return underTestContext;
-    }
-
-    protected abstract UnderTestContext newContextUnderTest();
-
-    protected abstract Class<C> getContextType();
-
-    private C createQuarkusContext() {
-        return getContextType()
-                .cast(ReflectTools.createInstance(getContextType()));
-    }
-
-    private TestBean createBean() {
-        createdBeans++;
-        return new TestBean();
+        assertEquals(2, getDestroyedBeans().size());
     }
 
 }
