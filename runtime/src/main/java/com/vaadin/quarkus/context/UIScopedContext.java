@@ -21,15 +21,17 @@ import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 
 import io.quarkus.arc.Arc;
+import io.quarkus.arc.Unremovable;
 
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.quarkus.annotation.NormalUIScoped;
 import com.vaadin.quarkus.annotation.UIScoped;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 
 /**
- * UIScopedContext is the context for {@link UIScoped @UIScoped} beans.
+ * UIScopedContext is the context for {@link UIScoped NormalUIScoped} beans.
  */
 public class UIScopedContext extends AbstractContext {
 
@@ -44,7 +46,7 @@ public class UIScopedContext extends AbstractContext {
 
     @Override
     public Class<? extends Annotation> getScope() {
-        return UIScoped.class;
+        return NormalUIScoped.class;
     }
 
     @Override
@@ -64,6 +66,7 @@ public class UIScopedContext extends AbstractContext {
     }
 
     @VaadinSessionScoped
+    @Unremovable
     public static class ContextualStorageManager
             extends AbstractContextualStorageManager<Integer> {
 

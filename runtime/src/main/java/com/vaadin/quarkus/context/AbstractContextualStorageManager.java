@@ -55,6 +55,13 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
         }
     }
 
+    protected void relocate(K from, K to) {
+        ContextualStorage storage = storageMap.remove(from);
+        if (storage != null) {
+            storageMap.put(to, storage);
+        }
+    }
+
     protected ContextualStorage newContextualStorage(K key) {
         return new ContextualStorage(concurrent);
     }

@@ -40,8 +40,13 @@ public class UIContextRootView extends Div {
     public static final String NORMALSCOPED_LINK = "normalscoped bean view";
     public static final String EVENT_PAYLOAD = "EVENT_PAYLOAD";
 
+    public static final String UI_SCOPED_BEAN_ID = "ui-scoped-bean";
+
     @Inject
     private UIScopedLabel label;
+
+    @Inject
+    private UIScopedBean bean;
 
     @Inject
     private Event<SetTextEvent> setTextEventTrigger;
@@ -67,6 +72,10 @@ public class UIContextRootView extends Div {
                         .fire(new SetTextEvent(EVENT_PAYLOAD)));
         triggerEvent.setId(TRIGGER_EVENT_BTN);
 
+        Div beanDiv = new Div();
+        beanDiv.setId(UI_SCOPED_BEAN_ID);
+        beanDiv.setText(bean.getId());
+
         final Div navDiv = new Div(
                 new RouterLink(INJECTER_LINK, UIScopeInjecterView.class),
                 new RouterLink(UISCOPED_LINK, UIScopedView.class),
@@ -74,7 +83,7 @@ public class UIContextRootView extends Div {
                         UINormalScopedBeanView.class));
 
         add(new Div(uiId), new Div(closeUI, closeSession),
-                new Div(triggerEvent), new Div(this.label), navDiv);
+                new Div(triggerEvent), new Div(this.label), navDiv, beanDiv);
     }
 
 }

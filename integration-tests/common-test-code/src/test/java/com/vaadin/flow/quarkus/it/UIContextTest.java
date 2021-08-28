@@ -19,15 +19,16 @@ package com.vaadin.flow.quarkus.it;
 import java.io.IOException;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import com.vaadin.flow.quarkus.it.uicontext.UIContextRootView;
 import com.vaadin.flow.quarkus.it.uicontext.UINormalScopedBeanView;
-import com.vaadin.flow.quarkus.it.uicontext.UIScopedLabel;
-import com.vaadin.flow.quarkus.it.uicontext.UIScopedView;
+import com.vaadin.flow.quarkus.it.uicontext.UIScopedBean;
 
 @QuarkusTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UIContextTest extends AbstractCdiTest {
 
     private String uiId;
@@ -37,7 +38,7 @@ public class UIContextTest extends AbstractCdiTest {
         return "/ui";
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         resetCounts();
         open();
@@ -46,42 +47,25 @@ public class UIContextTest extends AbstractCdiTest {
 
     @Test
     public void beanDestroyedOnUIClose() throws IOException {
-        assertDestroyCountEquals(0);
+        assertCountEquals(UIScopedBean.DESTROY_COUNTER_KEY, 0);
         click(UIContextRootView.CLOSE_UI_BTN);
-        assertDestroyCountEquals(1);
+        assertCountEquals(UIScopedBean.DESTROY_COUNTER_KEY, 1);
     }
 
     @Test
-    public void beanDestroyedOnSessionClose() throws IOException {
-        assertDestroyCountEquals(0);
+    public void beanDestroyedOnSessionClose()
+            throws IOException, InterruptedException {
+        assertCountEquals(UIScopedBean.DESTROY_COUNTER_KEY, 0);
         click(UIContextRootView.CLOSE_SESSION_BTN);
-        assertDestroyCountEquals(1);
-    }
 
-    @Test
-    public void viewSurvivesNavigation() {
-        follow(UIContextRootView.UISCOPED_LINK);
-        assertTextEquals("", UIScopedView.VIEWSTATE_LABEL);
-        click(UIScopedView.SETSTATE_BTN);
-        assertTextEquals(UIScopedView.UISCOPED_STATE,
-                UIScopedView.VIEWSTATE_LABEL);
-        follow(UIScopedView.ROOT_LINK);
-        follow(UIContextRootView.UISCOPED_LINK);
-        assertTextEquals(UIScopedView.UISCOPED_STATE,
-                UIScopedView.VIEWSTATE_LABEL);
+        assertCountEquals(UIScopedBean.DESTROY_COUNTER_KEY, 1);
     }
 
     @Test
     public void sameScopedComponentInjectedInOtherView() {
-        assertTextEquals(uiId, UIScopedLabel.ID);
+        String beanId = getText(UIContextRootView.UI_SCOPED_BEAN_ID);
         follow(UIContextRootView.INJECTER_LINK);
-        assertTextEquals(uiId, UIScopedLabel.ID);
-    }
-
-    @Test
-    public void observerCalledOnInstanceAttachedToUI() {
-        click(UIContextRootView.TRIGGER_EVENT_BTN);
-        assertTextEquals(UIContextRootView.EVENT_PAYLOAD, UIScopedLabel.ID);
+        assertTextEquals(beanId, UIContextRootView.UI_SCOPED_BEAN_ID);
     }
 
     @Test
@@ -94,8 +78,8 @@ public class UIContextTest extends AbstractCdiTest {
         assertTextEquals(uiId, UINormalScopedBeanView.UIID_LABEL);
     }
 
-    private void assertDestroyCountEquals(int expectedCount)
+    private void assertCountEquals(String key, int expectedCount)
             throws IOException {
-        assertCountEquals(expectedCount, UIScopedLabel.DESTROY_COUNT + uiId);
+        assertCountEquals(expectedCount, key + uiId);
     }
 }

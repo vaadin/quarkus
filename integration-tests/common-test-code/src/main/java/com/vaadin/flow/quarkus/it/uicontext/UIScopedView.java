@@ -25,6 +25,10 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.quarkus.annotation.UIScoped;
 
+/**
+ * At the moment Quakrus doesn't support custom psuedo scopes. So this class
+ * won't be in UI (pseudo) scope and it's not used in tests.
+ */
 @Route("uiscoped")
 @UIScoped
 public class UIScopedView extends Div {

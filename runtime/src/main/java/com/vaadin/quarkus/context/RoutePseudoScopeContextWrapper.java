@@ -24,19 +24,20 @@ import java.lang.annotation.Annotation;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.InjectableContext;
 
-import com.vaadin.quarkus.annotation.NormalUIScoped;
-import com.vaadin.quarkus.annotation.UIScoped;
+import com.vaadin.quarkus.annotation.NormalRouteScoped;
+import com.vaadin.quarkus.annotation.RouteScoped;
 
 /**
  * Used to bind multiple scope annotations to a single context. Will delegate
  * all context-related operations to it's underlying instance, apart from
  * getting the scope of the context.
+ *
  */
-public class NormalUIContextWrapper implements InjectableContext {
+public class RoutePseudoScopeContextWrapper implements InjectableContext {
 
     @Override
     public Class<? extends Annotation> getScope() {
-        return NormalUIScoped.class;
+        return RouteScoped.class;
     }
 
     @Override
@@ -75,10 +76,10 @@ public class NormalUIContextWrapper implements InjectableContext {
      * <p>
      * It's not private only for testing purpose.
      * 
-     * @return a wrapped context
+     * @return a wrapped context.
      */
     InjectableContext getContext() {
-        return Arc.container().getActiveContext(UIScoped.class);
+        return Arc.container().getActiveContext(NormalRouteScoped.class);
     }
 
 }

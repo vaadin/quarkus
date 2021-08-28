@@ -16,31 +16,34 @@
 
 package com.vaadin.quarkus.context;
 
-import io.quarkus.arc.InjectableContext;
 import io.quarkus.test.junit.QuarkusTest;
 
-import com.vaadin.quarkus.context.UiContextNormalTest.TestNormalUIContextWrapper;
-import com.vaadin.quarkus.context.UiContextPseudoTest.TestUIScopedContext;
-
 @QuarkusTest
-public class UiContextNormalTest
-        extends InjectableContextTest<TestNormalUIContextWrapper> {
+public class RouteContextPseudoTest
+        extends AbstractContextTest<RouteScopedContext> {
 
     @Override
     protected UnderTestContext newContextUnderTest() {
-        return new UIUnderTestContext();
+        // Intentionally UI Under Test Context. Nothing else needed.
+        UIUnderTestContext context = new UIUnderTestContext() {
+
+            @Override
+            public void activate() {
+                super.activate();
+
+                // NavigationData data = new NavigationData(
+                // TestNavigationTarget.class, Collections.emptyList());
+                // ComponentUtil.setData(getUi(), NavigationData.class, data);
+            }
+        };
+
+        return context;
     }
 
     @Override
-    protected Class<TestNormalUIContextWrapper> getContextType() {
-        return TestNormalUIContextWrapper.class;
+    protected Class<RouteScopedContext> getContextType() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public static class TestNormalUIContextWrapper
-            extends NormalUIContextWrapper {
-        @Override
-        InjectableContext getContext() {
-            return new TestUIScopedContext();
-        }
-    }
 }

@@ -25,6 +25,10 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.quarkus.it.Counter;
 import com.vaadin.quarkus.annotation.UIScoped;
 
+/**
+ * At the moment Quakrus doesn't support custom psuedo scopes. So this class
+ * won't be in UI (pseudo) scope and it's not used in tests.
+ */
 @UIScoped
 public class UIScopedLabel extends Label {
 

@@ -39,11 +39,12 @@ import org.jboss.jandex.IndexView;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
+import com.vaadin.quarkus.annotation.NormalRouteScoped;
 import com.vaadin.quarkus.annotation.NormalUIScoped;
-import com.vaadin.quarkus.annotation.UIScoped;
+import com.vaadin.quarkus.annotation.RouteScoped;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
-import com.vaadin.quarkus.context.NormalUIContextWrapper;
+import com.vaadin.quarkus.context.RouteScopedContext;
 import com.vaadin.quarkus.context.UIScopedContext;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 import com.vaadin.quarkus.context.VaadinSessionScopedContext;
@@ -110,8 +111,7 @@ class VaadinQuarkusProcessor {
 
     @BuildStep
     CustomScopeBuildItem serviceScope() {
-        return new CustomScopeBuildItem(
-                DotName.createSimple(VaadinServiceScoped.class.getName()));
+        return new CustomScopeBuildItem(VaadinServiceScoped.class);
     }
 
     @BuildStep
@@ -124,30 +124,38 @@ class VaadinQuarkusProcessor {
 
     @BuildStep
     CustomScopeBuildItem sessionScope() {
-        return new CustomScopeBuildItem(
-                DotName.createSimple(VaadinSessionScoped.class.getName()));
+        return new CustomScopeBuildItem(VaadinSessionScoped.class);
     }
 
     @BuildStep
     ContextConfiguratorBuildItem registerUIScopedContext(
             ContextRegistrationPhaseBuildItem phase) {
         return new ContextConfiguratorBuildItem(
-                phase.getContext().configure(UIScoped.class).normal()
-                        .contextClass(UIScopedContext.class),
                 phase.getContext().configure(NormalUIScoped.class).normal()
-                        .contextClass(NormalUIContextWrapper.class));
-    }
-
-    @BuildStep
-    CustomScopeBuildItem uiScope() {
-        return new CustomScopeBuildItem(
-                DotName.createSimple(UIScoped.class.getName()));
+                        .contextClass(UIScopedContext.class));
     }
 
     @BuildStep
     CustomScopeBuildItem normalUiScope() {
-        return new CustomScopeBuildItem(
-                DotName.createSimple(NormalUIScoped.class.getName()));
+        return new CustomScopeBuildItem(NormalUIScoped.class);
+    }
+
+    @BuildStep
+    ContextConfiguratorBuildItem registerRouteScopedContext(
+            ContextRegistrationPhaseBuildItem phase) {
+        return new ContextConfiguratorBuildItem(
+                phase.getContext().configure(NormalRouteScoped.class).normal()
+                        .contextClass(RouteScopedContext.class));
+    }
+
+    @BuildStep
+    CustomScopeBuildItem routeScope() {
+        return new CustomScopeBuildItem(RouteScoped.class);
+    }
+
+    @BuildStep
+    CustomScopeBuildItem normalRouteScope() {
+        return new CustomScopeBuildItem(NormalRouteScoped.class);
     }
 
     private void registerUserServlets(
