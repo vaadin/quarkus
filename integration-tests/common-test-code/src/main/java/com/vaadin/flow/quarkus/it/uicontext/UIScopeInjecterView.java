@@ -24,16 +24,12 @@ import com.vaadin.flow.router.Route;
 
 @Route("injecter")
 public class UIScopeInjecterView extends Div {
-    @Inject
-    private UIScopedLabel label;
 
     @Inject
     private UIScopedBean bean;
 
     @PostConstruct
     private void init() {
-        add(label);
-
         Div div = new Div();
         div.setId(UIContextRootView.UI_SCOPED_BEAN_ID);
         div.setText(bean.getId());

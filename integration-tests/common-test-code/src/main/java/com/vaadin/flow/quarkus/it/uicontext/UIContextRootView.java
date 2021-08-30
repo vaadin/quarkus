@@ -17,14 +17,12 @@
 package com.vaadin.flow.quarkus.it.uicontext;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
-import com.vaadin.flow.quarkus.it.uicontext.UIScopedLabel.SetTextEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
@@ -43,18 +41,11 @@ public class UIContextRootView extends Div {
     public static final String UI_SCOPED_BEAN_ID = "ui-scoped-bean";
 
     @Inject
-    private UIScopedLabel label;
-
-    @Inject
     private UIScopedBean bean;
-
-    @Inject
-    private Event<SetTextEvent> setTextEventTrigger;
 
     @PostConstruct
     private void init() {
         final String uiIdStr = UI.getCurrent().getUIId() + "";
-        label.setText(uiIdStr);
 
         final Label uiId = new Label(uiIdStr);
         uiId.setId(UIID_LABEL);
@@ -67,23 +58,16 @@ public class UIContextRootView extends Div {
                 event -> getUI().ifPresent(ui -> ui.getSession().close()));
         closeSession.setId(CLOSE_SESSION_BTN);
 
-        final NativeButton triggerEvent = new NativeButton("event trigger",
-                event -> setTextEventTrigger
-                        .fire(new SetTextEvent(EVENT_PAYLOAD)));
-        triggerEvent.setId(TRIGGER_EVENT_BTN);
-
         Div beanDiv = new Div();
         beanDiv.setId(UI_SCOPED_BEAN_ID);
         beanDiv.setText(bean.getId());
 
         final Div navDiv = new Div(
                 new RouterLink(INJECTER_LINK, UIScopeInjecterView.class),
-                new RouterLink(UISCOPED_LINK, UIScopedView.class),
                 new RouterLink(NORMALSCOPED_LINK,
                         UINormalScopedBeanView.class));
 
-        add(new Div(uiId), new Div(closeUI, closeSession),
-                new Div(triggerEvent), new Div(this.label), navDiv, beanDiv);
+        add(new Div(uiId), new Div(closeUI, closeSession), navDiv, beanDiv);
     }
 
 }

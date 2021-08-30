@@ -19,7 +19,7 @@ package com.vaadin.quarkus.context;
 import io.quarkus.arc.InjectableContext;
 import io.quarkus.test.junit.QuarkusTest;
 
-import com.vaadin.quarkus.context.UiContextPseudoTest.TestUIScopedContext;
+import com.vaadin.quarkus.context.UiContextTest.TestUIScopedContext;
 import com.vaadin.quarkus.context.UiPseudoScopeContextTest.TestUIPseudoScopeContextWrapper;
 
 @QuarkusTest

@@ -19,7 +19,7 @@ package com.vaadin.quarkus.context;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class RouteContextPseudoTest
+public class RouteContextTest
         extends AbstractContextTest<RouteScopedContext> {
 
     @Override
