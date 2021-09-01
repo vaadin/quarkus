@@ -27,7 +27,6 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.quarkus.annotation.NormalUIScoped;
-import com.vaadin.quarkus.annotation.UIScoped;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 
 /**
@@ -35,13 +34,13 @@ import com.vaadin.quarkus.annotation.VaadinSessionScoped;
  */
 public class UIScopedContext extends AbstractContext {
 
-    private ContextualStorageManager contextualStorageManager;
-
     @Override
     protected ContextualStorage getContextualStorage(Contextual<?> contextual,
             boolean createIfNotExist) {
-        init();
-        return contextualStorageManager.getContextualStorage(createIfNotExist);
+        return BeanProvider
+                .getContextualReference(getBeanManager(),
+                        ContextualStorageManager.class, false)
+                .getContextualStorage(createIfNotExist);
     }
 
     @Override
@@ -96,20 +95,12 @@ public class UIScopedContext extends AbstractContext {
 
     @Override
     public void destroy() {
-        init();
         super.destroy();
     }
 
     @Override
     public ContextState getState() {
-        init();
         return super.getState();
     }
 
-    private void init() {
-        if (contextualStorageManager == null) {
-            contextualStorageManager = BeanProvider.getContextualReference(
-                    getBeanManager(), ContextualStorageManager.class, false);
-        }
-    }
 }

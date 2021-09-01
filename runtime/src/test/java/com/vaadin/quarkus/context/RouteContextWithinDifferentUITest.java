@@ -16,22 +16,34 @@
 
 package com.vaadin.quarkus.context;
 
+import java.util.Collections;
+
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
+
+import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.quarkus.context.RouteScopedContext.NavigationData;
 
 @QuarkusTest
-public class RouteContextTest
+public class RouteContextWithinDifferentUITest
         extends AbstractContextTest<TestRouteScopedContext> {
 
     @Override
-    @Test
-    public void destroyContext_beanExistsInContext_beanDestroyed() {
-        destroyContext_beanExistsInContext_beanDestroyed(true);
-    }
-
-    @Override
     protected UnderTestContext newContextUnderTest() {
-        return new RouteUnderTestContext();
+        // Intentionally UI Under Test Context. Nothing else needed.
+        UIUnderTestContext context = new UIUnderTestContext() {
+
+            @Override
+            public void activate() {
+                super.activate();
+
+                NavigationData data = new NavigationData(
+                        TestNavigationTarget.class, Collections.emptyList());
+                ComponentUtil.setData(getUi(), NavigationData.class, data);
+            }
+
+        };
+
+        return context;
     }
 
     @Override

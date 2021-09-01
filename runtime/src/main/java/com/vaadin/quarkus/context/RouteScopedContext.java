@@ -20,7 +20,6 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.PassivationCapable;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -43,7 +42,6 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.quarkus.annotation.NormalRouteScoped;
 import com.vaadin.quarkus.annotation.NormalUIScoped;
 import com.vaadin.quarkus.annotation.RouteScopeOwner;
-import com.vaadin.quarkus.annotation.RouteScoped;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 
 import static javax.enterprise.event.Reception.IF_EXISTS;
@@ -53,9 +51,7 @@ import static javax.enterprise.event.Reception.IF_EXISTS;
  */
 public class RouteScopedContext extends AbstractContext {
 
-    @VaadinSessionScoped
-    @Unremovable
-    public static class ContextualStorageManager
+    public abstract static class ContextualStorageManager
             extends AbstractContextualStorageManager<RouteStorageKey> {
 
         public ContextualStorageManager() {
@@ -162,9 +158,23 @@ public class RouteScopedContext extends AbstractContext {
             }
         }
 
+        private List<ContextualStorage> getActiveContextualStorages() {
+            return getKeySet().stream().filter(
+                    key -> key.getUIId().equals(getUIStoreId(UI.getCurrent())))
+                    .map(key -> getContextualStorage(key, false))
+                    .collect(Collectors.toList());
+        }
+
     }
 
-    private static class RouteStorageKey implements Serializable {
+    @VaadinSessionScoped
+    @Unremovable
+    private static class RouteContextualStorageManager
+            extends ContextualStorageManager {
+
+    }
+
+    static class RouteStorageKey implements Serializable {
         private final Class<?> owner;
         private final String uiId;
 
@@ -224,8 +234,6 @@ public class RouteScopedContext extends AbstractContext {
         }
     }
 
-    private BeanManager beanManager;
-
     public RouteScopedContext() {
         super();
     }
@@ -247,6 +255,33 @@ public class RouteScopedContext extends AbstractContext {
             boolean createIfNotExist) {
         RouteStorageKey key = convertToKey(contextual);
         return getStorageManager().getContextualStorage(key, createIfNotExist);
+    }
+
+    @Override
+    protected List<ContextualStorage> getActiveContextualStorages() {
+        return getStorageManager().getActiveContextualStorages();
+    }
+
+    /**
+     * Gets a bean manager.
+     * <p>
+     * Not a private for testing purposes only.
+     * 
+     * @return a bean manager
+     */
+    BeanManager getBeanManager() {
+        return Arc.container().beanManager();
+    }
+
+    /**
+     * Gets a contextual storage manager class.
+     * <p>
+     * Not a private for testing purposes only.
+     * 
+     * @return a contextual storage manager class
+     */
+    Class<? extends ContextualStorageManager> getContextualStorageManagerClass() {
+        return RouteContextualStorageManager.class;
     }
 
     private RouteStorageKey convertToKey(Contextual<?> contextual) {
@@ -294,21 +329,17 @@ public class RouteScopedContext extends AbstractContext {
     }
 
     private ContextualStorageManager getStorageManager() {
-        return BeanProvider.getContextualReference(
-                Arc.container().beanManager(), ContextualStorageManager.class,
-                false);
+        return BeanProvider.getContextualReference(getBeanManager(),
+                getContextualStorageManagerClass(), false);
     }
 
     private Bean<?> getBean(Contextual<?> contextual) {
         if (contextual instanceof Bean) {
             return (Bean<?>) contextual;
-        }
-        if (contextual instanceof PassivationCapable) {
-            String id = ((PassivationCapable) contextual).getId();
-            return beanManager.getPassivationCapableBean(id);
         } else {
             throw new IllegalArgumentException(contextual.getClass().getName()
                     + " is not of type " + Bean.class.getName());
         }
+
     }
 }

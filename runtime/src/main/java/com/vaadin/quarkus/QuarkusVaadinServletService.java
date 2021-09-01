@@ -28,9 +28,19 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.PollEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.UsageStatistics;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationListener;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterListener;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveListener;
+import com.vaadin.flow.router.ListenerPriority;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinServletService;
@@ -38,6 +48,8 @@ import com.vaadin.flow.server.VaadinServletService;
 public class QuarkusVaadinServletService extends VaadinServletService {
 
     private BeanManager beanManager;
+
+    private UIEventListener uiEventListener;
 
     public QuarkusVaadinServletService(final QuarkusVaadinServlet servlet,
             final DeploymentConfiguration configuration,
@@ -56,7 +68,14 @@ public class QuarkusVaadinServletService extends VaadinServletService {
     @Override
     public void init() throws ServiceException {
         addServiceDestroyListener(this::fireCdiDestroyEvent);
+        uiEventListener = new UIEventListener();
         super.init();
+    }
+
+    @Override
+    public void fireUIInitListeners(UI ui) {
+        addUIListeners(ui);
+        super.fireUIInitListeners(ui);
     }
 
     @Override
@@ -112,8 +131,48 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         }
     }
 
+    private void addUIListeners(UI ui) {
+        ui.addAfterNavigationListener(uiEventListener);
+        ui.addBeforeLeaveListener(uiEventListener);
+        ui.addBeforeEnterListener(uiEventListener);
+        ui.addPollListener(uiEventListener);
+    }
+
+    private BeanManager getBeanManager() {
+        return beanManager;
+    }
+
     private static Logger getLogger() {
         return LoggerFactory.getLogger(QuarkusVaadinServletService.class);
+    }
+
+    /**
+     * Static listener class, to avoid registering the whole service instance.
+     */
+    @ListenerPriority(-100) // navigation event listeners are last by default
+    private class UIEventListener
+            implements AfterNavigationListener, BeforeEnterListener,
+            BeforeLeaveListener, ComponentEventListener<PollEvent> {
+
+        @Override
+        public void afterNavigation(AfterNavigationEvent event) {
+            getBeanManager().fireEvent(event);
+        }
+
+        @Override
+        public void beforeEnter(BeforeEnterEvent event) {
+            getBeanManager().fireEvent(event);
+        }
+
+        @Override
+        public void beforeLeave(BeforeLeaveEvent event) {
+            getBeanManager().fireEvent(event);
+        }
+
+        @Override
+        public void onComponentEvent(PollEvent event) {
+            getBeanManager().fireEvent(event);
+        }
     }
 
 }

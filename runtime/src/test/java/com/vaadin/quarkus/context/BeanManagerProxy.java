@@ -67,7 +67,7 @@ class BeanManagerProxy implements InvocationHandler {
                 && args[1].equals(mockingBeanType)
                 && args[2].equals(fakeContext)) {
             VaadinSession session = VaadinSession.getCurrent();
-            String attribute = "test-" + mockingBeanType;
+            String attribute = getAttributeName(mockingBeanType);
             Object value = session.getAttribute(attribute);
             if (value == null) {
                 value = BeanProvider.getContextualReference(delegate,
@@ -99,6 +99,10 @@ class BeanManagerProxy implements InvocationHandler {
             }
         }
         return found.invoke(delegate, args);
+    }
+
+    static String getAttributeName(Class<?> mockingBeanType) {
+        return "test-" + mockingBeanType;
     }
 
 }

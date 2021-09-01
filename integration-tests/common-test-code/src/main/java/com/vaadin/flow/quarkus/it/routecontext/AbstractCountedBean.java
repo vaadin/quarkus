@@ -14,29 +14,31 @@
  * the License.
  */
 
-package com.vaadin.quarkus.context;
+package com.vaadin.flow.quarkus.it.routecontext;
 
-import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
-@QuarkusTest
-public class RouteContextTest
-        extends AbstractContextTest<TestRouteScopedContext> {
+public class AbstractCountedBean implements CountedPerUI {
 
-    @Override
-    @Test
-    public void destroyContext_beanExistsInContext_beanDestroyed() {
-        destroyContext_beanExistsInContext_beanDestroyed(true);
+    private String data = "";
+
+    @PostConstruct
+    private void construct() {
+        countConstruct();
     }
 
-    @Override
-    protected UnderTestContext newContextUnderTest() {
-        return new RouteUnderTestContext();
+    @PreDestroy
+    private void destroy() {
+        countDestroy();
     }
 
-    @Override
-    protected Class<TestRouteScopedContext> getContextType() {
-        return TestRouteScopedContext.class;
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 
 }

@@ -62,7 +62,6 @@ public abstract class InjectableContextTest<C extends InjectableContext> {
 
     private int createdBeans;
 
-    @SuppressWarnings("unchecked")
     @BeforeEach
     public void setUp() {
         createdBeans = 0;
@@ -134,25 +133,7 @@ public abstract class InjectableContextTest<C extends InjectableContext> {
 
     @Test
     public void destroyContext_beanExistsInContext_beanDestroyed() {
-        UnderTestContext contextUnderTestA = createContext();
-        contextUnderTestA.activate();
-        TestBean referenceA = context.get(contextual, creationalContext);
-
-        referenceA.setState("hello");
-
-        final UnderTestContext contextUnderTestB = createContext();
-        contextUnderTestB.activate();
-        TestBean referenceB = context.get(contextual, creationalContext);
-
-        referenceB.setState("foo");
-
-        assertEquals(2, createdBeans);
-
-        contextUnderTestA.destroy();
-        assertEquals(1, destroyedBeans.size());
-
-        contextUnderTestB.destroy();
-        assertEquals(2, destroyedBeans.size());
+        destroyContext_beanExistsInContext_beanDestroyed(false);
     }
 
     @Test
@@ -206,6 +187,34 @@ public abstract class InjectableContextTest<C extends InjectableContext> {
     protected abstract UnderTestContext newContextUnderTest();
 
     protected abstract Class<C> getContextType();
+
+    protected void destroyContext_beanExistsInContext_beanDestroyed(
+            boolean bothContextDestroyed) {
+        UnderTestContext contextUnderTestA = createContext();
+        contextUnderTestA.activate();
+        TestBean referenceA = context.get(contextual, creationalContext);
+
+        referenceA.setState("hello");
+
+        final UnderTestContext contextUnderTestB = createContext();
+        contextUnderTestB.activate();
+        TestBean referenceB = context.get(contextual, creationalContext);
+
+        referenceB.setState("foo");
+
+        assertEquals(2, createdBeans);
+
+        contextUnderTestA.destroy();
+
+        if (bothContextDestroyed) {
+            assertEquals(2, destroyedBeans.size());
+        } else {
+            assertEquals(1, destroyedBeans.size());
+
+            contextUnderTestB.destroy();
+            assertEquals(2, destroyedBeans.size());
+        }
+    }
 
     protected Set<TestBean> getDestroyedBeans() {
         return destroyedBeans;
