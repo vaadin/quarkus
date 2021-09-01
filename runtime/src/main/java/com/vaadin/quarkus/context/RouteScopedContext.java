@@ -47,7 +47,7 @@ import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 import static javax.enterprise.event.Reception.IF_EXISTS;
 
 /**
- * Context for {@link RouteScoped @RouteScoped} beans.
+ * Context for {@link NormalRouteScoped NormalRouteScoped} beans.
  */
 public class RouteScopedContext extends AbstractContext {
 
