@@ -46,10 +46,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * You cannot use this scope with Vaadin Components. Proxy Components do not
  * work correctly within the Vaadin framework, so as a precaution the Vaadin CDI
  * plugin will not deploy if any such beans are discovered.
- * <p>
- * The sister annotation to this is the {@link RouteScoped}. Both annotations
- * reference the same underlying scope, so it is possible to get both a proxy
- * and a direct reference to the same object by using different annotations.
+ * 
  */
 @NormalScope
 @Inherited

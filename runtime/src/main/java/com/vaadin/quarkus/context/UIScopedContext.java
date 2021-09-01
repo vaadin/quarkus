@@ -30,7 +30,8 @@ import com.vaadin.quarkus.annotation.NormalUIScoped;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 
 /**
- * UIScopedContext is the context for {@link UIScoped NormalUIScoped} beans.
+ * UIScopedContext is the context for {@link NormalUIScoped @NormalUIScoped}
+ * beans.
  */
 public class UIScopedContext extends AbstractContext {
 

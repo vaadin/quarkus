@@ -33,8 +33,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Link a {@link RouteScoped @RouteScoped}, or
- * {@link NormalRouteScoped @NormalRouteScoped} bean to its owner.
+ * Link a {@link NormalRouteScoped @NormalRouteScoped} bean to its owner.
  * <p>
  * Owner is a router component. A {@link Route @Route}, or a
  * {@link RouterLayout}, or a {@link HasErrorParameter}.
@@ -44,8 +43,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ TYPE, METHOD, FIELD, PARAMETER })
 public @interface RouteScopeOwner {
     /**
-     * Owner class of the qualified {@link RouteScoped @RouteScoped}, or
-     * {@link NormalRouteScoped @NormalRouteScoped} bean.
+     * Owner class of the qualified {@link NormalRouteScoped @NormalRouteScoped}
+     * bean.
      * <p>
      * A {@link Route @Route}, or a {@link RouterLayout}, or a
      * {@link HasErrorParameter}
