@@ -32,6 +32,8 @@ import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.ServiceException;
+import com.vaadin.flow.server.SessionDestroyEvent;
+import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.VaadinServletService;
 
 public class QuarkusVaadinServletService extends VaadinServletService {
@@ -54,7 +56,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
 
     @Override
     public void init() throws ServiceException {
-        addServiceDestroyListener(this::fireCdiDestroyEvent);
+        addEventListeners();
         super.init();
     }
 
@@ -99,6 +101,22 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         return (QuarkusVaadinServlet) super.getServlet();
     }
 
+    private void addEventListeners() {
+        addServiceDestroyListener(this::fireCdiDestroyEvent);
+        addUIInitListener(getBeanManager()::fireEvent);
+        addSessionInitListener(this::sessionInit);
+        addSessionDestroyListener(this::sessionDestroy);
+    }
+
+    private void sessionInit(SessionInitEvent sessionInitEvent)
+            throws ServiceException {
+        getBeanManager().fireEvent(sessionInitEvent);
+    }
+
+    private void sessionDestroy(SessionDestroyEvent sessionDestroyEvent) {
+        getBeanManager().fireEvent(sessionDestroyEvent);
+    }
+
     private void fireCdiDestroyEvent(ServiceDestroyEvent event) {
         try {
             beanManager.fireEvent(event);
@@ -110,4 +128,9 @@ public class QuarkusVaadinServletService extends VaadinServletService {
                     .warn("Error at destroy event distribution with CDI.", e);
         }
     }
+
+    private BeanManager getBeanManager() {
+        return beanManager;
+    }
+
 }
