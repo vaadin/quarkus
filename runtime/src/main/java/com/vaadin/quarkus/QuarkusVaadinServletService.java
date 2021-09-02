@@ -43,19 +43,22 @@ import com.vaadin.flow.router.BeforeLeaveListener;
 import com.vaadin.flow.router.ListenerPriority;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.ServiceException;
+import com.vaadin.flow.server.SessionDestroyEvent;
+import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.VaadinServletService;
 
 public class QuarkusVaadinServletService extends VaadinServletService {
 
     private BeanManager beanManager;
 
-    private UIEventListener uiEventListener;
+    private final UIEventListener uiEventListener;
 
     public QuarkusVaadinServletService(final QuarkusVaadinServlet servlet,
             final DeploymentConfiguration configuration,
             final BeanManager beanManager) {
         super(servlet, configuration);
         this.beanManager = beanManager;
+        uiEventListener = new UIEventListener();
         reportUsage();
     }
 
@@ -67,8 +70,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
 
     @Override
     public void init() throws ServiceException {
-        addServiceDestroyListener(this::fireCdiDestroyEvent);
-        uiEventListener = new UIEventListener();
+        addEventListeners();
         super.init();
     }
 
@@ -117,6 +119,22 @@ public class QuarkusVaadinServletService extends VaadinServletService {
     @Override
     public QuarkusVaadinServlet getServlet() {
         return (QuarkusVaadinServlet) super.getServlet();
+    }
+
+    private void addEventListeners() {
+        addServiceDestroyListener(this::fireCdiDestroyEvent);
+        addUIInitListener(getBeanManager()::fireEvent);
+        addSessionInitListener(this::sessionInit);
+        addSessionDestroyListener(this::sessionDestroy);
+    }
+
+    private void sessionInit(SessionInitEvent sessionInitEvent)
+            throws ServiceException {
+        getBeanManager().fireEvent(sessionInitEvent);
+    }
+
+    private void sessionDestroy(SessionDestroyEvent sessionDestroyEvent) {
+        getBeanManager().fireEvent(sessionDestroyEvent);
     }
 
     private void fireCdiDestroyEvent(ServiceDestroyEvent event) {
