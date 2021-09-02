@@ -20,6 +20,7 @@ import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
+
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -34,7 +35,7 @@ import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
  * destroyed properly. {@link javax.annotation.PreDestroy} won't run.
  *
  * @param <T>
- *         Bean Type
+ *            Bean Type
  */
 class BeanLookup<T> {
 
@@ -86,8 +87,8 @@ class BeanLookup<T> {
     }
 
     T lookupOrElseGet(final Supplier<T> fallback) {
-        final Set<Bean<?>> beans = this.beanManager
-                .getBeans(this.type, this.qualifiers);
+        final Set<Bean<?>> beans = this.beanManager.getBeans(this.type,
+                this.qualifiers);
         if (beans == null || beans.isEmpty()) {
             this.unsatisfiedHandler.handle();
             return fallback.get();
@@ -103,5 +104,9 @@ class BeanLookup<T> {
                 .createCreationalContext(bean);
         // noinspection unchecked
         return (T) this.beanManager.getReference(bean, this.type, ctx);
+    }
+
+    T lookup() {
+        return lookupOrElseGet(() -> null);
     }
 }
