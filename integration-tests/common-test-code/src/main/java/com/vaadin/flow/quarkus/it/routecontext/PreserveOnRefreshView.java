@@ -30,7 +30,7 @@ public class PreserveOnRefreshView extends Div {
 
     @Inject
     @RouteScopeOwner(PreserveOnRefreshView.class)
-    private Instance<PreserveOnRefreshBean> injection;
+    Instance<PreserveOnRefreshBean> injection;
 
     public PreserveOnRefreshView() {
         setId("preserve-on-refresh");

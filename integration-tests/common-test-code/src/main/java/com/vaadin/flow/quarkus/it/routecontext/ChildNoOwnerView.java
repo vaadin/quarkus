@@ -28,7 +28,7 @@ import com.vaadin.flow.router.RouterLink;
 public class ChildNoOwnerView extends Div {
 
     @Inject
-    private Instance<BeanNoOwner> instance;
+    Instance<BeanNoOwner> instance;
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
