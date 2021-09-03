@@ -39,8 +39,14 @@ import org.jboss.jandex.IndexView;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
+import com.vaadin.quarkus.annotation.NormalRouteScoped;
+import com.vaadin.quarkus.annotation.NormalUIScoped;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
+import com.vaadin.quarkus.annotation.VaadinSessionScoped;
+import com.vaadin.quarkus.context.RouteScopedContext;
+import com.vaadin.quarkus.context.UIScopedContext;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
+import com.vaadin.quarkus.context.VaadinSessionScopedContext;
 
 class VaadinQuarkusProcessor {
 
@@ -104,8 +110,46 @@ class VaadinQuarkusProcessor {
 
     @BuildStep
     CustomScopeBuildItem serviceScope() {
-        return new CustomScopeBuildItem(
-                DotName.createSimple(VaadinServiceScoped.class.getName()));
+        return new CustomScopeBuildItem(VaadinServiceScoped.class);
+    }
+
+    @BuildStep
+    ContextConfiguratorBuildItem registerVaadinSessionScopedContext(
+            ContextRegistrationPhaseBuildItem phase) {
+        return new ContextConfiguratorBuildItem(
+                phase.getContext().configure(VaadinSessionScoped.class).normal()
+                        .contextClass(VaadinSessionScopedContext.class));
+    }
+
+    @BuildStep
+    CustomScopeBuildItem sessionScope() {
+        return new CustomScopeBuildItem(VaadinSessionScoped.class);
+    }
+
+    @BuildStep
+    ContextConfiguratorBuildItem registerUIScopedContext(
+            ContextRegistrationPhaseBuildItem phase) {
+        return new ContextConfiguratorBuildItem(
+                phase.getContext().configure(NormalUIScoped.class).normal()
+                        .contextClass(UIScopedContext.class));
+    }
+
+    @BuildStep
+    CustomScopeBuildItem normalUiScope() {
+        return new CustomScopeBuildItem(NormalUIScoped.class);
+    }
+
+    @BuildStep
+    ContextConfiguratorBuildItem registerRouteScopedContext(
+            ContextRegistrationPhaseBuildItem phase) {
+        return new ContextConfiguratorBuildItem(
+                phase.getContext().configure(NormalRouteScoped.class).normal()
+                        .contextClass(RouteScopedContext.class));
+    }
+
+    @BuildStep
+    CustomScopeBuildItem normalRouteScope() {
+        return new CustomScopeBuildItem(NormalRouteScoped.class);
     }
 
     private void registerUserServlets(

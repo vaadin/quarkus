@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2018 Vaadin Ltd.
+ * Copyright 2000-2021 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -52,6 +52,13 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
             return storageMap.computeIfAbsent(key, this::newContextualStorage);
         } else {
             return storageMap.get(key);
+        }
+    }
+
+    protected void relocate(K from, K to) {
+        ContextualStorage storage = storageMap.remove(from);
+        if (storage != null) {
+            storageMap.put(to, storage);
         }
     }
 

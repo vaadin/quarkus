@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2018 Vaadin Ltd.
+ * Copyright 2000-2021 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -23,6 +23,7 @@ import javax.enterprise.event.Observes;
 import java.lang.annotation.Annotation;
 
 import io.quarkus.arc.Arc;
+import io.quarkus.arc.Unremovable;
 
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.VaadinServlet;
@@ -37,13 +38,9 @@ import static javax.enterprise.event.Reception.IF_EXISTS;
  */
 public class VaadinServiceScopedContext extends AbstractContext {
 
-    private ContextualStorageManager contextManager;
-
     @Override
     protected ContextualStorage getContextualStorage(Contextual<?> contextual,
             boolean createIfNotExist) {
-        init();
-
         QuarkusVaadinServlet servlet = (QuarkusVaadinServlet) VaadinServlet
                 .getCurrent();
         String servletName;
@@ -52,8 +49,10 @@ public class VaadinServiceScopedContext extends AbstractContext {
         } else {
             servletName = QuarkusVaadinServlet.getCurrentServletName().get();
         }
-        return contextManager.getContextualStorage(servletName,
-                createIfNotExist);
+        return BeanProvider
+                .getContextualReference(Arc.container().beanManager(),
+                        ContextualStorageManager.class, false)
+                .getContextualStorage(servletName, createIfNotExist);
     }
 
     @Override
@@ -69,6 +68,7 @@ public class VaadinServiceScopedContext extends AbstractContext {
     }
 
     @ApplicationScoped
+    @Unremovable
     public static class ContextualStorageManager
             extends AbstractContextualStorageManager<String> {
 
@@ -97,14 +97,6 @@ public class VaadinServiceScopedContext extends AbstractContext {
             destroy(servletName);
         }
 
-    }
-
-    private void init() {
-        if (contextManager == null) {
-            contextManager = BeanProvider.getContextualReference(
-                    Arc.container().beanManager(),
-                    ContextualStorageManager.class, false);
-        }
     }
 
 }
