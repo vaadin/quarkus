@@ -30,6 +30,7 @@ import com.vaadin.flow.quarkus.it.routecontext.AssignedBean;
 import com.vaadin.flow.quarkus.it.routecontext.BeanNoOwner;
 import com.vaadin.flow.quarkus.it.routecontext.DetailApartView;
 import com.vaadin.flow.quarkus.it.routecontext.DetailAssignedView;
+import com.vaadin.flow.quarkus.it.routecontext.MainLayout;
 import com.vaadin.flow.quarkus.it.routecontext.MasterView;
 import com.vaadin.flow.quarkus.it.routecontext.PreserveOnRefreshBean;
 import com.vaadin.flow.quarkus.it.routecontext.RootView;

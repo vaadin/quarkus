@@ -58,7 +58,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
             final BeanManager beanManager) {
         super(servlet, configuration);
         this.beanManager = beanManager;
-        uiEventListener = new UIEventListener();
+        uiEventListener = new UIEventListener(beanManager);
         reportUsage();
     }
 
@@ -168,9 +168,15 @@ public class QuarkusVaadinServletService extends VaadinServletService {
      * Static listener class, to avoid registering the whole service instance.
      */
     @ListenerPriority(-100) // navigation event listeners are last by default
-    private class UIEventListener
+    private static class UIEventListener
             implements AfterNavigationListener, BeforeEnterListener,
             BeforeLeaveListener, ComponentEventListener<PollEvent> {
+
+        private BeanManager beanManager;
+
+        UIEventListener(BeanManager beanManager) {
+            this.beanManager = beanManager;
+        }
 
         @Override
         public void afterNavigation(AfterNavigationEvent event) {
@@ -190,6 +196,10 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         @Override
         public void onComponentEvent(PollEvent event) {
             getBeanManager().fireEvent(event);
+        }
+
+        private BeanManager getBeanManager() {
+            return beanManager;
         }
     }
 
