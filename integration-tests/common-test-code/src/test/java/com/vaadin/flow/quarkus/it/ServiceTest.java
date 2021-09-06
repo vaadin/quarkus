@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import com.vaadin.flow.quarkus.it.service.BootstrapCustomizer;
-import com.vaadin.flow.quarkus.it.service.ServiceBean;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -59,9 +58,8 @@ public class ServiceTest extends AbstractCdiTest {
         // open another UI
         open();
 
+        Assertions.assertFalse(id.isEmpty());
         Assertions.assertEquals(id, getText("service-id"));
-        int count = getCount(ServiceBean.class.getName());
-        Assertions.assertEquals(1, count);
     }
 
 }
