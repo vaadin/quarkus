@@ -18,23 +18,19 @@ package com.vaadin.flow.quarkus.it.routecontext;
 
 import javax.annotation.PostConstruct;
 
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.router.RouterLink;
 
-@Route(value = "route", layout = MainLayout.class)
-public class RootView extends AbstractCountedView {
+@Route("error-layout")
+public class ErrorParentView extends AbstractCountedView
+        implements RouterLayout {
 
-    public static final String MASTER = "master";
-
-    public static final String ERROR = "error";
+    public static final String ROOT = "root";
 
     @PostConstruct
     private void init() {
-        add(new Div(new Label("ROOT")),
-                new Div(new RouterLink(MASTER, MasterView.class)),
-                new Div(new RouterLink(ERROR, ErrorView.class)));
+        add(new RouterLink(ROOT, RootView.class));
     }
 
 }
