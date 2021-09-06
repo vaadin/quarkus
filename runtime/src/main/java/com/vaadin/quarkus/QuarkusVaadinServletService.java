@@ -41,11 +41,14 @@ import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveListener;
 import com.vaadin.flow.router.ListenerPriority;
+import com.vaadin.flow.server.ErrorHandler;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SessionDestroyEvent;
 import com.vaadin.flow.server.SessionInitEvent;
+import com.vaadin.flow.server.SystemMessagesProvider;
 import com.vaadin.flow.server.VaadinServletService;
+import com.vaadin.flow.server.VaadinSession;
 
 public class QuarkusVaadinServletService extends VaadinServletService {
 
@@ -71,6 +74,8 @@ public class QuarkusVaadinServletService extends VaadinServletService {
     @Override
     public void init() throws ServiceException {
         addEventListeners();
+        lookup(SystemMessagesProvider.class)
+                .ifPresent(this::setSystemMessagesProvider);
         super.init();
     }
 
@@ -130,6 +135,8 @@ public class QuarkusVaadinServletService extends VaadinServletService {
 
     private void sessionInit(SessionInitEvent sessionInitEvent)
             throws ServiceException {
+        VaadinSession session = sessionInitEvent.getSession();
+        lookup(ErrorHandler.class).ifPresent(session::setErrorHandler);
         getBeanManager().fireEvent(sessionInitEvent);
     }
 
@@ -154,6 +161,17 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         ui.addBeforeLeaveListener(uiEventListener);
         ui.addBeforeEnterListener(uiEventListener);
         ui.addPollListener(uiEventListener);
+    }
+
+    public <T> Optional<T> lookup(Class<T> type) throws ServiceException {
+        try {
+            T instance = new BeanLookup<>(getBeanManager(), type,
+                    BeanLookup.SERVICE).lookup();
+            return Optional.ofNullable(instance);
+        } catch (AmbiguousResolutionException e) {
+            throw new ServiceException("There are multiple eligible CDI "
+                    + type.getSimpleName() + " beans.", e);
+        }
     }
 
     private BeanManager getBeanManager() {
