@@ -30,8 +30,6 @@ import com.vaadin.flow.quarkus.it.routecontext.AssignedBean;
 import com.vaadin.flow.quarkus.it.routecontext.BeanNoOwner;
 import com.vaadin.flow.quarkus.it.routecontext.DetailApartView;
 import com.vaadin.flow.quarkus.it.routecontext.DetailAssignedView;
-import com.vaadin.flow.quarkus.it.routecontext.ErrorHandlerView.ErrorBean1;
-import com.vaadin.flow.quarkus.it.routecontext.ErrorHandlerView.ErrorBean2;
 import com.vaadin.flow.quarkus.it.routecontext.MainLayout;
 import com.vaadin.flow.quarkus.it.routecontext.MasterView;
 import com.vaadin.flow.quarkus.it.routecontext.PreserveOnRefreshBean;
@@ -168,31 +166,6 @@ public class RouteContextTest extends AbstractCdiTest {
 
         Assertions.assertEquals(beanData,
                 findElement(By.id("preserve-on-refresh")).getText());
-    }
-
-    @Test
-    public void navigateToViewWhichThrows_beansInsideErrorViewArePreservedinScope()
-            throws IOException {
-        follow(RootView.ERROR);
-
-        assertConstructed(ErrorBean1.class, 1);
-        assertDestroyed(ErrorBean1.class, 0);
-
-        assertConstructed(ErrorBean2.class, 0);
-        assertDestroyed(ErrorBean2.class, 0);
-
-        findElement(By.id("switch-content")).click();
-
-        assertDestroyed(ErrorBean1.class, 0);
-        assertConstructed(ErrorBean2.class, 1);
-        assertDestroyed(ErrorBean2.class, 0);
-
-        findElement(By.id("switch-content")).click();
-
-        assertConstructed(ErrorBean1.class, 1);
-        assertConstructed(ErrorBean2.class, 1);
-        assertDestroyed(ErrorBean1.class, 0);
-        assertDestroyed(ErrorBean2.class, 0);
     }
 
     private void assertRootViewIsDisplayed() {

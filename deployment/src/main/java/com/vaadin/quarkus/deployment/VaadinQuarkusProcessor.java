@@ -28,7 +28,6 @@ import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfig
 import io.quarkus.arc.deployment.CustomScopeBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.undertow.deployment.ServletBuildItem;
 import org.jboss.jandex.AnnotationInstance;
@@ -37,7 +36,6 @@ import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 
-import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
@@ -72,18 +70,6 @@ class VaadinQuarkusProcessor {
         // Make and Route annotated Component a bean for injection
         additionalBeanDefiningAnnotationRegistry
                 .produce(new BeanDefiningAnnotationBuildItem(ROUTE_ANNOTATION));
-    }
-
-    @BuildStep
-    public void specifyErrorViewsBeans(CombinedIndexBuildItem item,
-            BuildProducer<AdditionalBeanBuildItem> additionalBeanProducer) {
-        Collection<ClassInfo> errors = item.getComputingIndex()
-                .getAllKnownImplementors(DotName
-                        .createSimple(HasErrorParameter.class.getName()));
-        for (ClassInfo errorInfo : errors) {
-            additionalBeanProducer.produce(AdditionalBeanBuildItem
-                    .unremovableOf(errorInfo.name().toString()));
-        }
     }
 
     @BuildStep

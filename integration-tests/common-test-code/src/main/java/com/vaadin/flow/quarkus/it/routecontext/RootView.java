@@ -28,13 +28,10 @@ public class RootView extends AbstractCountedView {
 
     public static final String MASTER = "master";
 
-    public static final String ERROR = "error";
-
     @PostConstruct
     private void init() {
         add(new Div(new Label("ROOT")),
-                new Div(new RouterLink(MASTER, MasterView.class)),
-                new Div(new RouterLink(ERROR, ErrorView.class)));
+                new Div(new RouterLink(MASTER, MasterView.class)));
     }
 
 }
