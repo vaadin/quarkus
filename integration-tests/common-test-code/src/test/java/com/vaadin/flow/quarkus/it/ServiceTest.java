@@ -56,14 +56,11 @@ public class ServiceTest extends AbstractCdiTest {
 
         String id = getText("service-id");
 
-        int count = getCount(ServiceBean.class.getName());
-        Assertions.assertEquals(1, count);
-
         // open another UI
         open();
 
         Assertions.assertEquals(id, getText("service-id"));
-        count = getCount(ServiceBean.class.getName());
+        int count = getCount(ServiceBean.class.getName());
         Assertions.assertEquals(1, count);
     }
 
