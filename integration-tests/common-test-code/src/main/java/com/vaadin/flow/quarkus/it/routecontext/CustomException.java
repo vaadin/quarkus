@@ -13,28 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.flow.quarkus.it.routecontext;
 
-import javax.annotation.PostConstruct;
-
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLink;
-
-@Route(value = "route", layout = MainLayout.class)
-public class RootView extends AbstractCountedView {
-
-    public static final String MASTER = "master";
-
-    public static final String ERROR = "error";
-
-    @PostConstruct
-    private void init() {
-        add(new Div(new Label("ROOT")),
-                new Div(new RouterLink(MASTER, MasterView.class)),
-                new Div(new RouterLink(ERROR, ErrorView.class)));
-    }
+public class CustomException extends RuntimeException {
 
 }

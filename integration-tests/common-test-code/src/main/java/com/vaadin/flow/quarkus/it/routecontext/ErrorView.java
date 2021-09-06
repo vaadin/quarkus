@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2021 Vaadin Ltd.
+ * Copyright 2000-20121 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,25 +16,19 @@
 
 package com.vaadin.flow.quarkus.it.routecontext;
 
-import javax.annotation.PostConstruct;
-
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLink;
 
-@Route(value = "route", layout = MainLayout.class)
-public class RootView extends AbstractCountedView {
+@Route("error")
+public class ErrorView extends AbstractCountedView
+        implements BeforeEnterObserver {
 
-    public static final String MASTER = "master";
-
-    public static final String ERROR = "error";
-
-    @PostConstruct
-    private void init() {
-        add(new Div(new Label("ROOT")),
-                new Div(new RouterLink(MASTER, MasterView.class)),
-                new Div(new RouterLink(ERROR, ErrorView.class)));
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        if (true) {
+            throw new CustomException();
+        }
     }
 
 }
