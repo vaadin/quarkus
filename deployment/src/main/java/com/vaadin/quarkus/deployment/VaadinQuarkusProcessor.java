@@ -43,9 +43,13 @@ import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
 import com.vaadin.quarkus.annotation.NormalRouteScoped;
 import com.vaadin.quarkus.annotation.NormalUIScoped;
+import com.vaadin.quarkus.annotation.RouteScoped;
+import com.vaadin.quarkus.annotation.UIScoped;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
+import com.vaadin.quarkus.context.RouteContextWrapper;
 import com.vaadin.quarkus.context.RouteScopedContext;
+import com.vaadin.quarkus.context.UIContextWrapper;
 import com.vaadin.quarkus.context.UIScopedContext;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 import com.vaadin.quarkus.context.VaadinSessionScopedContext;
@@ -149,8 +153,21 @@ class VaadinQuarkusProcessor {
     }
 
     @BuildStep
+    ContextConfiguratorBuildItem registerPseudoUIScopedContext(
+            ContextRegistrationPhaseBuildItem phase) {
+        return new ContextConfiguratorBuildItem(
+                phase.getContext().configure(UIScoped.class)
+                        .contextClass(UIContextWrapper.class));
+    }
+
+    @BuildStep
     CustomScopeBuildItem normalUiScope() {
         return new CustomScopeBuildItem(NormalUIScoped.class);
+    }
+
+    @BuildStep
+    CustomScopeBuildItem uiScope() {
+        return new CustomScopeBuildItem(UIScoped.class);
     }
 
     @BuildStep
@@ -162,8 +179,21 @@ class VaadinQuarkusProcessor {
     }
 
     @BuildStep
+    ContextConfiguratorBuildItem registerPseudoRouteScopedContext(
+            ContextRegistrationPhaseBuildItem phase) {
+        return new ContextConfiguratorBuildItem(
+                phase.getContext().configure(RouteScoped.class)
+                        .contextClass(RouteContextWrapper.class));
+    }
+
+    @BuildStep
     CustomScopeBuildItem normalRouteScope() {
         return new CustomScopeBuildItem(NormalRouteScoped.class);
+    }
+
+    @BuildStep
+    CustomScopeBuildItem rRouteScope() {
+        return new CustomScopeBuildItem(RouteScoped.class);
     }
 
     private void registerUserServlets(

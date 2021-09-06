@@ -15,12 +15,14 @@
  */
 package com.vaadin.quarkus.annotation;
 
-import javax.enterprise.context.NormalScope;
+import javax.inject.Scope;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import com.vaadin.flow.component.UI;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
@@ -31,25 +33,23 @@ import static java.lang.annotation.ElementType.TYPE;
 /**
  * The lifecycle of a UIScoped component is bound to a browser tab.
  * <p>
- * Injecting with this annotation will create a proxy for the contextual
- * instance rather than provide the contextual instance itself.
+ * Injection with this annotation will create a direct reference to the object
+ * rather than a proxy.
  * <p>
- * When using proxies, be aware that it's not guaranteed that the hashcode or
- * equals will match when comparing a proxy to it's underlying instance. It's
- * imperative to be aware of this when (for example) adding proxies to a
- * Collection.
+ * There are some limitations when not using proxies. Circular referencing (that
+ * is, injecting A to B and B to A) will not work. Injecting into a larger scope
+ * will bind the instance from the currently active smaller scope, and will
+ * ignore smaller scope change. For example after being injected into session
+ * scope it will point to the same {@link UIScoped} bean instance ( even its
+ * {@link UI} is closed ) regardless of {@link UI} change.
  * <p>
- * You cannot use this scope with Vaadin Components. Proxy Components do not
- * work correctly within the Vaadin framework, so as a precaution the Vaadin CDI
- * plugin will not deploy if any such beans are discovered.
- * <p>
- * The sister annotation to this is the {@link UIScoped}. Both annotations
+ * The sister annotation to this is the {@link NormalUIScoped}. Both annotations
  * reference the same underlying scope, so it is possible to get both a proxy
  * and a direct reference to the same object by using different annotations.
  */
-@NormalScope
+@Scope
 @Inherited
 @Target({ ANNOTATION_TYPE, TYPE, FIELD, METHOD, CONSTRUCTOR })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NormalUIScoped {
+public @interface UIScoped {
 }
