@@ -22,8 +22,10 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.quarkus.annotation.RouteScoped;
 
 @Route(value = "route", layout = MainLayout.class)
+@RouteScoped
 public class RootView extends AbstractCountedView {
 
     public static final String MASTER = "master";

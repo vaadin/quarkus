@@ -30,11 +30,17 @@ import com.vaadin.flow.quarkus.it.routecontext.AssignedBean;
 import com.vaadin.flow.quarkus.it.routecontext.BeanNoOwner;
 import com.vaadin.flow.quarkus.it.routecontext.DetailApartView;
 import com.vaadin.flow.quarkus.it.routecontext.DetailAssignedView;
+import com.vaadin.flow.quarkus.it.routecontext.ErrorHandlerView;
 import com.vaadin.flow.quarkus.it.routecontext.ErrorHandlerView.ErrorBean1;
 import com.vaadin.flow.quarkus.it.routecontext.ErrorHandlerView.ErrorBean2;
+import com.vaadin.flow.quarkus.it.routecontext.ErrorParentView;
+import com.vaadin.flow.quarkus.it.routecontext.ErrorView;
+import com.vaadin.flow.quarkus.it.routecontext.EventView;
 import com.vaadin.flow.quarkus.it.routecontext.MainLayout;
 import com.vaadin.flow.quarkus.it.routecontext.MasterView;
+import com.vaadin.flow.quarkus.it.routecontext.PostponeView;
 import com.vaadin.flow.quarkus.it.routecontext.PreserveOnRefreshBean;
+import com.vaadin.flow.quarkus.it.routecontext.RerouteView;
 import com.vaadin.flow.quarkus.it.routecontext.RootView;
 
 @QuarkusTest
@@ -53,8 +59,16 @@ public class RouteContextTest extends AbstractCdiTest {
         resetCounts();
         open("");
         uiId = getText(MainLayout.UIID);
+        assertConstructed(RootView.class, 1);
+        assertDestroyed(RootView.class, 0);
+        assertConstructed(RerouteView.class, 0);
+        assertConstructed(MasterView.class, 0);
         assertConstructed(AssignedBean.class, 0);
         assertConstructed(ApartBean.class, 0);
+        assertConstructed(DetailApartView.class, 0);
+        assertConstructed(DetailAssignedView.class, 0);
+        assertConstructed(ErrorParentView.class, 0);
+        assertConstructed(ErrorHandlerView.class, 0);
     }
 
     @Test
@@ -63,10 +77,16 @@ public class RouteContextTest extends AbstractCdiTest {
         follow(RootView.MASTER);
         assertTextEquals("", MasterView.ASSIGNED_BEAN_LABEL);
 
+        assertConstructed(RootView.class, 1);
+        assertDestroyed(RootView.class, 1);
+        assertConstructed(MasterView.class, 1);
+        assertDestroyed(MasterView.class, 0);
         assertConstructed(AssignedBean.class, 1);
         assertDestroyed(AssignedBean.class, 0);
         assertConstructed(ApartBean.class, 0);
         assertDestroyed(ApartBean.class, 0);
+        assertConstructed(DetailApartView.class, 0);
+        assertConstructed(DetailAssignedView.class, 0);
     }
 
     @Test
@@ -76,6 +96,11 @@ public class RouteContextTest extends AbstractCdiTest {
         assertTextEquals("ASSIGNED", DetailAssignedView.BEAN_LABEL);
 
         follow(DetailAssignedView.MASTER);
+        assertConstructed(MasterView.class, 1);
+        assertDestroyed(MasterView.class, 0);
+        assertConstructed(DetailAssignedView.class, 1);
+        assertDestroyed(DetailAssignedView.class, 0);
+        assertConstructed(DetailApartView.class, 0);
 
         assertTextEquals("ASSIGNED", MasterView.ASSIGNED_BEAN_LABEL);
     }
@@ -88,8 +113,83 @@ public class RouteContextTest extends AbstractCdiTest {
         assertTextEquals("APART", DetailApartView.BEAN_LABEL);
 
         follow(DetailApartView.MASTER);
+        assertConstructed(MasterView.class, 1);
+        assertDestroyed(MasterView.class, 0);
+        assertConstructed(DetailAssignedView.class, 0);
+        assertDestroyed(DetailAssignedView.class, 0);
+        assertConstructed(DetailApartView.class, 1);
+        assertDestroyed(DetailApartView.class, 1);
 
         assertTextEquals("", MasterView.ASSIGNED_BEAN_LABEL);
+    }
+
+    @Test
+    public void rerouteReleasesSource() throws IOException {
+        follow(RootView.REROUTE);
+        assertConstructed(RerouteView.class, 1);
+        assertDestroyed(RerouteView.class, 1);
+
+        assertRootViewIsDisplayed();
+    }
+
+    @Test
+    public void postponedNavigationDoesNotCreateTarget() throws IOException {
+        follow(RootView.POSTPONE);
+        assertConstructed(RootView.class, 1);
+
+        follow(PostponeView.POSTPONED_ROOT);
+        assertConstructed(RootView.class, 1);
+        assertDestroyed(RootView.class, 1);
+
+        click(PostponeView.NAVIGATE);
+        assertConstructed(RootView.class, 2);
+        assertDestroyed(RootView.class, 1);
+        assertRootViewIsDisplayed();
+    }
+
+    @Test
+    public void eventObserved() {
+        follow(RootView.EVENT);
+        assertTextEquals("", EventView.OBSERVER_LABEL);
+
+        click(EventView.FIRE);
+        assertTextEquals("HELLO", EventView.OBSERVER_LABEL);
+    }
+
+    @Test
+    public void errorHandlerIsScoped() throws IOException {
+        follow(RootView.ERROR);
+        assertConstructed(RootView.class, 1);
+        assertDestroyed(RootView.class, 1);
+        assertConstructed(ErrorView.class, 1);
+        assertDestroyed(ErrorView.class, 1);
+        assertConstructed(ErrorParentView.class, 1);
+        assertDestroyed(ErrorParentView.class, 0);
+        assertConstructed(ErrorHandlerView.class, 1);
+        assertDestroyed(ErrorHandlerView.class, 0);
+
+        follow(ErrorHandlerView.PARENT);
+        assertConstructed(ErrorParentView.class, 1);
+        assertDestroyed(ErrorParentView.class, 0);
+        assertConstructed(ErrorHandlerView.class, 1);
+        assertDestroyed(ErrorHandlerView.class, 0);
+
+        follow(ErrorParentView.ROOT);
+        assertConstructed(RootView.class, 2);
+        assertDestroyed(RootView.class, 1);
+        assertConstructed(ErrorParentView.class, 1);
+        assertDestroyed(ErrorParentView.class, 1);
+        assertConstructed(ErrorHandlerView.class, 1);
+        assertDestroyed(ErrorHandlerView.class, 1);
+
+        assertRootViewIsDisplayed();
+    }
+
+    @Test
+    public void routeScopeDoesNotExist_injectionWithOwnerOutOfNavigationThrows_invalidViewIsNotRendered() {
+        follow(MainLayout.INVALID);
+
+        Assertions.assertFalse(isElementPresent(By.id("invalid-injection")));
     }
 
     @Test
