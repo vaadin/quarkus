@@ -16,26 +16,24 @@
 package com.vaadin.flow.quarkus.it.service;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import com.vaadin.flow.quarkus.it.Counter;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 
 @VaadinServiceScoped
 public class ServiceBean {
     private static final String id = UUID.randomUUID().toString();
 
-    @Inject
-    private Counter counter;
+    private static final AtomicInteger beansCount = new AtomicInteger();
 
     public String getId() {
-        return id;
+        return id + "-" + beansCount.get();
     }
 
     @PostConstruct
     void postConstruct() {
-        counter.increment(ServiceBean.class.getName());
+        beansCount.incrementAndGet();
     }
 }

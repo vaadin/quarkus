@@ -23,9 +23,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import com.vaadin.flow.quarkus.it.service.BootstrapCustomizer;
-import com.vaadin.flow.quarkus.it.service.ServiceBean;
+import com.vaadin.flow.quarkus.it.service.ServiceView;
+import com.vaadin.flow.quarkus.it.service.TestErrorHandler;
+import com.vaadin.flow.quarkus.it.service.TestSystemMessagesProvider;
+import com.vaadin.flow.server.SessionDestroyEvent;
+import com.vaadin.flow.server.SessionInitEvent;
+import com.vaadin.flow.server.UIInitEvent;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -56,15 +63,63 @@ public class ServiceTest extends AbstractCdiTest {
 
         String id = getText("service-id");
 
-        int count = getCount(ServiceBean.class.getName());
-        Assertions.assertEquals(1, count);
-
         // open another UI
         open();
 
+        Assertions.assertTrue(id.endsWith("-1"),
+                "The number of created beans must be 1 but it's "
+                        + id.substring(id.indexOf("-") + 1));
         Assertions.assertEquals(id, getText("service-id"));
-        count = getCount(ServiceBean.class.getName());
-        Assertions.assertEquals(1, count);
+    }
+
+    @Test
+    public void sessionExpiredMessageCustomized() {
+        open();
+        click(ServiceView.EXPIRE);
+        click(ServiceView.ACTION);
+        assertSystemMessageEquals(TestSystemMessagesProvider.EXPIRED_BY_TEST);
+    }
+
+    @Test
+    public void errorHandlerCustomized() throws IOException {
+        String counter = TestErrorHandler.class.getSimpleName();
+        assertCountEquals(0, counter);
+        open();
+        click(ServiceView.FAIL);
+        assertCountEquals(1, counter);
+    }
+
+    @Test
+    public void sessionInitEventObserved() throws IOException {
+        String initCounter = SessionInitEvent.class.getSimpleName();
+        assertCountEquals(0, initCounter);
+        getDriver().manage().deleteAllCookies();
+        open();
+        assertCountEquals(1, initCounter);
+    }
+
+    @Test
+    public void sessionDestroyEventObserved() throws IOException {
+        String destroyCounter = SessionDestroyEvent.class.getSimpleName();
+        assertCountEquals(0, destroyCounter);
+        open();
+        assertCountEquals(0, destroyCounter);
+        click(ServiceView.EXPIRE);
+        assertCountEquals(1, destroyCounter);
+    }
+
+    @Test
+    public void uiInitEventObserved() throws IOException {
+        String uiInitCounter = UIInitEvent.class.getSimpleName();
+        assertCountEquals(0, uiInitCounter);
+        open();
+        assertCountEquals(1, uiInitCounter);
+    }
+
+    private void assertSystemMessageEquals(String expected) {
+        WebElement message = findElement(
+                By.cssSelector("div.v-system-error div.message"));
+        Assertions.assertEquals(expected, message.getText());
     }
 
 }
