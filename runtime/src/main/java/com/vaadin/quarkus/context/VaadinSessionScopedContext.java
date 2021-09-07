@@ -20,6 +20,9 @@ import javax.enterprise.context.spi.Contextual;
 
 import java.lang.annotation.Annotation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.server.SessionDestroyEvent;
 import com.vaadin.flow.server.SessionDestroyListener;
 import com.vaadin.flow.server.VaadinSession;
@@ -66,23 +69,6 @@ public class VaadinSessionScopedContext extends AbstractContext {
         return VaadinSession.getCurrent() != null;
     }
 
-    /**
-     * Guess whether this context is undeployed.
-     *
-     * Tomcat expires sessions after contexts are undeployed. Need this guess to
-     * prevent exceptions when try to properly destroy contexts on session
-     * expiration.
-     *
-     * @return true when context is not active, but sure it should
-     */
-    public static boolean guessContextIsUndeployed() {
-        // Given there is a current VaadinSession, we should have an active
-        // context,
-        // except we get here after the application is undeployed.
-        return (VaadinSession.getCurrent() != null
-                && !ContextUtils.isContextActive(VaadinSessionScoped.class));
-    }
-
     private static class SessionContextualStorage extends ContextualStorage
             implements SessionDestroyListener {
 
@@ -101,12 +87,17 @@ public class VaadinSessionScopedContext extends AbstractContext {
             if (!session.equals(event.getSession())) {
                 return;
             }
+            getLogger().debug("VaadinSessionScopedContext destroy");
             ContextualStorage storage = findContextualStorage(
                     event.getSession());
             registration.remove();
             if (storage != null) {
                 AbstractContext.destroyAllActive(storage);
             }
+        }
+
+        private Logger getLogger() {
+            return LoggerFactory.getLogger(SessionContextualStorage.class);
         }
     }
 

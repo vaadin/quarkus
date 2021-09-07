@@ -21,16 +21,14 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.quarkus.annotation.RouteScoped;
 
+@Route("reroute")
 @RouteScoped
-@Route("error")
-public class ErrorView extends AbstractCountedView
+public class RerouteView extends AbstractCountedView
         implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        if (true) {
-            throw new CustomException();
-        }
+        event.rerouteTo(RootView.class);
     }
 
 }

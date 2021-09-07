@@ -28,7 +28,9 @@ import com.vaadin.flow.router.RoutePrefix;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.quarkus.annotation.RouteScopeOwner;
+import com.vaadin.quarkus.annotation.RouteScoped;
 
+@RouteScoped
 @Route("")
 @RoutePrefix("master")
 public class MasterView extends AbstractCountedView
@@ -41,7 +43,7 @@ public class MasterView extends AbstractCountedView
 
     @Inject
     @RouteScopeOwner(MasterView.class)
-    private AssignedBean assignedBean;
+    AssignedBean assignedBean;
     private Label assignedLabel;
 
     @PostConstruct

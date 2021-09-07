@@ -17,41 +17,38 @@
 package com.vaadin.flow.quarkus.it.routecontext;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.quarkus.annotation.RouteScopeOwner;
 import com.vaadin.quarkus.annotation.RouteScoped;
 
+@Route("postpone")
 @RouteScoped
-@Route(value = "apart", layout = MasterView.class)
-public class DetailApartView extends AbstractCountedView
-        implements AfterNavigationObserver {
+public class PostponeView extends AbstractCountedView
+        implements BeforeLeaveObserver {
 
-    public static final String MASTER = "master";
-    public static final String BEAN_LABEL = "BEAN_LABEL";
+    public static final String NAVIGATE = "NAVIGATE";
+    public static final String POSTPONED_ROOT = "postpone";
 
-    @Inject
-    @RouteScopeOwner(DetailApartView.class)
-    ApartBean apartBean;
-    private Label apartLabel;
+    private BeforeLeaveEvent.ContinueNavigationAction navigationAction;
 
     @PostConstruct
     private void init() {
-        apartLabel = new Label();
-        apartLabel.setId(BEAN_LABEL);
-        apartBean.setData("APART");
-        add(apartLabel, new Div(new RouterLink(MASTER, MasterView.class)));
+        NativeButton navBtn = new NativeButton("navigate",
+                clickEvent -> navigationAction.proceed());
+        navBtn.setId(NAVIGATE);
+
+        add(new Div(new RouterLink(POSTPONED_ROOT, RootView.class)),
+                new Div(navBtn));
     }
 
     @Override
-    public void afterNavigation(AfterNavigationEvent event) {
-        apartLabel.setText(apartBean.getData());
+    public void beforeLeave(BeforeLeaveEvent beforeLeaveEvent) {
+        navigationAction = beforeLeaveEvent.postpone();
     }
 
 }

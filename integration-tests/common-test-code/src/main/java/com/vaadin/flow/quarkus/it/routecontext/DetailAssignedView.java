@@ -26,8 +26,11 @@ import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.quarkus.annotation.RouteScopeOwner;
+import com.vaadin.quarkus.annotation.RouteScoped;
 
 @Route(value = "assigned", layout = MasterView.class)
+@RouteScoped
+@RouteScopeOwner(MasterView.class)
 public class DetailAssignedView extends AbstractCountedView
         implements AfterNavigationObserver {
 

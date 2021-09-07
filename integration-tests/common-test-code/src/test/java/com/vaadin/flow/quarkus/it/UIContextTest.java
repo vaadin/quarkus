@@ -26,6 +26,8 @@ import org.junit.jupiter.api.TestInstance;
 import com.vaadin.flow.quarkus.it.uicontext.UIContextRootView;
 import com.vaadin.flow.quarkus.it.uicontext.UINormalScopedBeanView;
 import com.vaadin.flow.quarkus.it.uicontext.UIScopedBean;
+import com.vaadin.flow.quarkus.it.uicontext.UIScopedLabel;
+import com.vaadin.flow.quarkus.it.uicontext.UIScopedView;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -62,10 +64,31 @@ public class UIContextTest extends AbstractCdiTest {
     }
 
     @Test
+    public void viewSurvivesNavigation() {
+        follow(UIContextRootView.UISCOPED_LINK);
+        assertTextEquals("", UIScopedView.VIEWSTATE_LABEL);
+        click(UIScopedView.SETSTATE_BTN);
+        assertTextEquals(UIScopedView.UISCOPED_STATE,
+                UIScopedView.VIEWSTATE_LABEL);
+        follow(UIScopedView.ROOT_LINK);
+        follow(UIContextRootView.UISCOPED_LINK);
+        assertTextEquals(UIScopedView.UISCOPED_STATE,
+                UIScopedView.VIEWSTATE_LABEL);
+    }
+
+    @Test
     public void sameScopedComponentInjectedInOtherView() {
         String beanId = getText(UIContextRootView.UI_SCOPED_BEAN_ID);
+        assertTextEquals(uiId, UIScopedLabel.ID);
         follow(UIContextRootView.INJECTER_LINK);
         assertTextEquals(beanId, UIContextRootView.UI_SCOPED_BEAN_ID);
+        assertTextEquals(uiId, UIScopedLabel.ID);
+    }
+
+    @Test
+    public void observerCalledOnInstanceAttachedToUI() {
+        click(UIContextRootView.TRIGGER_EVENT_BTN);
+        assertTextEquals(UIContextRootView.EVENT_PAYLOAD, UIScopedLabel.ID);
     }
 
     @Test
