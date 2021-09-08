@@ -14,34 +14,35 @@
  * the License.
  */
 
-package com.vaadin.flow.quarkus.it.routecontext;
+package com.vaadin.flow.quarkus.it.uicontext;
 
 import javax.annotation.PostConstruct;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.quarkus.annotation.RouteScoped;
+import com.vaadin.quarkus.annotation.UIScoped;
 
-@Route(value = "route", layout = MainLayout.class)
-@RouteScoped
-public class RootView extends AbstractCountedView {
+@Route("uiscoped")
+@UIScoped
+public class UIScopedView extends Div {
 
-    public static final String MASTER = "master";
-    public static final String REROUTE = "reroute";
-    public static final String POSTPONE = "postpone";
-    public static final String EVENT = "event";
-    public static final String ERROR = "ERROR";
+    public static final String VIEWSTATE_LABEL = "VIEWSTATE_LABEL";
+    public static final String SETSTATE_BTN = "SETSTATE_BTN";
+    public static final String ROOT_LINK = "root view";
+    public static final String UISCOPED_STATE = "UISCOPED_STATE";
 
     @PostConstruct
     private void init() {
-        add(new Div(new Label("ROOT")),
-                new Div(new RouterLink(MASTER, MasterView.class)),
-                new Div(new RouterLink(REROUTE, RerouteView.class)),
-                new Div(new RouterLink(POSTPONE, PostponeView.class)),
-                new Div(new RouterLink(EVENT, EventView.class)),
-                new Div(new RouterLink(ERROR, ErrorView.class)));
-    }
+        final Label state = new Label("");
+        state.setId(VIEWSTATE_LABEL);
 
+        final NativeButton button = new NativeButton("set state",
+                event -> state.setText(UISCOPED_STATE));
+        button.setId(SETSTATE_BTN);
+
+        add(button, state, new RouterLink(ROOT_LINK, UIContextRootView.class));
+    }
 }

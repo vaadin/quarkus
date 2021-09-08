@@ -32,7 +32,10 @@ import com.vaadin.flow.router.ParentLayout;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.quarkus.annotation.NormalRouteScoped;
 import com.vaadin.quarkus.annotation.RouteScopeOwner;
+import com.vaadin.quarkus.annotation.RouteScoped;
 
+@RouteScoped
+@RouteScopeOwner(ErrorParentView.class)
 @ParentLayout(ErrorParentView.class)
 public class ErrorHandlerView extends AbstractCountedView
         implements HasErrorParameter<CustomException> {
@@ -46,8 +49,6 @@ public class ErrorHandlerView extends AbstractCountedView
     @Inject
     @RouteScopeOwner(ErrorHandlerView.class)
     private Instance<ErrorBean2> bean2;
-
-    private boolean isSubDiv;
 
     private AbstractCountedBean current;
 

@@ -13,28 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.flow.quarkus.it.routecontext;
 
-import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLayout;
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.quarkus.annotation.RouteScopeOwner;
-import com.vaadin.quarkus.annotation.RouteScoped;
 
-@RouteScoped
-@RouteScopeOwner(ErrorParentView.class)
-@Route("error-layout")
-public class ErrorParentView extends AbstractCountedView
-        implements RouterLayout {
+@Route("invalid-injection")
+public class InvalidView extends Div {
 
-    public static final String ROOT = "root";
+    @Inject
+    @RouteScopeOwner(ErrorParentView.class)
+    /*
+     * There is no a ErrorParentView in navigation: this injection has no scope.
+     * Pseudo-scope @RouteScoped is used here with the component to immediately
+     * get an exception, for normal scope proxy is created and the exception
+     * won't be thrown immediately.
+     */
+    private ErrorParentView bean;
 
-    @PostConstruct
-    private void init() {
-        add(new RouterLink(ROOT, RootView.class));
+    public InvalidView() {
+        setId("invalid-injection");
+        setText("This view should not be shown since the "
+                + "injection has no scope and an exception should be thrown");
     }
-
 }

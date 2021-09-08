@@ -34,9 +34,9 @@ public class MainLayout extends Div implements RouterLayout {
 
     public MainLayout() {
         add(new RouterLink(PRESERVE, PreserveOnRefreshView.class),
+                new RouterLink(INVALID, InvalidView.class),
                 new RouterLink(PARENT_NO_OWNER, ParentNoOwnerView.class),
                 new RouterLink(CHILD_NO_OWNER, ChildNoOwnerView.class));
-        ;
     }
 
     @Override
