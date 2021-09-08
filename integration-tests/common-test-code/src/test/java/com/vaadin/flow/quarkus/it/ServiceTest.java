@@ -18,7 +18,7 @@ package com.vaadin.flow.quarkus.it;
 
 import java.io.IOException;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import com.vaadin.flow.server.SessionDestroyEvent;
 import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
 
-@QuarkusTest
+@QuarkusIntegrationTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ServiceTest extends AbstractCdiTest {
 
