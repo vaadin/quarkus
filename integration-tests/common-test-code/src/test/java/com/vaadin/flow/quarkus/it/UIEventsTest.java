@@ -18,11 +18,10 @@ package com.vaadin.flow.quarkus.it;
 
 import java.util.List;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.openqa.selenium.By;
 
 import com.vaadin.flow.quarkus.it.uievents.UIEventsView;
@@ -31,8 +30,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.testbench.TestBenchElement;
 
-@QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@QuarkusIntegrationTest
 public class UIEventsTest extends AbstractCdiTest {
 
     @Override

@@ -22,7 +22,6 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -35,7 +34,6 @@ import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
 
 @QuarkusIntegrationTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ServiceTest extends AbstractCdiTest {
 
     @BeforeEach

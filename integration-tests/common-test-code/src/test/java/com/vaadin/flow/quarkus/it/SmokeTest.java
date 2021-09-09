@@ -1,9 +1,8 @@
 package com.vaadin.flow.quarkus.it;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -11,8 +10,7 @@ import com.vaadin.flow.component.html.testbench.LabelElement;
 import com.vaadin.flow.component.html.testbench.NativeButtonElement;
 import com.vaadin.flow.test.AbstractChromeTest;
 
-@QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@QuarkusIntegrationTest
 public class SmokeTest extends AbstractChromeTest {
 
     @Test
