@@ -19,6 +19,7 @@ package com.vaadin.flow.quarkus.it;
 import java.io.IOException;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,12 @@ import com.vaadin.flow.quarkus.it.sessioncontext.SessionContextView;
 import static com.vaadin.flow.quarkus.it.sessioncontext.SessionContextView.SessionScopedBean.DESTROY_COUNT;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@QuarkusIntegrationTest
+/**
+ * This should be a part of SessionContextTest but it seems someone starts Java
+ * 8 instead of Java 11 to execute this specific test on TC so it's a
+ * {@link QuarkusTest} instead {@link QuarkusIntegrationTest}.
+ */
+@QuarkusTest
 public class SessionContextTest extends AbstractCdiTest {
 
     @BeforeEach
@@ -45,6 +51,13 @@ public class SessionContextTest extends AbstractCdiTest {
         click(SessionContextView.SETVALUEBTN_ID);
         getDriver().navigate().refresh();// creates new UI
         assertLabelEquals(SessionContextView.VALUE);
+    }
+
+    @Test
+    public void vaadinSessionCloseDestroysSessionContext() throws Exception {
+        assertDestroyCountEquals(0);
+        click(SessionContextView.INVALIDATEBTN_ID);
+        assertDestroyCountEquals(1);
     }
 
     @Test
