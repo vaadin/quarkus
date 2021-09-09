@@ -48,13 +48,6 @@ public class SessionContextTest extends AbstractCdiTest {
     }
 
     @Test
-    public void vaadinSessionCloseDestroysSessionContext() throws Exception {
-        assertDestroyCountEquals(0);
-        click(SessionContextView.INVALIDATEBTN_ID);
-        assertDestroyCountEquals(1);
-    }
-
-    @Test
     public void httpSessionCloseDestroysSessionContext() throws Exception {
         assertDestroyCountEquals(0);
         click(SessionContextView.HTTP_INVALIDATEBTN_ID);
