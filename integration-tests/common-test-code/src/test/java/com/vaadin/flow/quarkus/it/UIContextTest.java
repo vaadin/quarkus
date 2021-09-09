@@ -18,10 +18,9 @@ package com.vaadin.flow.quarkus.it;
 
 import java.io.IOException;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import com.vaadin.flow.quarkus.it.uicontext.UIContextRootView;
 import com.vaadin.flow.quarkus.it.uicontext.UINormalScopedBeanView;
@@ -29,8 +28,7 @@ import com.vaadin.flow.quarkus.it.uicontext.UIScopedBean;
 import com.vaadin.flow.quarkus.it.uicontext.UIScopedLabel;
 import com.vaadin.flow.quarkus.it.uicontext.UIScopedView;
 
-@QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@QuarkusIntegrationTest
 public class UIContextTest extends AbstractCdiTest {
 
     private String uiId;

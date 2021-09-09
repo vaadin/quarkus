@@ -7,6 +7,8 @@ import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.vaadin.flow.testcategory.ChromeTests;
@@ -20,6 +22,8 @@ import com.vaadin.testbench.parallel.BrowserUtil;
  * API
  */
 @Category(ChromeTests.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(ScreenshotsOnFailureExtension.class)
 public abstract class AbstractChromeTest extends ChromeBrowserTest {
 
     @AfterEach
