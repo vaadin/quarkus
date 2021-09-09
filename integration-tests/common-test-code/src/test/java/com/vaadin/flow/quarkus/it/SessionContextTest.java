@@ -18,11 +18,10 @@ package com.vaadin.flow.quarkus.it;
 
 import java.io.IOException;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +30,7 @@ import com.vaadin.flow.quarkus.it.sessioncontext.SessionContextView;
 import static com.vaadin.flow.quarkus.it.sessioncontext.SessionContextView.SessionScopedBean.DESTROY_COUNT;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@QuarkusIntegrationTest
 public class SessionContextTest extends AbstractCdiTest {
 
     @BeforeEach
