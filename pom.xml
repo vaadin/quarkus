@@ -171,7 +171,7 @@
 
     <profiles>
         <profile>
-            <id>release</id>
+            <id>default</id>
             <activation>
                 <property>
                     <name>!release</name>
