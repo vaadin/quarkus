@@ -17,6 +17,8 @@ package com.vaadin.flow.test;
 
 import java.util.logging.Logger;
 
+import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.runner.Description;
@@ -49,6 +51,14 @@ public class ScreenshotsOnFailureExtension
         }
         Object object = context.getTestInstance().get();
         AbstractChromeTest test = (AbstractChromeTest) object;
+        if (test.getDriver() == null) {
+            getLogger().severe(
+                    "There is no driver for test instance available, do you run "
+                            + QuarkusTest.class.getSimpleName() + " instead of "
+                            + QuarkusIntegrationTest.class.getSimpleName()
+                            + "?");
+            throw throwable;
+        }
 
         ScreenshotOnFailureRuleDelegate delegate = new ScreenshotOnFailureRuleDelegate(
                 test);
