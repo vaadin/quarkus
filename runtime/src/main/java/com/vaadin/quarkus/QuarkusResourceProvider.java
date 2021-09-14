@@ -35,13 +35,11 @@ public class QuarkusResourceProvider implements ResourceProvider {
 
     @Override
     public URL getApplicationResource(String path) {
-        return Thread.currentThread().getContextClassLoader()
-                .getResource(path);
+        return Thread.currentThread().getContextClassLoader().getResource(path);
     }
 
     @Override
-    public List<URL> getApplicationResources(String path)
-            throws IOException {
+    public List<URL> getApplicationResources(String path) throws IOException {
         return Collections.list(Thread.currentThread().getContextClassLoader()
                 .getResources(path));
     }

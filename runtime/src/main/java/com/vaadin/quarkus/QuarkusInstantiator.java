@@ -58,21 +58,26 @@ public class QuarkusInstantiator implements Instantiator {
     @Override
     public boolean init(final VaadinService service) {
         delegate = new DefaultInstantiator(service);
-        return delegate.init(service) && getServiceClass()
-                .isAssignableFrom(service.getClass());
+        return delegate.init(service)
+                && getServiceClass().isAssignableFrom(service.getClass());
     }
 
     @Override
     public <T> T getOrCreate(Class<T> type) {
-        return new BeanLookup<>(getBeanManager(), type).setUnsatisfiedHandler(
-                () -> getLogger().debug("'{}' is not a CDI bean. "
+        return new BeanLookup<>(getBeanManager(), type)
+                .setUnsatisfiedHandler(() -> getLogger().debug(
+                        "'{}' is not a CDI bean. "
                                 + FALLING_BACK_TO_DEFAULT_INSTANTIATION,
-                        type.getName())).setAmbiguousHandler(e -> getLogger()
-                .debug("Multiple CDI beans found. "
-                        + FALLING_BACK_TO_DEFAULT_INSTANTIATION, e))
+                        type.getName()))
+                .setAmbiguousHandler(
+                        e -> getLogger().debug(
+                                "Multiple CDI beans found. "
+                                        + FALLING_BACK_TO_DEFAULT_INSTANTIATION,
+                                e))
                 .lookupOrElseGet(() -> {
                     final T instance = delegate.getOrCreate(type);
-                    // BeanProvider.injectFields(instance); // TODO maybe it could be fixed after Quarkus-Arc ticket
+                    // BeanProvider.injectFields(instance); // TODO maybe it
+                    // could be fixed after Quarkus-Arc ticket
                     // https://github.com/quarkusio/quarkus/issues/2378 is done
                     return instance;
                 });
@@ -83,13 +88,14 @@ public class QuarkusInstantiator implements Instantiator {
         final BeanLookup<I18NProvider> lookup = new BeanLookup<>(
                 getBeanManager(), I18NProvider.class, BeanLookup.SERVICE);
         if (i18NLoggingEnabled.compareAndSet(true, false)) {
-            lookup.setUnsatisfiedHandler(() -> getLogger()
-                    .info("Can't find any @VaadinServiceScoped bean implementing '{}'. "
-                                    + CANNOT_USE_CDI_BEANS_FOR_I18N,
-                            I18NProvider.class.getSimpleName()))
-                    .setAmbiguousHandler(e -> getLogger()
-                            .warn("Found more beans for I18N. "
-                                    + CANNOT_USE_CDI_BEANS_FOR_I18N, e));
+            lookup.setUnsatisfiedHandler(() -> getLogger().info(
+                    "Can't find any @VaadinServiceScoped bean implementing '{}'. "
+                            + CANNOT_USE_CDI_BEANS_FOR_I18N,
+                    I18NProvider.class.getSimpleName())).setAmbiguousHandler(
+                            e -> getLogger().warn(
+                                    "Found more beans for I18N. "
+                                            + CANNOT_USE_CDI_BEANS_FOR_I18N,
+                                    e));
         } else {
             lookup.setAmbiguousHandler(e -> {
             });
