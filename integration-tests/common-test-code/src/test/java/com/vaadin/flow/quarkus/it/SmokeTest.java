@@ -1,9 +1,8 @@
 package com.vaadin.flow.quarkus.it;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -11,14 +10,13 @@ import com.vaadin.flow.component.html.testbench.LabelElement;
 import com.vaadin.flow.component.html.testbench.NativeButtonElement;
 import com.vaadin.flow.test.AbstractChromeTest;
 
-@QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@QuarkusIntegrationTest
 public class SmokeTest extends AbstractChromeTest {
 
     @Test
     public void smokeTest_clickButton() {
         open();
-        checkLogsForErrors();
+        checkLogs();
         waitForElementPresent(By.tagName("button"));
         final NativeButtonElement button = $(NativeButtonElement.class).first();
         Assertions.assertTrue(button.isDisplayed());
@@ -32,7 +30,7 @@ public class SmokeTest extends AbstractChromeTest {
     @Test
     public void smokeTest_validateReusableTheme() {
         open();
-        checkLogsForErrors();
+        checkLogs();
         waitForElementPresent(By.tagName("button"));
         final WebElement element = findElement(
                 By.className("centered-content"));
@@ -44,5 +42,10 @@ public class SmokeTest extends AbstractChromeTest {
     @Override
     protected String getTestPath() {
         return "/";
+    }
+
+    private void checkLogs() {
+        checkLogsForErrors(msg -> msg.contains("webpack-internal:")
+                && msg.contains("VaadinDevmodeGizmo") && msg.contains("Event"));
     }
 }

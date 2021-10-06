@@ -2,18 +2,16 @@ package com.vaadin.flow.quarkus.it;
 
 import java.util.List;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.vaadin.flow.quarkus.it.regression.RemoveOldContentView;
 import com.vaadin.testbench.TestBenchElement;
 
-@QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@QuarkusIntegrationTest
 public class RemoveOldContentTest extends AbstractCdiTest {
 
     @Override
