@@ -114,8 +114,6 @@
                 <configuration>
                     <systemPropertyVariables>
                         <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
-                        <!-- TODO: Enable liveReload when websockets are in use -->
-                        <vaadin.devmode.liveReload.enabled>false</vaadin.devmode.liveReload.enabled>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
