@@ -114,8 +114,6 @@
                 <configuration>
                     <systemPropertyVariables>
                         <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
-                        <!-- TODO: Enable dev mode gizmo when websockets are in use -->
-                        <vaadin.devmode.gizmo.enabled>false</vaadin.devmode.gizmo.enabled>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
