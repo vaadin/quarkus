@@ -1,9 +1,10 @@
-name: Vaadin Quarkus
-#description: Vaadin Quarkus ...
+name: Vaadin Flow
+description: Vaadin Flow is a unique framework that lets you build web apps without writing HTML or JavaScript
 metadata:
-#  keywords:
-#    - vaadin-quarkus
+  keywords:
+    - vaadin
+    - flow
 #  guide: ...
-#  categories:
-#    - "miscellaneous"
-#  status: "preview"
+  categories:
+    - "web"
+  status: "preview"
