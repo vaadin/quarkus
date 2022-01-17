@@ -18,7 +18,7 @@ public class UsageStatisticsTest {
 
     @AfterEach
     public void cleanup() {
-        UsageStatistics.clearEntries();
+        UsageStatistics.resetEntries();
     }
 
     @Test
