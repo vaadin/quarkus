@@ -16,6 +16,9 @@
     <modules>
         <!-- Builds the reusable theme jar -->
         <module>reusable-theme</module>
+        <!-- Builds testing addons -->
+        <module>test-addons/addon-with-jandex</module>
+        <module>test-addons/addon-without-jandex</module>
         <!-- only validates that code compiles -->
         <module>common-test-code</module>
 
