@@ -35,11 +35,6 @@ public class PushSmokeTest extends AbstractChromeTest {
                         + nextUpdateCount);
 
         waitUntil(driver -> getUpdateCount() == expectedUpdates, 5);
-
-        int updateCount = getUpdateCount();
-        Assertions.assertEquals(expectedUpdates, updateCount,
-                "The update count should have reached the maximin 50, but it has value "
-                        + updateCount);
     }
 
     private int getUpdateCount() {
