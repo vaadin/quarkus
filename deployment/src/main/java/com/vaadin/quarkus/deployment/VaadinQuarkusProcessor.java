@@ -18,7 +18,10 @@ package com.vaadin.quarkus.deployment;
 import javax.servlet.annotation.WebServlet;
 
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
@@ -103,7 +106,7 @@ class VaadinQuarkusProcessor {
                 .stream()
                 .filter(servlet -> !servlet.name().toString()
                         .equals(QuarkusVaadinServlet.class.getName())
-                        || servlet.name().toString()
+                        && !servlet.name().toString()
                                 .equals(VaadinServlet.class.getName()))
                 .collect(Collectors.toList());
 
@@ -203,12 +206,18 @@ class VaadinQuarkusProcessor {
         for (ClassInfo info : vaadinServlets) {
             final AnnotationInstance webServletInstance = info.classAnnotation(
                     DotName.createSimple(WebServlet.class.getName()));
+            String servletName = Optional
+                    .ofNullable(webServletInstance.value("name"))
+                    .map(AnnotationValue::asString)
+                    .orElse(info.name().toString());
             final ServletBuildItem.Builder servletBuildItem = ServletBuildItem
-                    .builder(info.name().toString(), info.name().toString());
+                    .builder(servletName, info.name().toString());
 
-            // Add url pattern mapping
-            servletBuildItem.addMapping(
-                    webServletInstance.value("urlPatterns").asString());
+            Stream.of(webServletInstance.value("value"),
+                    webServletInstance.value("urlPatterns"))
+                    .filter(Objects::nonNull)
+                    .flatMap(value -> Stream.of(value.asStringArray()))
+                    .forEach(servletBuildItem::addMapping);
 
             addWebInitParameters(webServletInstance, servletBuildItem);
             setAsyncSupportedIfDefined(webServletInstance, servletBuildItem);
@@ -220,11 +229,13 @@ class VaadinQuarkusProcessor {
     private void addWebInitParameters(AnnotationInstance webServletInstance,
             ServletBuildItem.Builder servletBuildItem) {
         // Add WebInitParam parameters to registration
-        final AnnotationInstance[] initParams = webServletInstance
-                .value("initParams").asNestedArray();
-        for (AnnotationInstance initParam : initParams) {
-            servletBuildItem.addInitParam(initParam.value("name").asString(),
-                    initParam.value().asString());
+        AnnotationValue initParams = webServletInstance.value("initParams");
+        if (initParams != null) {
+            for (AnnotationInstance initParam : initParams.asNestedArray()) {
+                servletBuildItem.addInitParam(
+                        initParam.value("name").asString(),
+                        initParam.value().asString());
+            }
         }
     }
 
