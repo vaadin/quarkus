@@ -46,6 +46,16 @@
                 <version>${vaadin.flow.version}</version>
                 <scope>test</scope>
             </dependency>
+            <!--
+                Guava version is pinned to avoid dependency clash between
+                quarkus bom and selenium version required by vaadin testbench
+            -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>31.0.1-jre</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
