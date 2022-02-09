@@ -34,7 +34,7 @@
         <failsafe-plugin.version>${surefire-plugin.version}</failsafe-plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
 
-        <vaadin.flow.version>10.0-SNAPSHOT</vaadin.flow.version>
+        <vaadin.flow.version>23.0-SNAPSHOT</vaadin.flow.version>
         <quarkus.version>2.6.0.Final</quarkus.version>
 
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
