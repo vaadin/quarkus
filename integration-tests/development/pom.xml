@@ -132,40 +132,6 @@
 
     <profiles>
         <profile>
-            <id>local-run</id>
-            <activation>
-                <property>
-                    <name>!test.use.hub</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.lazerycode.selenium</groupId>
-                        <artifactId>driver-binary-downloader-maven-plugin</artifactId>
-                        <version>1.0.14</version>
-                        <configuration>
-                            <onlyGetDriversForHostOperatingSystem>true</onlyGetDriversForHostOperatingSystem>
-                            <rootStandaloneServerDirectory>${project.basedir}/../driver
-                            </rootStandaloneServerDirectory>
-                            <downloadedZipFileDirectory>${project.basedir}/../driver_zips
-                            </downloadedZipFileDirectory>
-                            <customRepositoryMap>${project.basedir}/../drivers.xml</customRepositoryMap>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>generate-test-resources</phase>
-                                <goals>
-                                    <goal>selenium</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
             <id>java11</id>
             <activation>
                 <jdk>[9,)</jdk>
