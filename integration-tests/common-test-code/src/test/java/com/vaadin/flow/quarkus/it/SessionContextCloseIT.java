@@ -26,7 +26,7 @@ import com.vaadin.flow.quarkus.it.sessioncontext.SessionContextView;
 import static com.vaadin.flow.quarkus.it.sessioncontext.SessionContextView.SessionScopedBean.DESTROY_COUNT;
 
 @QuarkusIntegrationTest
-public class SessionContextCloseTest extends AbstractCdiTest {
+public class SessionContextCloseIT extends AbstractCdiIT {
 
     @Override
     protected String getTestPath() {

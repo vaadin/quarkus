@@ -29,7 +29,7 @@ public class ScreenshotsOnFailureExtension
 
     private static class ScreenshotOnFailureRuleDelegate
             extends ScreenshotOnFailureRule {
-        public ScreenshotOnFailureRuleDelegate(AbstractChromeTest test) {
+        public ScreenshotOnFailureRuleDelegate(AbstractChromeIT test) {
             super(test);
         }
 
@@ -48,7 +48,7 @@ public class ScreenshotsOnFailureExtension
             throw throwable;
         }
         Object object = context.getTestInstance().get();
-        AbstractChromeTest test = (AbstractChromeTest) object;
+        AbstractChromeIT test = (AbstractChromeIT) object;
 
         ScreenshotOnFailureRuleDelegate delegate = new ScreenshotOnFailureRuleDelegate(
                 test);

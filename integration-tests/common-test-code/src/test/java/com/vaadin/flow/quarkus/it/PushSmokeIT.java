@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 
-import com.vaadin.flow.test.AbstractChromeTest;
+import com.vaadin.flow.test.AbstractChromeIT;
 import com.vaadin.testbench.TestBenchElement;
 
 @QuarkusIntegrationTest
-public class PushSmokeTest extends AbstractChromeTest {
+public class PushSmokeIT extends AbstractChromeIT {
 
     protected String getTestPath() {
         return "/push";

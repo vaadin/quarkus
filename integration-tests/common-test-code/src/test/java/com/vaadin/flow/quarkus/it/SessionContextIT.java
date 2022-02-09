@@ -31,7 +31,7 @@ import static com.vaadin.flow.quarkus.it.sessioncontext.SessionContextView.Sessi
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusIntegrationTest
-public class SessionContextTest extends AbstractCdiTest {
+public class SessionContextIT extends AbstractCdiIT {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -87,7 +87,7 @@ public class SessionContextTest extends AbstractCdiTest {
     }
 
     private static Logger getLogger() {
-        return LoggerFactory.getLogger(SessionContextTest.class);
+        return LoggerFactory.getLogger(SessionContextIT.class);
     }
 
 }

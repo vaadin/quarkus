@@ -12,7 +12,7 @@ import com.vaadin.flow.quarkus.it.regression.RemoveOldContentView;
 import com.vaadin.testbench.TestBenchElement;
 
 @QuarkusIntegrationTest
-public class RemoveOldContentTest extends AbstractCdiTest {
+public class RemoveOldContentIT extends AbstractCdiIT {
 
     @Override
     protected String getTestPath() {

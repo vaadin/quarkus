@@ -34,7 +34,7 @@ import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
 
 @QuarkusIntegrationTest
-public class ServiceTest extends AbstractCdiTest {
+public class ServiceIT extends AbstractCdiIT {
 
     @BeforeEach
     public void setUp() throws Exception {

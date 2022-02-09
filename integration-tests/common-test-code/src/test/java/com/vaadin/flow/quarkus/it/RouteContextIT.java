@@ -43,7 +43,7 @@ import com.vaadin.flow.quarkus.it.routecontext.RerouteView;
 import com.vaadin.flow.quarkus.it.routecontext.RootView;
 
 @QuarkusIntegrationTest
-public class RouteContextTest extends AbstractCdiTest {
+public class RouteContextIT extends AbstractCdiIT {
 
     private String uiId;
 

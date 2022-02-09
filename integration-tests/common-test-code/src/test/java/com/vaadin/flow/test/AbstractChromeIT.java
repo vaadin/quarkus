@@ -24,7 +24,7 @@ import com.vaadin.testbench.parallel.BrowserUtil;
 @Category(ChromeTests.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(ScreenshotsOnFailureExtension.class)
-public abstract class AbstractChromeTest extends ChromeBrowserTest {
+public abstract class AbstractChromeIT extends ChromeBrowserTest {
 
     @AfterEach
     public void tearDown() {
