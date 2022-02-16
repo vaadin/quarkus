@@ -25,9 +25,9 @@ import java.net.URL;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 
-import com.vaadin.flow.test.AbstractChromeTest;
+import com.vaadin.flow.test.AbstractChromeIT;
 
-abstract public class AbstractCdiTest extends AbstractChromeTest {
+abstract public class AbstractCdiIT extends AbstractChromeIT {
 
     protected void click(String elementId) {
         findElement(By.id(elementId)).click();

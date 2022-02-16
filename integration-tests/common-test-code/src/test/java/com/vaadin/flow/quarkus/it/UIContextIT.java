@@ -29,7 +29,7 @@ import com.vaadin.flow.quarkus.it.uicontext.UIScopedLabel;
 import com.vaadin.flow.quarkus.it.uicontext.UIScopedView;
 
 @QuarkusIntegrationTest
-public class UIContextTest extends AbstractCdiTest {
+public class UIContextIT extends AbstractCdiIT {
 
     private String uiId;
 

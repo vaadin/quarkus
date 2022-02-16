@@ -31,7 +31,7 @@ import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.testbench.TestBenchElement;
 
 @QuarkusIntegrationTest
-public class UIEventsTest extends AbstractCdiTest {
+public class UIEventsIT extends AbstractCdiIT {
 
     @Override
     protected String getTestPath() {

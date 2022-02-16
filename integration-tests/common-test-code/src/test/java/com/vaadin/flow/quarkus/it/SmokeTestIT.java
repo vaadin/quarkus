@@ -8,10 +8,10 @@ import org.openqa.selenium.WebElement;
 
 import com.vaadin.flow.component.html.testbench.LabelElement;
 import com.vaadin.flow.component.html.testbench.NativeButtonElement;
-import com.vaadin.flow.test.AbstractChromeTest;
+import com.vaadin.flow.test.AbstractChromeIT;
 
 @QuarkusIntegrationTest
-public class SmokeTest extends AbstractChromeTest {
+public class SmokeTestIT extends AbstractChromeIT {
 
     @Test
     public void smokeTest_clickButton() {
