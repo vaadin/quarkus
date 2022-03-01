@@ -21,6 +21,10 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-undertow-deployment</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-websockets-deployment</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.vaadin</groupId>
