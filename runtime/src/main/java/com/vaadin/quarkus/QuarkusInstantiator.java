@@ -33,6 +33,17 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 
+/**
+ * Instantiator implementation based on Quarkus DI feature.
+ * 
+ * Quarkus DI solution (also called ArC) is based on the Contexts and Dependency
+ * Injection for Java 2.0 specification, but it is not a full CDI
+ * implementation. Only a subset of the CDI features is implemented.
+ * 
+ * See {@link https://quarkus.io/guides/cdi-reference} for details.
+ * 
+ * @see Instantiator
+ */
 @VaadinServiceEnabled
 @Unremovable
 @ApplicationScoped
@@ -47,10 +58,20 @@ public class QuarkusInstantiator implements Instantiator {
     @Inject
     BeanManager beanManager;
 
+    /**
+     * Gets the service class that this instantiator is supposed to work with.
+     * 
+     * @return the service class this instantiator is supposed to work with.
+     */
     public Class<? extends VaadinService> getServiceClass() {
         return QuarkusVaadinServletService.class;
     }
 
+    /**
+     * Gets the {@link BeanManager} instance.
+     * 
+     * @return the {@link BeanManager} instance.
+     */
     public BeanManager getBeanManager() {
         return this.beanManager;
     }

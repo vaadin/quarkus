@@ -46,6 +46,18 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
         this.concurrent = concurrent;
     }
 
+    /**
+     * Gets the {@link ContextualStorage} associated with the given context
+     * {@code key}, possibly creating a new instance, if requested and not
+     * already existing.
+     * 
+     * @param key
+     *            context key
+     * @param createIfNotExist
+     *            whether a ContextualStorage shall get created if it doesn't
+     *            yet exist.
+     * @return a {@link ContextualStorage} instance.
+     */
     protected ContextualStorage getContextualStorage(K key,
             boolean createIfNotExist) {
         if (createIfNotExist) {
@@ -55,6 +67,14 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
         }
     }
 
+    /**
+     * Changes the context key for a contextual storage.
+     * 
+     * @param from
+     *            the contextual storage context key
+     * @param to
+     *            the new context for the contextual storage
+     */
     protected void relocate(K from, K to) {
         ContextualStorage storage = storageMap.remove(from);
         if (storage != null) {
@@ -62,10 +82,20 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
         }
     }
 
+    /**
+     * Creates a new {@link ContextualStorage} for the given context key.
+     * 
+     * @param key
+     *            the context key
+     * @return a new {@link ContextualStorage} instance.
+     */
     protected ContextualStorage newContextualStorage(K key) {
         return new ContextualStorage(concurrent);
     }
 
+    /**
+     * Destroys all existing contextual storages.
+     */
     @PreDestroy
     protected void destroyAll() {
         Collection<ContextualStorage> storages = storageMap.values();
@@ -75,6 +105,12 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
         storageMap.clear();
     }
 
+    /**
+     * Destroys the contextual storage associated with the given context key.
+     * 
+     * @param key
+     *            the context key
+     */
     protected void destroy(K key) {
         ContextualStorage storage = storageMap.remove(key);
         if (storage != null) {
@@ -82,6 +118,11 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
         }
     }
 
+    /**
+     * Gets context keys of all registered contextual storages.
+     * 
+     * @return immutable set of context keys.
+     */
     protected Set<K> getKeySet() {
         return Collections.unmodifiableSet(storageMap.keySet());
     }

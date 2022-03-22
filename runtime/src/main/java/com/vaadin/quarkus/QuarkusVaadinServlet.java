@@ -30,6 +30,16 @@ import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletService;
 
+/**
+ * Servlet to create {@link QuarkusVaadinServletService}.
+ * 
+ * An instance of this servlet is automatically registered if no other custom
+ * VaadinServlet class with Servlet 3.0 annotations is present on classpath. A
+ * subclass of this servlet can be to provide a customized
+ * {@link QuarkusVaadinServletService} implementation, in which case
+ * {@link #createServletService(DeploymentConfiguration)} must call
+ * {@code service.init()}.
+ */
 public class QuarkusVaadinServlet extends VaadinServlet {
 
     @Inject

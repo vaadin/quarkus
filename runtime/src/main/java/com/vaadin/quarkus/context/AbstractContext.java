@@ -59,6 +59,11 @@ public abstract class AbstractContext implements InjectableContext {
     protected abstract ContextualStorage getContextualStorage(
             Contextual<?> contextual, boolean createIfNotExist);
 
+    /**
+     * Gets all active contextual storages.
+     * 
+     * @return a list of contextual storages.
+     */
     protected List<ContextualStorage> getActiveContextualStorages() {
         List<ContextualStorage> result = new ArrayList<ContextualStorage>();
         result.add(getContextualStorage(null, false));
