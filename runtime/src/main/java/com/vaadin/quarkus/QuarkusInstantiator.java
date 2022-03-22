@@ -40,7 +40,8 @@ import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
  * Injection for Java 2.0 specification, but it is not a full CDI
  * implementation. Only a subset of the CDI features is implemented.
  * 
- * See {@link https://quarkus.io/guides/cdi-reference} for details.
+ * See <a href="https://quarkus.io/guides/cdi-reference">Quarkus CDI
+ * Reference</a> for further details.
  * 
  * @see Instantiator
  */
