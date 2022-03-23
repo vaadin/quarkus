@@ -29,6 +29,10 @@ import org.apache.commons.io.IOUtils;
 
 import com.vaadin.flow.di.ResourceProvider;
 
+/**
+ * A {@link ResourceProvider} implementation that delegates resource loading to
+ * current thread context ClassLoader.
+ */
 public class QuarkusResourceProvider implements ResourceProvider {
 
     private Map<String, CachedStreamData> cache = new ConcurrentHashMap<>();

@@ -50,6 +50,15 @@ import com.vaadin.flow.server.SystemMessagesProvider;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 
+/**
+ * An implementation of {@link com.vaadin.flow.server.VaadinService} for Quarkus
+ * environment.
+ *
+ * This class looks up for and therefore provides an {@link Instantiator} bean.
+ * It also forwards Vaadin events to CDI listeners.
+ *
+ * @author Vaadin Ltd
+ */
 public class QuarkusVaadinServletService extends VaadinServletService {
 
     private BeanManager beanManager;
@@ -163,6 +172,20 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         ui.addPollListener(uiEventListener);
     }
 
+    /**
+     * Gets an instance of a {@code @VaadinServiceEnabled} annotated bean of the
+     * given {@code type}.
+     *
+     * @param type
+     *            the required service type
+     * @param <T>
+     *            the type of the service
+     * @return an {@link Optional} wrapping the service instance, or
+     *         {@link Optional#empty()} if no bean definition exists for given
+     *         type.
+     * @throws ServiceException
+     *             if multiple beans exists for the given type.
+     */
     public <T> Optional<T> lookup(Class<T> type) throws ServiceException {
         try {
             T instance = new BeanLookup<>(getBeanManager(), type,
