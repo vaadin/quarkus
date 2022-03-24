@@ -31,9 +31,15 @@ import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfig
 import io.quarkus.arc.deployment.CustomScopeBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.ExecutionTime;
+import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.undertow.deployment.ServletBuildItem;
+import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
+import io.quarkus.vertx.http.deployment.FilterBuildItem;
+import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
+import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
@@ -44,6 +50,7 @@ import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
+import com.vaadin.quarkus.WebsocketHttpSessionAttachRecorder;
 import com.vaadin.quarkus.annotation.NormalRouteScoped;
 import com.vaadin.quarkus.annotation.NormalUIScoped;
 import com.vaadin.quarkus.annotation.RouteScoped;
@@ -197,6 +204,20 @@ class VaadinQuarkusProcessor {
     @BuildStep
     CustomScopeBuildItem rRouteScope() {
         return new CustomScopeBuildItem(RouteScoped.class);
+    }
+
+    @BuildStep
+    @Record(ExecutionTime.RUNTIME_INIT)
+    void setupPush(ServletDeploymentManagerBuildItem deployment,
+            WebSocketDeploymentInfoBuildItem webSocketDeploymentInfoBuildItem,
+            ServerWebSocketContainerBuildItem serverWebSocketContainerBuildItem,
+            BuildProducer<FilterBuildItem> filterProd,
+            WebsocketHttpSessionAttachRecorder recorder) {
+
+        filterProd.produce(new FilterBuildItem(recorder.createWebSocketHandler(
+                webSocketDeploymentInfoBuildItem.getInfo(),
+                serverWebSocketContainerBuildItem.getContainer(),
+                deployment.getDeploymentManager()), 120));
     }
 
     private void registerUserServlets(
