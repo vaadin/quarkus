@@ -63,8 +63,12 @@ import com.vaadin.quarkus.context.UIContextWrapper;
 import com.vaadin.quarkus.context.UIScopedContext;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 import com.vaadin.quarkus.context.VaadinSessionScopedContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class VaadinQuarkusProcessor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(VaadinQuarkusProcessor.class);
 
     private static final String FEATURE = "vaadin-quarkus";
 
@@ -227,6 +231,11 @@ class VaadinQuarkusProcessor {
         for (ClassInfo info : vaadinServlets) {
             final AnnotationInstance webServletInstance = info.classAnnotation(
                     DotName.createSimple(WebServlet.class.getName()));
+            if (webServletInstance == null) {
+                LOG.warn("Found unexpected {} extends VaadinServlet without @WebServlet, skipping", info.name());
+                continue;
+            }
+
             String servletName = Optional
                     .ofNullable(webServletInstance.value("name"))
                     .map(AnnotationValue::asString)
