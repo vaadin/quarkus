@@ -67,6 +67,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class VaadinQuarkusProcessor {
+
     private static final Logger LOG = LoggerFactory.getLogger(VaadinQuarkusProcessor.class);
 
     private static final String FEATURE = "vaadin-quarkus";
