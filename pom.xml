@@ -36,7 +36,8 @@
 
         <vaadin.flow.version>23.2-SNAPSHOT</vaadin.flow.version>
         <quarkus.version>2.6.0.Final</quarkus.version>
-        <open.telemetry.version>1.16.0-alpha</open.telemetry.version>
+        <open.telemetry.alpha.version>1.16.0-alpha</open.telemetry.alpha.version>
+        <open.telemetry.version>1.16.0</open.telemetry.version>
 
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
         <surefire.excludedGroups>slow</surefire.excludedGroups>
@@ -84,13 +85,14 @@
         <dependencies>
             <dependency>
                 <groupId>io.opentelemetry</groupId>
-                <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
-                <version>${open.telemetry.version}</version>
-                <scope>test</scope>
+                <artifactId>opentelemetry-bom-alpha</artifactId>
+                <version>${open.telemetry.alpha.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>io.opentelemetry</groupId>
-                <artifactId>opentelemetry-bom-alpha</artifactId>
+                <artifactId>opentelemetry-bom</artifactId>
                 <version>${open.telemetry.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
