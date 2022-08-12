@@ -84,6 +84,12 @@
         <dependencies>
             <dependency>
                 <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
+                <version>${open.telemetry.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
                 <artifactId>opentelemetry-bom</artifactId>
                 <version>${open.telemetry.version}</version>
                 <type>pom</type>
