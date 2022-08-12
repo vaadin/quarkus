@@ -34,8 +34,10 @@
         <failsafe-plugin.version>${surefire-plugin.version}</failsafe-plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
 
-        <vaadin.flow.version>23.1-SNAPSHOT</vaadin.flow.version>
+        <vaadin.flow.version>23.2-SNAPSHOT</vaadin.flow.version>
         <quarkus.version>2.6.0.Final</quarkus.version>
+        <open.telemetry.alpha.version>1.16.0-alpha</open.telemetry.alpha.version>
+        <open.telemetry.version>1.16.0</open.telemetry.version>
 
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
         <surefire.excludedGroups>slow</surefire.excludedGroups>
@@ -81,6 +83,20 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom-alpha</artifactId>
+                <version>${open.telemetry.alpha.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom</artifactId>
+                <version>${open.telemetry.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-bom</artifactId>
