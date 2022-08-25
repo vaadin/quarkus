@@ -15,9 +15,9 @@
  */
 package com.vaadin.flow.quarkus.it.uicontext;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 
 import java.util.UUID;
 

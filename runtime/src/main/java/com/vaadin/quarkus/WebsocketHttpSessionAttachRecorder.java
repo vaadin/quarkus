@@ -15,7 +15,7 @@
  */
 package com.vaadin.quarkus;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import java.security.Principal;
 import java.util.Optional;
@@ -56,7 +56,7 @@ public class WebsocketHttpSessionAttachRecorder {
     /**
      * Gets an adapted version of VertxWebSocketHandler that attaches upgrade
      * request HTTP session to the Undertow WebSocket HttpExchange.
-     * 
+     *
      * @param info
      *            websocket deployment info
      * @param container

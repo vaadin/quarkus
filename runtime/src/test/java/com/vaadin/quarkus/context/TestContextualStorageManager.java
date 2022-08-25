@@ -15,7 +15,7 @@
  */
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 import java.util.Set;
 

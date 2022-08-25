@@ -16,8 +16,8 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.lang.reflect.Proxy;
 

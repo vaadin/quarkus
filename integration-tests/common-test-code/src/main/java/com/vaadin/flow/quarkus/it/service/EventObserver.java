@@ -16,8 +16,8 @@
 
 package com.vaadin.flow.quarkus.it.service;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 
 import com.vaadin.flow.quarkus.it.Counter;
 import com.vaadin.flow.server.SessionDestroyEvent;

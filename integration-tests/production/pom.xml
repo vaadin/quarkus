@@ -58,7 +58,7 @@
 
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-undertow-websockets</artifactId>
+            <artifactId>quarkus-websockets</artifactId>
         </dependency>
 
         <!-- Test dependencies -->
@@ -92,7 +92,7 @@
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>flow-maven-plugin</artifactId>
-                <version>${vaadin.flow.version}</version>
+                <version>${vaadin.flow.version2}</version>
                 <executions>
                     <execution>
                         <goals>

@@ -16,7 +16,7 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -50,7 +50,7 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
      * Gets the {@link ContextualStorage} associated with the given context
      * {@code key}, possibly creating a new instance, if requested and not
      * already existing.
-     * 
+     *
      * @param key
      *            context key
      * @param createIfNotExist
@@ -69,7 +69,7 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
 
     /**
      * Changes the context key for a contextual storage.
-     * 
+     *
      * @param from
      *            the contextual storage context key
      * @param to
@@ -84,7 +84,7 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
 
     /**
      * Creates a new {@link ContextualStorage} for the given context key.
-     * 
+     *
      * @param key
      *            the context key
      * @return a new {@link ContextualStorage} instance.
@@ -107,7 +107,7 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
 
     /**
      * Destroys the contextual storage associated with the given context key.
-     * 
+     *
      * @param key
      *            the context key
      */
@@ -120,7 +120,7 @@ abstract class AbstractContextualStorageManager<K> implements Serializable {
 
     /**
      * Gets context keys of all registered contextual storages.
-     * 
+     *
      * @return immutable set of context keys.
      */
     protected Set<K> getKeySet() {

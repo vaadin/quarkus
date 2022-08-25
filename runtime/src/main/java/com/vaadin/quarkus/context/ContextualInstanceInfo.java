@@ -1,6 +1,6 @@
 /*
  * Copyright 2000-2021 Vaadin Ltd.
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -21,14 +21,14 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.spi.CreationalContext;
 
 import java.io.Serializable;
 
 /**
  * A copy of org.apache.deltaspike.core.util.context.ContextualInstanceInfo.
- * 
- * 
+ *
+ *
  * This data holder contains all necessary data you need to store a Contextual
  * Instance in a CDI Context.
  */
@@ -42,7 +42,7 @@ public class ContextualInstanceInfo<T> implements Serializable {
     /**
      * We need to store the CreationalContext as we need it for properly
      * destroying the contextual instance via
-     * {@link javax.enterprise.context.spi.Contextual#destroy(Object, javax.enterprise.context.spi.CreationalContext)}
+     * {@link jakarta.enterprise.context.spi.Contextual#destroy(Object, jakarta.enterprise.context.spi.CreationalContext)}
      */
     private CreationalContext<T> creationalContext;
 

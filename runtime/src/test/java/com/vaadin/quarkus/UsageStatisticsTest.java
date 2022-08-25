@@ -1,6 +1,6 @@
 package com.vaadin.quarkus;
 
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.util.List;
 import java.util.Properties;

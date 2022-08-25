@@ -1,6 +1,6 @@
 /*
  * Copyright 2000-2021 Vaadin Ltd.
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -21,8 +21,8 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class ContextualStorage implements Serializable {
 
     /**
      * Creates a new instance of storage.
-     * 
+     *
      * @param concurrent
      *            whether the ContextualStorage might get accessed concurrently
      *            by different threads
@@ -124,12 +124,12 @@ public class ContextualStorage implements Serializable {
     /**
      * If the context is a passivating scope then we return the passivationId of
      * the Bean. Otherwise we use the Bean directly.
-     * 
+     *
      * @param <T>
      *            bean type
      * @param bean
      *            the contextual type
-     * 
+     *
      * @return the key to use in the context map
      */
     public <T> Object getBeanKey(Contextual<T> bean) {
@@ -138,12 +138,12 @@ public class ContextualStorage implements Serializable {
 
     /**
      * Restores the Bean from its beanKey.
-     * 
-     * @see #getBeanKey(javax.enterprise.context.spi.Contextual)
-     * 
+     *
+     * @see #getBeanKey(jakarta.enterprise.context.spi.Contextual)
+     *
      * @param beanKey
      *            a bean key
-     * 
+     *
      * @return the contextual type
      */
     public Contextual<?> getBean(Object beanKey) {

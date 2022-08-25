@@ -1,6 +1,6 @@
 /*
  * Copyright 2000-2021 Vaadin Ltd.
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -21,10 +21,10 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.spi.AlterableContext;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +37,7 @@ import io.quarkus.arc.InjectableContext;
 
 /**
  * A modified copy of org.apache.deltaspike.core.util.context.AbstractContext.
- * 
+ *
  * A skeleton containing the most important parts of a custom CDI Context. An
  * implementing Context needs to implement the missing methods from the
  * {@link AlterableContext} interface and
@@ -48,7 +48,7 @@ public abstract class AbstractContext implements InjectableContext {
     /**
      * An implementation has to return the underlying storage which contains the
      * items held in the Context.
-     * 
+     *
      * @param contextual
      *            the contextual type
      * @param createIfNotExist
@@ -61,7 +61,7 @@ public abstract class AbstractContext implements InjectableContext {
 
     /**
      * Gets all active contextual storages.
-     * 
+     *
      * @return a list of contextual storages.
      */
     protected List<ContextualStorage> getActiveContextualStorages() {
@@ -121,7 +121,7 @@ public abstract class AbstractContext implements InjectableContext {
 
     /**
      * Destroy the Contextual Instance of the given Bean.
-     * 
+     *
      * @param bean
      *            dictates which bean shall get cleaned up
      */
@@ -163,7 +163,7 @@ public abstract class AbstractContext implements InjectableContext {
      * Destroys all the Contextual Instances in the specified ContextualStorage.
      * This is a static method to allow various holder objects to cleanup
      * properly in &#064;PreDestroy.
-     * 
+     *
      * @param storage
      *            a contextual storage
      * @return a storage map of destroyed objects
@@ -198,7 +198,7 @@ public abstract class AbstractContext implements InjectableContext {
 
     /**
      * Make sure that the Context is really active.
-     * 
+     *
      * @throws ContextNotActiveException
      *             if there is no active Context for the current Thread.
      */

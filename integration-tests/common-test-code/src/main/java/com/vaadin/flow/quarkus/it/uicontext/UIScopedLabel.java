@@ -16,9 +16,9 @@
 
 package com.vaadin.flow.quarkus.it.uicontext;
 
-import javax.annotation.PreDestroy;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Label;

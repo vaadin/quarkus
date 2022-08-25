@@ -16,18 +16,18 @@
 
 package com.vaadin.flow.quarkus.it;
 
-import javax.inject.Inject;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
+import jakarta.inject.Inject;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
 
 import java.io.IOException;
 
 @WebFilter(urlPatterns = "/*", asyncSupported = true)
-public class CounterFilter implements javax.servlet.Filter {
+public class CounterFilter implements jakarta.servlet.Filter {
 
     @Inject
     private Counter counter;

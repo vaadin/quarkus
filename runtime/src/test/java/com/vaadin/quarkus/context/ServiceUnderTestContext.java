@@ -16,11 +16,11 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.spi.AlterableContext;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.util.Set;
 
@@ -58,7 +58,7 @@ public class ServiceUnderTestContext implements UnderTestContext {
     @Override
     public void destroy() {
         if (service != null) {
-            beanManager.fireEvent(new ServiceDestroyEvent(service));
+            beanManager.getEvent().fire(new ServiceDestroyEvent(service));
         }
     }
 

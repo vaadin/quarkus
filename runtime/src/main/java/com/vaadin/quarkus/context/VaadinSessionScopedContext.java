@@ -16,7 +16,7 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.Contextual;
 
 import java.lang.annotation.Annotation;
 

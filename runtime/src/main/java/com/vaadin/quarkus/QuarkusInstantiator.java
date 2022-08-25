@@ -15,9 +15,9 @@
  */
 package com.vaadin.quarkus;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
@@ -35,14 +35,14 @@ import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 
 /**
  * Instantiator implementation based on Quarkus DI feature.
- * 
+ *
  * Quarkus DI solution (also called ArC) is based on the Contexts and Dependency
  * Injection for Java 2.0 specification, but it is not a full CDI
  * implementation. Only a subset of the CDI features is implemented.
- * 
+ *
  * See <a href="https://quarkus.io/guides/cdi-reference">Quarkus CDI
  * Reference</a> for further details.
- * 
+ *
  * @see Instantiator
  */
 @VaadinServiceEnabled
@@ -61,7 +61,7 @@ public class QuarkusInstantiator implements Instantiator {
 
     /**
      * Gets the service class that this instantiator is supposed to work with.
-     * 
+     *
      * @return the service class this instantiator is supposed to work with.
      */
     public Class<? extends VaadinService> getServiceClass() {
@@ -70,7 +70,7 @@ public class QuarkusInstantiator implements Instantiator {
 
     /**
      * Gets the {@link BeanManager} instance.
-     * 
+     *
      * @return the {@link BeanManager} instance.
      */
     public BeanManager getBeanManager() {
@@ -132,7 +132,7 @@ public class QuarkusInstantiator implements Instantiator {
     @Override
     public Stream<VaadinServiceInitListener> getServiceInitListeners() {
         return Stream.concat(delegate.getServiceInitListeners(),
-                Stream.of(getBeanManager()::fireEvent));
+                Stream.of(event -> getBeanManager().getEvent().fire(event)));
     }
 
     @Override

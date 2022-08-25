@@ -15,7 +15,7 @@
  */
 package com.vaadin.quarkus.annotation;
 
-import javax.enterprise.context.NormalScope;
+import jakarta.enterprise.context.NormalScope;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -38,7 +38,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * instance rather than provide the contextual instance itself.
  * <p>
  * Contextual instances stored in {@link VaadinSession}, so indirectly stored in
- * HTTP session. {@link javax.annotation.PreDestroy} called after
+ * HTTP session. {@link jakarta.annotation.PreDestroy} called after
  * {@link com.vaadin.flow.server.SessionDestroyEvent} fired.
  *
  * @since 1.0

@@ -16,8 +16,8 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
 
 import java.lang.annotation.Annotation;
 
@@ -75,7 +75,7 @@ public class RouteContextWrapper implements InjectableContext {
      * Gets a delegating context.
      * <p>
      * Not a private for testing purposes only.
-     * 
+     *
      * @return a delegating context
      */
     InjectableContext getContext() {

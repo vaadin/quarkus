@@ -16,9 +16,9 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;

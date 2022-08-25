@@ -1,6 +1,6 @@
 /*
  * Copyright 2000-2021 Vaadin Ltd.
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -20,14 +20,14 @@
  */
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Typed;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.Typed;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.spi.InjectionTarget;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ import com.vaadin.quarkus.AnyLiteral;
 
 /**
  * A modified copy of org.apache.deltaspike.core.api.provider.BeanProvider.
- * 
+ *
  * This class contains utility methods for resolution of contextual references
  * in situations where no injection is available because the current class is
  * not managed by the CDI Container. This can happen in e.g. a JPA 2.0
@@ -80,7 +80,7 @@ public final class BeanProvider {
      * (because &#064;Dependent is not &#064;NormalScoped) and thus will not be
      * automatically destroyed at the end of the lifecycle. You need to manually
      * destroy this contextual instance via
-     * {@link javax.enterprise.context.spi.Contextual#destroy(Object, javax.enterprise.context.spi.CreationalContext)}.
+     * {@link jakarta.enterprise.context.spi.Contextual#destroy(Object, jakarta.enterprise.context.spi.CreationalContext)}.
      * Thus you also need to manually store the CreationalContext and the Bean
      * you used to create the contextual instance.
      * </p>
@@ -510,7 +510,7 @@ public final class BeanProvider {
         AnnotatedType<T> annotatedType = beanManager
                 .createAnnotatedType((Class<T>) instance.getClass());
         InjectionTarget<T> injectionTarget = beanManager
-                .createInjectionTarget(annotatedType);
+                .getInjectionTargetFactory(annotatedType).createInjectionTarget(null);
         injectionTarget.inject(instance, creationalContext);
         return instance;
     }
