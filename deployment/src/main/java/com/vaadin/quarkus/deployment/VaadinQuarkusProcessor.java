@@ -132,7 +132,7 @@ class VaadinQuarkusProcessor {
                     .builder(QuarkusVaadinServlet.class.getName(),
                             QuarkusVaadinServlet.class.getName())
                     .addMapping("/*").setAsyncSupported(true)
-                    .setLoadOnStartup(10).build());
+                    .setLoadOnStartup(1).build());
         }
     }
 
