@@ -16,7 +16,6 @@
 package com.vaadin.quarkus.deployment;
 
 import javax.servlet.annotation.WebServlet;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -46,9 +45,12 @@ import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
 import com.vaadin.quarkus.WebsocketHttpSessionAttachRecorder;
@@ -64,8 +66,6 @@ import com.vaadin.quarkus.context.UIContextWrapper;
 import com.vaadin.quarkus.context.UIScopedContext;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 import com.vaadin.quarkus.context.VaadinSessionScopedContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class VaadinQuarkusProcessor {
 
@@ -92,6 +92,18 @@ class VaadinQuarkusProcessor {
         // Make and Route annotated Component a bean for injection
         additionalBeanDefiningAnnotationRegistry
                 .produce(new BeanDefiningAnnotationBuildItem(ROUTE_ANNOTATION));
+    }
+
+    @BuildStep
+    public void specifyRouterLayoutBeans(CombinedIndexBuildItem item,
+            BuildProducer<AdditionalBeanBuildItem> additionalBeanProducer) {
+        Collection<ClassInfo> layouts = item.getComputingIndex()
+                .getAllKnownImplementors(
+                        DotName.createSimple(RouterLayout.class.getName()));
+        for (ClassInfo layoutInfo : layouts) {
+            additionalBeanProducer.produce(AdditionalBeanBuildItem
+                    .unremovableOf(layoutInfo.name().toString()));
+        }
     }
 
     @BuildStep
