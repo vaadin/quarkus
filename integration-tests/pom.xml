@@ -19,6 +19,7 @@
         <!-- Builds testing addons -->
         <module>test-addons/addon-with-jandex</module>
         <module>test-addons/addon-without-jandex</module>
+        <module>custom-websocket-dependency</module>
         <!-- only validates that code compiles -->
         <module>common-test-code</module>
 
