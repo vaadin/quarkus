@@ -40,6 +40,7 @@ import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
 import io.quarkus.vertx.http.deployment.FilterBuildItem;
 import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
 import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
+import org.atmosphere.cpr.ApplicationConfig;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
@@ -144,7 +145,11 @@ class VaadinQuarkusProcessor {
                     .builder(QuarkusVaadinServlet.class.getName(),
                             QuarkusVaadinServlet.class.getName())
                     .addMapping("/*").setAsyncSupported(true)
-                    .setLoadOnStartup(1).build());
+                    .setLoadOnStartup(1)
+                    // TODO: should be fixed in Flow and removed from here
+                    .addInitParam(ApplicationConfig.JSR356_PATH_MAPPING_LENGTH,
+                            "0")
+                    .build());
         }
     }
 
@@ -277,6 +282,9 @@ class VaadinQuarkusProcessor {
             setAsyncSupportedIfDefined(webServletInstance, servletBuildItem);
             servletBuildItem
                     .setLoadOnStartup(loadOnStartup > 0 ? loadOnStartup : 1);
+            // TODO: should be fixed in Flow and removed from here
+            servletBuildItem.addInitParam(
+                    ApplicationConfig.JSR356_PATH_MAPPING_LENGTH, "0");
             if (loadOnStartup < 1) {
                 LOG.warn(
                         "Vaadin Servlet needs to be eagerly loaded by setting load-on-startup to be greater than 0. "
