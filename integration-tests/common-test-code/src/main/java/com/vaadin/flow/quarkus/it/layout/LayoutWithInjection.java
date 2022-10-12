@@ -1,6 +1,6 @@
 package com.vaadin.flow.quarkus.it.layout;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.html.Div;
