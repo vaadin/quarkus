@@ -16,7 +16,7 @@
 package com.vaadin.quarkus.deployment;
 
 import jakarta.servlet.annotation.WebServlet;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,9 +45,12 @@ import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
 import com.vaadin.quarkus.WebsocketHttpSessionAttachRecorder;
@@ -63,12 +66,11 @@ import com.vaadin.quarkus.context.UIContextWrapper;
 import com.vaadin.quarkus.context.UIScopedContext;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 import com.vaadin.quarkus.context.VaadinSessionScopedContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class VaadinQuarkusProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(VaadinQuarkusProcessor.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(VaadinQuarkusProcessor.class);
 
     private static final String FEATURE = "vaadin-quarkus";
 
@@ -93,6 +95,18 @@ class VaadinQuarkusProcessor {
     }
 
     @BuildStep
+    public void specifyRouterLayoutBeans(CombinedIndexBuildItem item,
+            BuildProducer<AdditionalBeanBuildItem> additionalBeanProducer) {
+        Collection<ClassInfo> layouts = item.getComputingIndex()
+                .getAllKnownImplementors(
+                        DotName.createSimple(RouterLayout.class.getName()));
+        for (ClassInfo layoutInfo : layouts) {
+            additionalBeanProducer.produce(AdditionalBeanBuildItem
+                    .unremovableOf(layoutInfo.name().toString()));
+        }
+    }
+
+    @BuildStep
     public void specifyErrorViewsBeans(CombinedIndexBuildItem item,
             BuildProducer<AdditionalBeanBuildItem> additionalBeanProducer) {
         Collection<ClassInfo> errors = item.getComputingIndex()
@@ -111,7 +125,7 @@ class VaadinQuarkusProcessor {
 
         // Collect all VaadinServlet instances and remove QuarkusVaadinServlet
         // and VaadinServlet from the list.
-        final Collection<ClassInfo> vaadinServlets = indexView
+        Collection<ClassInfo> vaadinServlets = indexView
                 .getAllKnownSubclasses(
                         DotName.createSimple(VaadinServlet.class.getName()))
                 .stream()
@@ -121,14 +135,16 @@ class VaadinQuarkusProcessor {
                                 .equals(VaadinServlet.class.getName()))
                 .collect(Collectors.toList());
 
-        // If no VaadinServlet instances found register QuarkusVaadinServlet
+        // Register VaadinServlet instances annotated with @WebServlet
+        vaadinServlets = registerUserServlets(servletProducer, vaadinServlets);
+        // If no annotated VaadinServlet instances is registered, register
+        // QuarkusVaadinServlet
         if (vaadinServlets.isEmpty()) {
             servletProducer.produce(ServletBuildItem
                     .builder(QuarkusVaadinServlet.class.getName(),
                             QuarkusVaadinServlet.class.getName())
-                    .addMapping("/*").setAsyncSupported(true).build());
-        } else {
-            registerUserServlets(servletProducer, vaadinServlets);
+                    .addMapping("/*").setAsyncSupported(true)
+                    .setLoadOnStartup(1).build());
         }
     }
 
@@ -224,15 +240,20 @@ class VaadinQuarkusProcessor {
                 deployment.getDeploymentManager()), 120));
     }
 
-    private void registerUserServlets(
+    private Collection<ClassInfo> registerUserServlets(
             BuildProducer<ServletBuildItem> servletProducer,
             Collection<ClassInfo> vaadinServlets) {
+        Collection<ClassInfo> registeredServlets = new ArrayList<>(
+                vaadinServlets);
         // TODO: check that we don't register 2 of the same mapping
         for (ClassInfo info : vaadinServlets) {
             final AnnotationInstance webServletInstance = info.classAnnotation(
                     DotName.createSimple(WebServlet.class.getName()));
             if (webServletInstance == null) {
-                LOG.warn("Found unexpected {} extends VaadinServlet without @WebServlet, skipping", info.name());
+                LOG.warn(
+                        "Found unexpected {} extends VaadinServlet without @WebServlet, skipping",
+                        info.name());
+                registeredServlets.remove(info);
                 continue;
             }
 
@@ -240,6 +261,9 @@ class VaadinQuarkusProcessor {
                     .ofNullable(webServletInstance.value("name"))
                     .map(AnnotationValue::asString)
                     .orElse(info.name().toString());
+            int loadOnStartup = Optional
+                    .ofNullable(webServletInstance.value("loadOnStartup"))
+                    .map(AnnotationValue::asInt).orElse(-1);
             final ServletBuildItem.Builder servletBuildItem = ServletBuildItem
                     .builder(servletName, info.name().toString());
 
@@ -251,9 +275,18 @@ class VaadinQuarkusProcessor {
 
             addWebInitParameters(webServletInstance, servletBuildItem);
             setAsyncSupportedIfDefined(webServletInstance, servletBuildItem);
-
+            servletBuildItem
+                    .setLoadOnStartup(loadOnStartup > 0 ? loadOnStartup : 1);
+            if (loadOnStartup < 1) {
+                LOG.warn(
+                        "Vaadin Servlet needs to be eagerly loaded by setting load-on-startup to be greater than 0. "
+                                + "Current value for '{}' is '{}', so it will be forced to '1'. "
+                                + "Please set 'loadOnStartup' attribute on @WebServlet annotation to a value greater than 0.",
+                        servletName, loadOnStartup);
+            }
             servletProducer.produce(servletBuildItem.build());
         }
+        return registeredServlets;
     }
 
     private void addWebInitParameters(AnnotationInstance webServletInstance,
