@@ -66,6 +66,11 @@
             <artifactId>quarkus-websockets</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>com.vaadin</groupId>

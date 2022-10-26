@@ -67,7 +67,7 @@
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
-        <version>2.12.1.Final</version>
+        <version>${quarkus.version}</version>
         <executions>
           <execution>
             <phase>compile</phase>
