@@ -15,7 +15,7 @@
  */
 package com.vaadin.flow.quarkus.it.service;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -15,7 +15,7 @@
  */
 package com.vaadin.quarkus.deployment;
 
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.WebServlet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;

@@ -15,12 +15,12 @@
  */
 package com.vaadin.quarkus;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -32,7 +32,7 @@ import com.vaadin.flow.server.VaadinServletService;
 
 /**
  * Servlet to create {@link QuarkusVaadinServletService}.
- * 
+ *
  * An instance of this servlet is automatically registered if no other custom
  * VaadinServlet class with Servlet 3.0 annotations is present on classpath. A
  * subclass of this servlet can be to provide a customized

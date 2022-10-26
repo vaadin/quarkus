@@ -1,6 +1,6 @@
 package com.vaadin.flow.quarkus.it.addons;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.vaadin.jandex.HelloWorldJandex;
 import org.vaadin.nojandex.HelloWorld;

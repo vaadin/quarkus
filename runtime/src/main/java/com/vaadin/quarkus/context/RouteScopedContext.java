@@ -16,10 +16,10 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -44,7 +44,7 @@ import com.vaadin.quarkus.annotation.NormalUIScoped;
 import com.vaadin.quarkus.annotation.RouteScopeOwner;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 
-import static javax.enterprise.event.Reception.IF_EXISTS;
+import static jakarta.enterprise.event.Reception.IF_EXISTS;
 
 /**
  * Context for {@link NormalRouteScoped NormalRouteScoped} beans.
@@ -266,7 +266,7 @@ public class RouteScopedContext extends AbstractContext {
      * Gets a bean manager.
      * <p>
      * Not a private for testing purposes only.
-     * 
+     *
      * @return a bean manager
      */
     BeanManager getBeanManager() {
@@ -277,7 +277,7 @@ public class RouteScopedContext extends AbstractContext {
      * Gets a contextual storage manager class.
      * <p>
      * Not a private for testing purposes only.
-     * 
+     *
      * @return a contextual storage manager class
      */
     Class<? extends ContextualStorageManager> getContextualStorageManagerClass() {

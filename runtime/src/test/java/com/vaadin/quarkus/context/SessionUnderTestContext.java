@@ -16,7 +16,7 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.spi.CDI;
 
 import java.util.Properties;
 

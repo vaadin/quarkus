@@ -16,7 +16,7 @@
 
 package com.vaadin.flow.quarkus.it.service;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.communication.IndexHtmlResponse;

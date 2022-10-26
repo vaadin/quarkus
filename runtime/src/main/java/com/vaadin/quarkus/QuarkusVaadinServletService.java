@@ -15,12 +15,13 @@
  */
 package com.vaadin.quarkus;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.util.Optional;
 import java.util.Set;
@@ -137,7 +138,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
 
     private void addEventListeners() {
         addServiceDestroyListener(this::fireCdiDestroyEvent);
-        addUIInitListener(getBeanManager()::fireEvent);
+        addUIInitListener(event -> getBeanManager().getEvent().fire(event));
         addSessionInitListener(this::sessionInit);
         addSessionDestroyListener(this::sessionDestroy);
     }
@@ -146,16 +147,16 @@ public class QuarkusVaadinServletService extends VaadinServletService {
             throws ServiceException {
         VaadinSession session = sessionInitEvent.getSession();
         lookup(ErrorHandler.class).ifPresent(session::setErrorHandler);
-        getBeanManager().fireEvent(sessionInitEvent);
+        getBeanManager().getEvent().fire(sessionInitEvent);
     }
 
     private void sessionDestroy(SessionDestroyEvent sessionDestroyEvent) {
-        getBeanManager().fireEvent(sessionDestroyEvent);
+        getBeanManager().getEvent().fire(sessionDestroyEvent);
     }
 
     private void fireCdiDestroyEvent(ServiceDestroyEvent event) {
         try {
-            beanManager.fireEvent(event);
+            beanManager.getEvent().fire(event);
         } catch (Exception e) {
             // During application shutdown on TomEE 7,
             // beans are lost at this point.
@@ -221,22 +222,22 @@ public class QuarkusVaadinServletService extends VaadinServletService {
 
         @Override
         public void afterNavigation(AfterNavigationEvent event) {
-            getBeanManager().fireEvent(event);
+            getBeanManager().getEvent().fire(event);
         }
 
         @Override
         public void beforeEnter(BeforeEnterEvent event) {
-            getBeanManager().fireEvent(event);
+            getBeanManager().getEvent().fire(event);
         }
 
         @Override
         public void beforeLeave(BeforeLeaveEvent event) {
-            getBeanManager().fireEvent(event);
+            getBeanManager().getEvent().fire(event);
         }
 
         @Override
         public void onComponentEvent(PollEvent event) {
-            getBeanManager().fireEvent(event);
+            getBeanManager().getEvent().fire(event);
         }
 
         private BeanManager getBeanManager() {

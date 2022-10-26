@@ -16,9 +16,9 @@
 
 package com.vaadin.flow.quarkus.it.sessioncontext;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;

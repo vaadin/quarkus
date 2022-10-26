@@ -16,8 +16,8 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
 

@@ -16,7 +16,7 @@
 
 package com.vaadin.quarkus.annotation;
 
-import javax.enterprise.context.NormalScope;
+import jakarta.enterprise.context.NormalScope;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

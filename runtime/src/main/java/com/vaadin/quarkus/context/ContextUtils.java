@@ -1,6 +1,6 @@
 /*
  * Copyright 2000-2021 Vaadin Ltd.
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -20,9 +20,9 @@
  */
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.inject.Typed;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.inject.Typed;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.lang.annotation.Annotation;
 
@@ -30,7 +30,7 @@ import io.quarkus.arc.Arc;
 
 /**
  * A modified copy of org.apache.deltaspike.core.util.ContextUtils.
- * 
+ *
  * A set of utility methods for working with contexts.
  */
 @Typed()

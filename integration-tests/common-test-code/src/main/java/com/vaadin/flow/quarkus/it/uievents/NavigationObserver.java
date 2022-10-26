@@ -16,7 +16,7 @@
 
 package com.vaadin.flow.quarkus.it.uievents;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -16,7 +16,7 @@
 
 package com.vaadin.flow.quarkus.it.service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.quarkus.arc.Unremovable;
 

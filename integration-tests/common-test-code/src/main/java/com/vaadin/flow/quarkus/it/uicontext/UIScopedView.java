@@ -16,7 +16,7 @@
 
 package com.vaadin.flow.quarkus.it.uicontext;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;

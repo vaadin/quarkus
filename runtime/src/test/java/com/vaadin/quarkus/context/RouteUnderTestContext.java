@@ -81,7 +81,7 @@ public class RouteUnderTestContext implements UnderTestContext {
         List<HasElement> newNavigation = Collections
                 .singletonList(new TestHasElement());
         Arc.container().beanManager()
-                .fireEvent(new AfterNavigationEvent(
+                .getEvent().fire(new AfterNavigationEvent(
                         new LocationChangeEvent(Mockito.mock(Router.class), ui,
                                 NavigationTrigger.PROGRAMMATIC,
                                 new Location("foo"), newNavigation)));

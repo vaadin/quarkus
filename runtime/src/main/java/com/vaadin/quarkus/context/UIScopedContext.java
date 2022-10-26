@@ -15,8 +15,8 @@
  */
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.lang.annotation.Annotation;
 
@@ -58,7 +58,7 @@ public class UIScopedContext extends AbstractContext {
      * Gets a bean manager.
      * <p>
      * Not a private for testing purposes only.
-     * 
+     *
      * @return a bean manager
      */
     BeanManager getBeanManager() {

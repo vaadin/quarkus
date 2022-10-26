@@ -16,9 +16,9 @@
 
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.event.Observes;
 
 import java.lang.annotation.Annotation;
 
@@ -31,7 +31,7 @@ import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 
-import static javax.enterprise.event.Reception.IF_EXISTS;
+import static jakarta.enterprise.event.Reception.IF_EXISTS;
 
 /**
  * Context for {@link VaadinServiceScoped @VaadinServiceScoped} beans.

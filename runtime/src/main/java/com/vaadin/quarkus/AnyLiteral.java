@@ -15,12 +15,12 @@
  */
 package com.vaadin.quarkus;
 
-import javax.enterprise.inject.Any;
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 /**
- * Literal for the {@link javax.enterprise.inject.Any} annotation.
- * 
+ * Literal for the {@link jakarta.enterprise.inject.Any} annotation.
+ *
  * @author Vaadin Ltd
  * @since 1.0
  *

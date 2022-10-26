@@ -16,8 +16,8 @@
 
 package com.vaadin.quarkus;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.servlet.ServletContext;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.servlet.ServletContext;
 
 import java.util.Properties;
 

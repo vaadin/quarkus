@@ -15,8 +15,8 @@
  */
 package com.vaadin.quarkus.context;
 
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.spi.CreationalContext;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Basic tests for {@link InjectableContext} implementations.
- * 
+ *
  * @param <C>
  *            a context type
  */
