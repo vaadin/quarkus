@@ -35,7 +35,7 @@
         <maven.compiler.parameters>true</maven.compiler.parameters>
 
         <vaadin.flow.version>24.0-SNAPSHOT</vaadin.flow.version>
-        <quarkus.version>999-jakarta-SNAPSHOT</quarkus.version>
+        <quarkus.version>3.0.0.Alpha1</quarkus.version>
         <open.telemetry.alpha.version>1.16.0-alpha</open.telemetry.alpha.version>
         <open.telemetry.version>1.16.0</open.telemetry.version>
 
@@ -60,24 +60,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-
-        <repository>
-            <name>s01 OSSRH Snapshots</name>
-            <id>s01-ossrh-snapshots-repo</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>false</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
-        </repository>
-
         <repository>
             <id>apache snapshots</id>
             <url>https://repository.apache.org/content/repositories/snapshots</url>
@@ -99,22 +81,6 @@
             <url>https://maven.vaadin.com/vaadin-prereleases/</url>
             <snapshots>
                 <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <name>s01 OSSRH Snapshots</name>
-            <id>s01-ossrh-snapshots-repo</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>false</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
