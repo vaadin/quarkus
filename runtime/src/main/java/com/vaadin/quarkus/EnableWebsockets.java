@@ -27,7 +27,7 @@ import java.util.Set;
  * deployment, in order to make Atmosphere JSR365Endpoint work.
  * 
  * Quarkus enables WebSocket deployment only if it finds annotated endpoints
- * (@{@link javax.websocket.server.ServerEndpoint}) or implementors of
+ * (@{@link jakarta.websocket.server.ServerEndpoint}) or implementors of
  * {@link ServerApplicationConfig} interface.
  * 
  * Unfortunately, if at least one implementation of

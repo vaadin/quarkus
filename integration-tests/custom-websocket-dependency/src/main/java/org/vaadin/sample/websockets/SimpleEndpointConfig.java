@@ -1,8 +1,8 @@
 package org.vaadin.sample.websockets;
 
-import javax.websocket.Endpoint;
-import javax.websocket.server.ServerApplicationConfig;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.server.ServerApplicationConfig;
+import jakarta.websocket.server.ServerEndpointConfig;
 import java.util.Collections;
 import java.util.Set;
 
