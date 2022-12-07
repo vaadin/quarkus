@@ -146,9 +146,6 @@ class VaadinQuarkusProcessor {
                             QuarkusVaadinServlet.class.getName())
                     .addMapping("/*").setAsyncSupported(true)
                     .setLoadOnStartup(1)
-                    // TODO: should be fixed in Flow and removed from here
-                    .addInitParam(ApplicationConfig.JSR356_PATH_MAPPING_LENGTH,
-                            "0")
                     .build());
         }
     }
@@ -282,9 +279,6 @@ class VaadinQuarkusProcessor {
             setAsyncSupportedIfDefined(webServletInstance, servletBuildItem);
             servletBuildItem
                     .setLoadOnStartup(loadOnStartup > 0 ? loadOnStartup : 1);
-            // TODO: should be fixed in Flow and removed from here
-            servletBuildItem.addInitParam(
-                    ApplicationConfig.JSR356_PATH_MAPPING_LENGTH, "0");
             if (loadOnStartup < 1) {
                 LOG.warn(
                         "Vaadin Servlet needs to be eagerly loaded by setting load-on-startup to be greater than 0. "
