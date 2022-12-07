@@ -40,6 +40,7 @@ import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
 import io.quarkus.vertx.http.deployment.FilterBuildItem;
 import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
 import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
+import org.atmosphere.cpr.ApplicationConfig;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
@@ -144,7 +145,8 @@ class VaadinQuarkusProcessor {
                     .builder(QuarkusVaadinServlet.class.getName(),
                             QuarkusVaadinServlet.class.getName())
                     .addMapping("/*").setAsyncSupported(true)
-                    .setLoadOnStartup(1).build());
+                    .setLoadOnStartup(1)
+                    .build());
         }
     }
 

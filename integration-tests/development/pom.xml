@@ -50,6 +50,11 @@
             <artifactId>test-addon-with-jandex</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>custom-websockets</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.vaadin</groupId>

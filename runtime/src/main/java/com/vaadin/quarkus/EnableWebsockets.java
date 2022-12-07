@@ -19,22 +19,39 @@ import jakarta.websocket.Endpoint;
 import jakarta.websocket.server.ServerApplicationConfig;
 import jakarta.websocket.server.ServerEndpointConfig;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
  * Only purpose of this class is to automatically enable quarkus WebSocket
  * deployment, in order to make Atmosphere JSR365Endpoint work.
+ * 
+ * Quarkus enables WebSocket deployment only if it finds annotated endpoints
+ * (@{@link jakarta.websocket.server.ServerEndpoint}) or implementors of
+ * {@link ServerApplicationConfig} interface.
+ * 
+ * Unfortunately, if at least one implementation of
+ * {@link ServerApplicationConfig} is found, annotated endpoints are not
+ * deployed automatically.
+ *
+ * To circumvent this problem, implementation of
+ * {@link #getAnnotatedEndpointClasses(Set)} method will return all the provided
+ * scanned annotated endpoints. Although Javadocs says that the passed set of
+ * scanned classes contains all the annotated endpoint classes in the JAR or WAR
+ * file containing the implementation of this interface, Quarkus will instead
+ * provide all available annotated endpoints found at build time.
+ *
  */
 public class EnableWebsockets implements ServerApplicationConfig {
 
     @Override
     public Set<ServerEndpointConfig> getEndpointConfigs(
             Set<Class<? extends Endpoint>> endpointClasses) {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
     public Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> scanned) {
-        return null;
+        return scanned;
     }
 }
