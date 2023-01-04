@@ -20,18 +20,25 @@ import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.servlet.ServletContext;
 import org.mockito.Mockito;
 
+import java.util.Enumeration;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import com.vaadin.flow.di.Lookup;
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.server.Command;
+import com.vaadin.flow.server.VaadinContext;
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinServletContext;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.startup.ApplicationConfiguration;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TestQuarkusVaadinServletService
         extends QuarkusVaadinServletService {
+    private ServletContext servletcontext;
 
     public TestQuarkusVaadinServletService(BeanManager beanManager,
             String servletName) {
@@ -39,11 +46,13 @@ public class TestQuarkusVaadinServletService
                 mock(DeploymentConfiguration.class), beanManager);
         when(getServlet().getServletName()).thenReturn(servletName);
         when(getServlet().getService()).thenReturn(this);
-        final ServletContext servletcontext = mock(ServletContext.class);
+        servletcontext = mock(ServletContext.class);
         when(getServlet().getServletContext())
                 .thenReturn(servletcontext);
         when(servletcontext.getAttribute(Lookup.class.getName()))
                 .thenReturn(Mockito.mock(Lookup.class));
+        when(servletcontext.getAttribute(ApplicationConfiguration.class.getName()))
+                .thenReturn(Mockito.mock(ApplicationConfiguration.class));
         DeploymentConfiguration config = getDeploymentConfiguration();
         Properties properties = new Properties();
         when(config.getInitParameters()).thenReturn(properties);
@@ -66,5 +75,10 @@ public class TestQuarkusVaadinServletService
         if (classLoader != null) {
             super.setClassLoader(classLoader);
         }
+    }
+
+    @Override
+    protected VaadinContext constructVaadinContext() {
+        return new VaadinServletContext(servletcontext);
     }
 }
