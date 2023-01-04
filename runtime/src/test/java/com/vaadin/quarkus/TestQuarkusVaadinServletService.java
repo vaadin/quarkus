@@ -18,9 +18,11 @@ package com.vaadin.quarkus;
 
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.servlet.ServletContext;
+import org.mockito.Mockito;
 
 import java.util.Properties;
 
+import com.vaadin.flow.di.Lookup;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinSession;
@@ -37,8 +39,11 @@ public class TestQuarkusVaadinServletService
                 mock(DeploymentConfiguration.class), beanManager);
         when(getServlet().getServletName()).thenReturn(servletName);
         when(getServlet().getService()).thenReturn(this);
+        final ServletContext servletcontext = mock(ServletContext.class);
         when(getServlet().getServletContext())
-                .thenReturn(mock(ServletContext.class));
+                .thenReturn(servletcontext);
+        when(servletcontext.getAttribute(Lookup.class.getName()))
+                .thenReturn(Mockito.mock(Lookup.class));
         DeploymentConfiguration config = getDeploymentConfiguration();
         Properties properties = new Properties();
         when(config.getInitParameters()).thenReturn(properties);
