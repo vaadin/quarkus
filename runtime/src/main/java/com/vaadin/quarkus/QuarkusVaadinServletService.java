@@ -98,7 +98,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
 
     @Override
     public Optional<Instantiator> loadInstantiators() throws ServiceException {
-        final Set<Bean<?>> beans = beanManager.getBeans(Instantiator.class,
+        final Set<Bean<?>> beans = beanManager.getBeans(InstantiatorFactory.class,
                 BeanLookup.SERVICE);
         if (beans == null || beans.isEmpty()) {
             throw new ServiceException("Cannot init VaadinService "
