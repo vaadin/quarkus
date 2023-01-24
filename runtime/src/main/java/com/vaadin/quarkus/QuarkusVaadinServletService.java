@@ -33,6 +33,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.di.InstantiatorFactory;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.router.AfterNavigationEvent;
@@ -103,10 +104,10 @@ public class QuarkusVaadinServletService extends VaadinServletService {
             throw new ServiceException("Cannot init VaadinService "
                     + "because no CDI instantiator bean found.");
         }
-        final Bean<Instantiator> bean;
+        final Bean<InstantiatorFactory> bean;
         try {
             // noinspection unchecked
-            bean = (Bean<Instantiator>) beanManager.resolve(beans);
+            bean = (Bean<InstantiatorFactory>) beanManager.resolve(beans);
         } catch (final AmbiguousResolutionException e) {
             throw new ServiceException(
                     "There are multiple eligible CDI "
@@ -118,12 +119,14 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         // stored inside VaadinService. Not relying on the proxy allows
         // accessing VaadinService::getInstantiator even when
         // VaadinServiceScopedContext is not active
-        final CreationalContext<Instantiator> creationalContext = beanManager
+        final CreationalContext<InstantiatorFactory> creationalContext = beanManager
                 .createCreationalContext(bean);
         final Context context = beanManager.getContext(ApplicationScoped.class); // VaadinServiceScoped
-        final Instantiator instantiator = context.get(bean, creationalContext);
+        final InstantiatorFactory instantiatorFactory = context.get(bean,
+                creationalContext);
 
-        if (!instantiator.init(this)) {
+        Instantiator instantiator = instantiatorFactory.createInstantitor(this);
+        if (instantiator == null) {
             throw new ServiceException("Cannot init VaadinService because "
                     + instantiator.getClass().getName() + " CDI bean init()"
                     + " returned false.");

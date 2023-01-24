@@ -15,13 +15,10 @@
  */
 package com.vaadin.quarkus;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.inject.Inject;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import io.quarkus.arc.Unremovable;
+import jakarta.enterprise.inject.spi.BeanManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,25 +26,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.i18n.I18NProvider;
-import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
-import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 
-/**
- * Instantiator implementation based on Quarkus DI feature.
- *
- * Quarkus DI solution (also called ArC) is based on the Contexts and Dependency
- * Injection for Java 2.0 specification, but it is not a full CDI
- * implementation. Only a subset of the CDI features is implemented.
- *
- * See <a href="https://quarkus.io/guides/cdi-reference">Quarkus CDI
- * Reference</a> for further details.
- *
- * @see Instantiator
- */
-@VaadinServiceEnabled
-@Unremovable
-@ApplicationScoped
 public class QuarkusInstantiator implements Instantiator {
 
     private static final String CANNOT_USE_CDI_BEANS_FOR_I18N = "Cannot use CDI beans for I18N, falling back to the default behavior.";
@@ -56,16 +36,12 @@ public class QuarkusInstantiator implements Instantiator {
     private AtomicBoolean i18NLoggingEnabled = new AtomicBoolean(true);
     private DefaultInstantiator delegate;
 
-    @Inject
-    BeanManager beanManager;
+    private BeanManager beanManager;
 
-    /**
-     * Gets the service class that this instantiator is supposed to work with.
-     *
-     * @return the service class this instantiator is supposed to work with.
-     */
-    public Class<? extends VaadinService> getServiceClass() {
-        return QuarkusVaadinServletService.class;
+    public QuarkusInstantiator(DefaultInstantiator delegate,
+            BeanManager beanManager) {
+        this.delegate = delegate;
+        this.beanManager = beanManager;
     }
 
     /**
@@ -75,13 +51,6 @@ public class QuarkusInstantiator implements Instantiator {
      */
     public BeanManager getBeanManager() {
         return this.beanManager;
-    }
-
-    @Override
-    public boolean init(final VaadinService service) {
-        delegate = new DefaultInstantiator(service);
-        return delegate.init(service)
-                && getServiceClass().isAssignableFrom(service.getClass());
     }
 
     @Override
