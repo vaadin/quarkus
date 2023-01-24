@@ -25,9 +25,17 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.di.InstantiatorFactory;
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 
+/**
+ * Instantiator implementation for Quarkus.
+ *
+ * New instances are created by default by QuarkusInstantiatorFactory.
+ *
+ * @see InstantiatorFactory
+ */
 public class QuarkusInstantiator implements Instantiator {
 
     private static final String CANNOT_USE_CDI_BEANS_FOR_I18N = "Cannot use CDI beans for I18N, falling back to the default behavior.";
