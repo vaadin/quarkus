@@ -102,7 +102,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
                 BeanLookup.SERVICE);
         if (beans == null || beans.isEmpty()) {
             throw new ServiceException("Cannot init VaadinService "
-                    + "because no CDI instantiator bean found.");
+                    + "because no CDI instantiator factory bean found.");
         }
         final Bean<InstantiatorFactory> bean;
         try {
@@ -111,7 +111,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         } catch (final AmbiguousResolutionException e) {
             throw new ServiceException(
                     "There are multiple eligible CDI "
-                            + Instantiator.class.getSimpleName() + " beans.",
+                            + InstantiatorFactory.class.getSimpleName() + " beans.",
                     e);
         }
 
@@ -128,8 +128,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         Instantiator instantiator = instantiatorFactory.createInstantitor(this);
         if (instantiator == null) {
             throw new ServiceException("Cannot init VaadinService because "
-                    + instantiator.getClass().getName() + " CDI bean init()"
-                    + " returned false.");
+                    + Instantiator.class.getSimpleName() + " is null");
         }
         return Optional.of(instantiator);
     }
