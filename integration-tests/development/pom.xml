@@ -128,19 +128,9 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <systemProperties>
-                        <vaadin.devmode.vite.options>--host</vaadin.devmode.vite.options>
-                    </systemProperties>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <quarkus.test.arg-line>-Dvaadin.devmode.vite.options=--host</quarkus.test.arg-line>
-                    </systemPropertyVariables>
-                </configuration>
             </plugin>
         </plugins>
     </build>
