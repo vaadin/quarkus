@@ -35,7 +35,7 @@
         <maven.compiler.parameters>true</maven.compiler.parameters>
 
         <vaadin.flow.version>24.0-SNAPSHOT</vaadin.flow.version>
-        <quarkus.version>3.0.0.Alpha1</quarkus.version>
+        <quarkus.version>3.0.0.Alpha3</quarkus.version>
         <open.telemetry.alpha.version>1.16.0-alpha</open.telemetry.alpha.version>
         <open.telemetry.version>1.16.0</open.telemetry.version>
 
