@@ -59,7 +59,7 @@ public class UIEventsView extends Div implements AfterNavigationObserver {
     }
 
     @Inject
-    private NavigationObserver navigationObserver;
+    NavigationObserver navigationObserver;
 
     @PostConstruct
     private void init() {
