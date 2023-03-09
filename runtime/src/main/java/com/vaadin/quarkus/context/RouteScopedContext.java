@@ -68,7 +68,7 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private void onAfterNavigation(
-                @Observes(notifyObserver = IF_EXISTS) AfterNavigationEvent event) {
+                @Observes AfterNavigationEvent event) {
             Set<Class<?>> activeChain = event.getActiveChain().stream()
                     .map(Object::getClass).collect(Collectors.toSet());
 
