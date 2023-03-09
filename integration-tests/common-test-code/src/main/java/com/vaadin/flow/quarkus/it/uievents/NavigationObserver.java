@@ -41,6 +41,16 @@ public class NavigationObserver implements Serializable {
         navigationEvents.add(event);
     }
 
+    /**
+     * <a href="https://stackoverflow.com/questions/48902847/cdi-observer-condition-in-dependent-bean">...</a>
+     * <a href="https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#conditional_observer_methods">...</a>
+     * <p>
+     * Removed conditional observer method because it is not supported 1.2 CDI spec.
+     * <p>
+     * Beans with scope @Dependent may not have conditional observer methods.
+     * If a bean with scope @Dependent has an observer method declared receive=IF_EXISTS,
+     * the container automatically detects the problem and treats it as a definition error.
+     */
     private void onAfterNavigation(@Observes AfterNavigationEvent event) {
         navigationEvents.add(event);
     }
