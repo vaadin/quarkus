@@ -16,13 +16,14 @@
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <vaadin-lumo-theme.version>24.0-SNAPSHOT</vaadin-lumo-theme.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-lumo-theme</artifactId>
-            <version>21.0-SNAPSHOT</version>
+            <version>${vaadin-lumo-theme.version}</version>
         </dependency>
     </dependencies>
 </project>
