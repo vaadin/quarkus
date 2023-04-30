@@ -26,7 +26,7 @@ env:
 
 jobs:
   quarkus-main:
-    name: "Build against latest Quarkus snapshot"
+    name: "Build against latest Quarkus main snapshot"
     runs-on: ubuntu-latest
     if: github.actor == 'quarkusbot' || github.event_name == 'workflow_dispatch'
 
@@ -61,3 +61,43 @@ jobs:
         run: ./ecosystem-ci/setup-and-test
         env:
           ECOSYSTEM_CI_TOKEN: ${{ secrets.ECOSYSTEM_CI_TOKEN }}
+
+
+  quarkus-2:
+    name: "Build against latest Quarkus 2.x snapshot"
+    runs-on: ubuntu-latest
+    if: github.actor == 'quarkusbot' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Install yq
+        uses: dcarbone/install-yq-action@v1.0.1
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          path: current-repo
+          ref: "1.1"
+
+      - name: Checkout Ecosystem
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.ECOSYSTEM_CI_REPO }}
+          path: ecosystem-ci
+
+      - name: Set TB License
+        run: |
+          TB_LICENSE=${{secrets.TB_LICENSE}}
+          mkdir -p ~/.vaadin/
+          echo '{"username":"'`echo $TB_LICENSE | cut -d / -f1`'","proKey":"'`echo $TB_LICENSE | cut -d / -f2`'"}' > ~/.vaadin/proKey
+
+      - name: Setup and Run Tests
+        run: ./ecosystem-ci/setup-and-test
+        env:
+          ECOSYSTEM_CI_TOKEN: ${{ secrets.ECOSYSTEM_CI_TOKEN }}
+          ALTERNATIVE: 2.x
