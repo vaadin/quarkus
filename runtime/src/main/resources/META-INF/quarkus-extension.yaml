@@ -4,7 +4,8 @@ metadata:
   keywords:
     - vaadin
     - flow
-#  guide: ...
+    - web
+  guide: "https://vaadin.com/docs/latest/integrations/quarkus"
   categories:
     - "web"
-  status: "preview"
+  status: "stable"
