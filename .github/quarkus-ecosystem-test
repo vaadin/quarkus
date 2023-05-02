@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -exuo pipefail
+
+# update the versions
+mvn --settings .github/quarkus-ecosystem-maven-settings.xml -B -ntp versions:set-property -Dproperty=quarkus.version -DnewVersion=${QUARKUS_VERSION} -DgenerateBackupPoms=false
+mvn --settings .github/quarkus-ecosystem-maven-settings.xml -B -ntp versions:set-property -Dproperty=vaadin.flow.version -DnewVersion=${FLOW_VERSION} -DgenerateBackupPoms=false
+
+# run the tests
+mvn --settings .github/quarkus-ecosystem-maven-settings.xml -B -e -V -ntp -DskipTests -ntp -Drequire.home.node=true clean install
+mvn --settings .github/quarkus-ecosystem-maven-settings.xml -B -e -V -ntp -Drequire.home.node=true -Dcom.vaadin.testbench.Parameters.maxAttempts=2 verify
