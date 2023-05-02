@@ -57,6 +57,10 @@ jobs:
           mkdir -p ~/.vaadin/
           echo '{"username":"'`echo $TB_LICENSE | cut -d / -f1`'","proKey":"'`echo $TB_LICENSE | cut -d / -f2`'"}' > ~/.vaadin/proKey
 
+      - uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
+
       - name: Setup and Run Tests
         run: ./ecosystem-ci/setup-and-test
         env:
@@ -67,7 +71,9 @@ jobs:
     name: "Build against latest Quarkus 2.x snapshot"
     runs-on: ubuntu-latest
     if: github.actor == 'quarkusbot' || github.event_name == 'workflow_dispatch'
-
+    env:
+      JAVA_VERSION: 11
+      FLOW_VERSION: 23.3-SNAPSHOT
     steps:
       - name: Install yq
         uses: dcarbone/install-yq-action@v1.0.1
@@ -95,6 +101,10 @@ jobs:
           TB_LICENSE=${{secrets.TB_LICENSE}}
           mkdir -p ~/.vaadin/
           echo '{"username":"'`echo $TB_LICENSE | cut -d / -f1`'","proKey":"'`echo $TB_LICENSE | cut -d / -f2`'"}' > ~/.vaadin/proKey
+
+      - uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
 
       - name: Setup and Run Tests
         run: ./ecosystem-ci/setup-and-test
