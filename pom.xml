@@ -141,7 +141,6 @@
                             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                             <maven.home>${maven.home}</maven.home>
                             <maven.repo>${settings.localRepository}</maven.repo>
-                            <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                         </systemPropertyVariables>
                     </configuration>
                     <executions>
@@ -224,6 +223,29 @@
             <modules>
                 <module>integration-tests</module>
             </modules>
+        </profile>
+        <profile>
+            <id>webdrivermanager</id>
+            <activation>
+                <property>
+                    <name>webdriver.chrome.driver</name>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <version>${failsafe-plugin.version}</version>
+                            <configuration>
+                                <systemPropertyVariables>
+                                    <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
+                                </systemPropertyVariables>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
         </profile>
     </profiles>
 </project>
