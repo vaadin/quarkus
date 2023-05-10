@@ -9,3 +9,8 @@ metadata:
   categories:
     - "web"
   status: "stable"
+  codestart:
+    name: "vaadin-flow"
+    languages:
+    - "java"
+    artifact: "com.vaadin:vaadin-quarkus:codestarts:jar:${project.version}"
