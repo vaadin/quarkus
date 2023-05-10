@@ -1,0 +1,7 @@
+/
+themes/
+themes/starter-theme/
+themes/starter-theme/components/
+themes/starter-theme/components/vaadin-text-field.css
+themes/starter-theme/styles.css
+themes/starter-theme/theme.json
