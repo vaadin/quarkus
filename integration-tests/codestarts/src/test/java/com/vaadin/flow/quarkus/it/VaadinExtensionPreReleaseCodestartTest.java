@@ -1,0 +1,57 @@
+package com.vaadin.flow.quarkus.it;
+
+import java.util.Map;
+
+import io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Language;
+import io.quarkus.devtools.testing.codestarts.QuarkusCodestartTest;
+import io.quarkus.maven.ArtifactKey;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.DefaultModelReader;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static com.vaadin.flow.quarkus.it.CodestartTestUtils.assertThatHasPreReleaseRepositories;
+import static com.vaadin.flow.quarkus.it.CodestartTestUtils.assertThatHasProductionProfile;
+import static com.vaadin.flow.quarkus.it.CodestartTestUtils.assertThatHasVaadinBom;
+import static com.vaadin.flow.quarkus.it.CodestartTestUtils.assertThatHasVaadinQuarkusExtension;
+import static io.quarkus.devtools.testing.SnapshotTesting.checkContains;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
+public class VaadinExtensionPreReleaseCodestartTest {
+
+    @RegisterExtension
+    public static QuarkusCodestartTest codestartTest = QuarkusCodestartTest
+            .builder().languages(Language.JAVA).standaloneExtensionCatalog()
+            .extension(ArtifactKey.fromString("com.vaadin:vaadin-quarkus"))
+            .putData("vaadin-flow-codestart.vaadinVersion", "23.3-SNAPSHOT")
+            .build();
+
+    @Test
+    void testApplicationContents() throws Throwable {
+        codestartTest.checkGeneratedSource("org.acme.example.MainView");
+        codestartTest.checkGeneratedSource("org.acme.example.AppConfig");
+        codestartTest.checkGeneratedSource("org.acme.example.GreetService");
+
+        codestartTest.assertThatGeneratedTreeMatchSnapshots(Language.JAVA,
+                "frontend");
+
+        codestartTest.assertThatGeneratedFile(Language.JAVA, ".gitignore")
+                .satisfies(checkContains("node_modules/")
+                        .andThen(checkContains("frontend/generated/"))
+                        .andThen(checkContains("vite.generated.ts")));
+
+        // Check POM file: vaadin-bom, deps, production profile
+        codestartTest.assertThatGeneratedFile(Language.JAVA, "pom.xml")
+                .satisfies(pomFile -> {
+                    Model pom = new DefaultModelReader().read(pomFile.toFile(),
+                            Map.of());
+                    assertSoftly(soft -> {
+                        assertThatHasVaadinBom(pom, soft);
+                        assertThatHasVaadinQuarkusExtension(pom, soft);
+                        assertThatHasProductionProfile(pom, soft);
+                        assertThatHasPreReleaseRepositories(pom, soft);
+                    });
+                });
+    }
+
+}
