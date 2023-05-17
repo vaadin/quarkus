@@ -2,7 +2,6 @@ package com.vaadin.flow.quarkus.it;
 
 import io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Language;
 import io.quarkus.devtools.testing.codestarts.QuarkusCodestartTest;
-import io.quarkus.maven.ArtifactKey;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -13,8 +12,8 @@ public class VaadinExtensionBuildCodestartTest {
 
     @RegisterExtension
     public static QuarkusCodestartTest codestartTest = QuarkusCodestartTest
-            .builder().languages(Language.JAVA).standaloneExtensionCatalog()
-            .extension(ArtifactKey.fromString("com.vaadin:vaadin-quarkus"))
+            .builder().languages(Language.JAVA)
+            .setupStandaloneExtensionTest("com.vaadin:vaadin-quarkus")
             .putData("vaadin-flow-codestart.vaadinVersion",
                     System.getProperty("vaadin.platform.version"))
             .build();
