@@ -4,7 +4,6 @@ import java.util.Map;
 
 import io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Language;
 import io.quarkus.devtools.testing.codestarts.QuarkusCodestartTest;
-import io.quarkus.maven.ArtifactKey;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.DefaultModelReader;
 import org.junit.jupiter.api.Test;
@@ -21,8 +20,8 @@ public class VaadinExtensionPreReleaseCodestartTest {
 
     @RegisterExtension
     public static QuarkusCodestartTest codestartTest = QuarkusCodestartTest
-            .builder().languages(Language.JAVA).standaloneExtensionCatalog()
-            .extension(ArtifactKey.fromString("com.vaadin:vaadin-quarkus"))
+            .builder().languages(Language.JAVA)
+            .setupStandaloneExtensionTest("com.vaadin:vaadin-quarkus")
             .putData("vaadin-flow-codestart.vaadinVersion", "23.3-SNAPSHOT")
             .build();
 
