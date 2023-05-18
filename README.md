@@ -9,6 +9,4 @@ The first stable version of the extension 1.0 is targeting Vaadin 22.
 
 
 ## devUI URL
-After executing the quarkus project with dev profile:  `mvn quarkus:dev`
-
-The devUI can be reached (with not overriten configuration) in this URL: `http://localhost:8080/q/dev-ui/extensions`
+After executing the quarkus project with dev profile `mvn quarkus:dev`, the devUI can be accessed (with not overwritten configuration) at URL: `http://localhost:8080/q/dev-ui/extensions`
