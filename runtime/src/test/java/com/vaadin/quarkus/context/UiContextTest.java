@@ -16,7 +16,9 @@
 
 package com.vaadin.quarkus.context;
 
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Alternative;
 import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.lang.reflect.Proxy;
@@ -55,6 +57,8 @@ public class UiContextTest extends AbstractContextTest<TestUIScopedContext> {
 
     @Dependent
     @Unremovable
+    @Alternative
+    @Priority(1)
     public static class TestContextualStorageManager
             extends UIScopedContext.ContextualStorageManager {
 
