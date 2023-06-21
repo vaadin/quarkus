@@ -41,6 +41,17 @@ abstract public class AbstractCdiIT extends AbstractChromeIT {
         return findElement(By.id(id)).getText();
     }
 
+    protected void waitForCount(int expectedCount, String counter) {
+        waitUntil(driver -> {
+            try {
+                assertCountEquals(expectedCount, counter);
+                return true;
+            } catch (Exception ex) {
+                return false;
+            }
+        }, 1);
+    }
+
     protected void assertCountEquals(int expectedCount, String counter)
             throws IOException {
         Assert.assertEquals(expectedCount, getCount(counter));

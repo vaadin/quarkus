@@ -83,7 +83,7 @@ public class SessionContextIT extends AbstractCdiIT {
 
     private void assertDestroyCountEquals(int expectedCount)
             throws IOException {
-        assertCountEquals(expectedCount, DESTROY_COUNT);
+        waitForCount(expectedCount, DESTROY_COUNT);
     }
 
     private static Logger getLogger() {
