@@ -131,6 +131,11 @@
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <vaadin.devmode.hostsAllowed>*</vaadin.devmode.hostsAllowed>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
         </plugins>
     </build>
