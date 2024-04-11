@@ -36,8 +36,13 @@ public class QuarkusInstantiatorFactory implements InstantiatorFactory {
         if (!getServiceClass().isAssignableFrom(vaadinService.getClass())) {
             return null;
         }
-        return new QuarkusInstantiator(new DefaultInstantiator(vaadinService),
-                beanManager);
+        DefaultInstantiator delegate = new DefaultInstantiator(vaadinService) {
+            @Override
+            protected ClassLoader getClassLoader() {
+                return Thread.currentThread().getContextClassLoader();
+            }
+        };
+        return new QuarkusInstantiator(delegate, beanManager);
     }
 
     /**
