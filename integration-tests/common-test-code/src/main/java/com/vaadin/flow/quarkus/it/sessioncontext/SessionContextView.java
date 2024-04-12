@@ -21,8 +21,8 @@ import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.quarkus.it.Counter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -66,7 +66,7 @@ public class SessionContextView extends Div {
         expireBtn.setId(EXPIREBTN_ID);
         add(expireBtn);
 
-        Label label = new Label();
+        Span label = new Span();
         label.setText(sessionScopedBean.getValue()); // bean instantiated here
         label.setId(VALUELABEL_ID);
         add(label);

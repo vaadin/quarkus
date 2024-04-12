@@ -22,8 +22,8 @@ import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.quarkus.it.uicontext.UIScopedLabel.SetTextEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
@@ -56,7 +56,7 @@ public class UIContextRootView extends Div {
         final String uiIdStr = UI.getCurrent().getUIId() + "";
         label.setText(uiIdStr);
 
-        final Label uiId = new Label(uiIdStr);
+        final Span uiId = new Span(uiIdStr);
         uiId.setId(UIID_LABEL);
 
         final NativeButton closeUI = new NativeButton("close UI",

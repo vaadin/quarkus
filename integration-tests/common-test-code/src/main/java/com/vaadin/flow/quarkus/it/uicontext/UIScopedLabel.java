@@ -21,12 +21,12 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.quarkus.it.Counter;
 import com.vaadin.quarkus.annotation.UIScoped;
 
 @UIScoped
-public class UIScopedLabel extends Label {
+public class UIScopedLabel extends Span {
 
     public static final String DESTROY_COUNT = "UIScopedLabelDestroy";
 

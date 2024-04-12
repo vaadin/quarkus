@@ -1,5 +1,6 @@
 package com.vaadin.flow.quarkus.it;
 
+import com.vaadin.flow.component.html.testbench.SpanElement;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ public class SmokeTestIT extends AbstractChromeIT {
         button.click();
 
         Assertions.assertEquals("hello quarkus CDI",
-                $(LabelElement.class).first().getText());
+                $(SpanElement.class).first().getText());
     }
 
     @Test

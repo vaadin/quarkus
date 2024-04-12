@@ -20,7 +20,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
@@ -39,11 +39,11 @@ public class DetailApartView extends AbstractCountedView
     @Inject
     @RouteScopeOwner(DetailApartView.class)
     ApartBean apartBean;
-    private Label apartLabel;
+    private Span apartLabel;
 
     @PostConstruct
     private void init() {
-        apartLabel = new Label();
+        apartLabel = new Span();
         apartLabel.setId(BEAN_LABEL);
         apartBean.setData("APART");
         add(apartLabel, new Div(new RouterLink(MASTER, MasterView.class)));

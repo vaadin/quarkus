@@ -21,7 +21,7 @@ import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.Route;
 import com.vaadin.quarkus.annotation.NormalUIScoped;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
@@ -36,7 +36,7 @@ public class UINormalScopedBeanView extends Div {
 
     @PostConstruct
     private void init() {
-        final Label label = new Label(sessionScopedUIidService.getUiIdStr());
+        final Span label = new Span(sessionScopedUIidService.getUiIdStr());
         label.setId(UIID_LABEL);
         add(label);
     }

@@ -22,8 +22,8 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.Route;
 import com.vaadin.quarkus.annotation.RouteScopeOwner;
 import com.vaadin.quarkus.annotation.RouteScoped;
@@ -37,7 +37,7 @@ public class EventView extends Div {
 
     @RouteScoped
     @RouteScopeOwner(EventView.class)
-    public static class ObserverLabel extends Label {
+    public static class ObserverLabel extends Span {
         private void onPrintEvent(@Observes PrintEvent printEvent) {
             setText(printEvent.getMessage());
         }
@@ -57,7 +57,7 @@ public class EventView extends Div {
 
     @Inject
     @RouteScopeOwner(EventView.class)
-    private Label label;
+    private Span label;
     @Inject
     private Event<PrintEvent> printEventTrigger;
 

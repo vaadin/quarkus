@@ -17,7 +17,7 @@ package com.vaadin.flow.quarkus.it.routecontext;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.router.RouterLink;
 
@@ -30,7 +30,7 @@ public class MainLayout extends Div implements RouterLayout {
     public static final String PARENT_NO_OWNER = "parent-no-owner";
     public static final String CHILD_NO_OWNER = "child-no-owner";
 
-    private Label uiIdLabel;
+    private Span uiIdLabel;
 
     public MainLayout() {
         add(new RouterLink(PRESERVE, PreserveOnRefreshView.class),
@@ -44,7 +44,7 @@ public class MainLayout extends Div implements RouterLayout {
         if (uiIdLabel != null) {
             remove(uiIdLabel);
         }
-        uiIdLabel = new Label(attachEvent.getUI().getUIId() + "");
+        uiIdLabel = new Span(attachEvent.getUI().getUIId() + "");
         uiIdLabel.setId(UIID);
         add(uiIdLabel);
     }
