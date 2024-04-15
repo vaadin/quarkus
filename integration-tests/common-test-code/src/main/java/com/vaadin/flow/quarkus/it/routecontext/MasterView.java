@@ -20,7 +20,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
@@ -44,13 +44,13 @@ public class MasterView extends AbstractCountedView
     @Inject
     @RouteScopeOwner(MasterView.class)
     AssignedBean assignedBean;
-    private Label assignedLabel;
+    private Span assignedLabel;
 
     @PostConstruct
     private void init() {
-        assignedLabel = new Label();
+        assignedLabel = new Span();
         assignedLabel.setId(ASSIGNED_BEAN_LABEL);
-        add(new Label("MASTER"), new Div(assignedLabel),
+        add(new Span("MASTER"), new Div(assignedLabel),
                 new Div(new RouterLink(ASSIGNED, DetailAssignedView.class)),
                 new Div(new RouterLink(APART, DetailApartView.class)));
     }

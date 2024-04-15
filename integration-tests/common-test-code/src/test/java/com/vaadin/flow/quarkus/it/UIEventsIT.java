@@ -46,7 +46,7 @@ public class UIEventsIT extends AbstractCdiIT {
     @Test
     public void navigationEventsObserved() {
         List<TestBenchElement> events = $("div")
-                .id(UIEventsView.NAVIGATION_EVENTS).$("label").all();
+                .id(UIEventsView.NAVIGATION_EVENTS).$("span").all();
         Assertions.assertEquals(3, events.size());
         assertEventIs(events.get(0), BeforeLeaveEvent.class);
         assertEventIs(events.get(1), BeforeEnterEvent.class);

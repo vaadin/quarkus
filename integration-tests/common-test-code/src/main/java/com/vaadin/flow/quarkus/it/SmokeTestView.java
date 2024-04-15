@@ -16,15 +16,15 @@
  */
 package com.vaadin.flow.quarkus.it;
 
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.html.NativeButton;
-import com.vaadin.flow.router.Route;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import java.io.Serializable;
+
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.router.Route;
 
 @Route("")
 public class SmokeTestView extends Div {
@@ -33,7 +33,7 @@ public class SmokeTestView extends Div {
 
     public SmokeTestView() {
         add(new NativeButton("Click me",
-                event -> add(new Label(getLabelText()))));
+                event -> add(new Span(getLabelText()))));
 
         // Use custom CSS classes to apply styling. This is defined in
         // shared-styles.css.

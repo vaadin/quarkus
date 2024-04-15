@@ -19,7 +19,6 @@ package com.vaadin.flow.quarkus.it.uievents;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-
 import java.util.EventObject;
 import java.util.List;
 
@@ -27,7 +26,7 @@ import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
@@ -50,7 +49,7 @@ public class UIEventsView extends Div implements AfterNavigationObserver {
             HasElement leaf = chain.get(chain.size() - 1);
             if (leaf instanceof UIEventsView) {
 
-                final Label poll = new Label(pollEvent.isFromClient() + "");
+                final Span poll = new Span(pollEvent.isFromClient() + "");
                 poll.setId(POLL_FROM_CLIENT);
 
                 ((UIEventsView) leaf).add(new Div(poll));
@@ -77,7 +76,7 @@ public class UIEventsView extends Div implements AfterNavigationObserver {
         List<EventObject> navigationEvents = navigationObserver
                 .getNavigationEvents();
         navigationEvents.stream()
-                .map(event -> new Label(event.getClass().getSimpleName()))
+                .map(event -> new Span(event.getClass().getSimpleName()))
                 .forEach(events::add);
         add(events);
     }
