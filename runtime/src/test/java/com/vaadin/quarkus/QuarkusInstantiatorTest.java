@@ -163,7 +163,7 @@ public class QuarkusInstantiatorTest {
     public void getI18NProvider_beanEnabled_instanceReturned() {
         I18NProvider i18NProvider = instantiator.getI18NProvider();
         Assertions.assertNotNull(i18NProvider);
-        Assertions.assertTrue((i18NProvider instanceof I18NTestProvider));
+        Assertions.assertTrue(i18NProvider instanceof I18NTestProvider);
     }
 
     /*
