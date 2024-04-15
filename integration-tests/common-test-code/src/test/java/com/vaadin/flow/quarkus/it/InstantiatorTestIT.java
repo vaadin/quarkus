@@ -27,13 +27,14 @@ public class InstantiatorTestIT extends AbstractChromeIT {
             if (prevUuid != null) {
                 Assert.assertEquals("UUID should not have been changed",
                         prevUuid, uuid);
+            } else {
+                prevUuid = uuid;
             }
             String counter = findElement(By.id("CLICK_COUNTER")).getText();
             Assert.assertEquals(
                     "Parameter and counter should have the same value",
                     "P:" + i + ", C:" + i, counter);
 
-            prevUuid = uuid;
             prevCounter.set(counter);
 
             $("a").first().click();
