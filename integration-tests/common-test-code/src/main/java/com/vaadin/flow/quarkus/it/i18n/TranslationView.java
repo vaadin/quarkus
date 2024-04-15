@@ -38,18 +38,18 @@ public class TranslationView extends Div {
     public TranslationView() {
         setId(TEST_VIEW_ID);
 
-        Span defaultLang = new Span(getTranslation("label", Locale.ENGLISH));
+        Span defaultLang = new Span(getTranslation(Locale.ENGLISH, "label"));
         defaultLang.setId("english");
-        Span german = new Span(getTranslation("label", Locale.GERMAN));
+        Span german = new Span(getTranslation(Locale.GERMAN, "label"));
         german.setId("german");
-        Span germany = new Span(getTranslation("label", Locale.GERMANY));
+        Span germany = new Span(getTranslation(Locale.GERMANY, "label"));
         germany.setId("germany");
         Span finnish = new Span(
-                getTranslation("label", new Locale("fi", "FI")));
+                getTranslation(new Locale("fi", "FI", "label")));
         finnish.setId("finnish");
-        Span french = new Span(getTranslation("label", Locale.FRANCE));
+        Span french = new Span(getTranslation(Locale.FRANCE, "label"));
         french.setId("french");
-        Span japanese = new Span(getTranslation("label", Locale.JAPAN));
+        Span japanese = new Span(getTranslation(Locale.JAPAN, "label"));
         japanese.setId("japanese");
 
         Optional<I18NProvider> i18NProvider = LocaleUtil.getI18NProvider();
@@ -85,7 +85,7 @@ public class TranslationView extends Div {
                 e.printStackTrace();
             } finally {
                 ui.access(() -> {
-                    dynamic.setText(getTranslation("label", Locale.FRANCE));
+                    dynamic.setText(getTranslation(Locale.FRANCE, "label"));
                     ui.setPollInterval(-1);
                 });
 
