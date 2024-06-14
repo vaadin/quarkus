@@ -5,7 +5,7 @@ metadata:
     - vaadin
     - flow
     - web
-  guide: "https://vaadin.com/docs/latest/integrations/quarkus"
+  guide: "https://vaadin.com/docs/latest/flow/integrations/quarkus"
   categories:
     - "web"
   status: "stable"
