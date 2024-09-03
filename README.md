@@ -8,7 +8,7 @@ To try it out, you can get a project https://github.com/vaadin/base-starter-flow
 This branch is compatible with upcoming Vaadin platform versions. See other branches for other Vaadin versions:
 
 1.0 for Vaadin 22 and 23 and Quarkus 2
-2.0 for Vaadin 24 up to 24.4 and Quarkus 2.3 LTS and 3.8 (LTS)
+2.0 for Vaadin 24 up to 24.4 and Quarkus 3.2 LTS and 3.8 (LTS)
 
 
 ## devUI URL
