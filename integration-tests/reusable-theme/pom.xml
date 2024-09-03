@@ -16,7 +16,7 @@
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <vaadin-lumo-theme.version>24.4-SNAPSHOT</vaadin-lumo-theme.version>
+        <vaadin-lumo-theme.version>24.5-SNAPSHOT</vaadin-lumo-theme.version>
     </properties>
 
     <dependencies>
