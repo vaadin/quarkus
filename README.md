@@ -1,11 +1,14 @@
 # vaadin-quarkus
 An extension to Quarkus to support Vaadin Flow.
 
-Supports Quarkus 2.0 and should support 1.11+ too.
+Supports Quarkus 3.12+
 
 To try it out, you can get a project https://github.com/vaadin/base-starter-flow-quarkus/
 
-The first stable version of the extension 1.0 is targeting Vaadin 22.
+This branch is compatible with upcoming Vaadin platform versions. See other branches for other Vaadin versions:
+
+1.0 for Vaadin 22 and 23 and Quarkus 2
+2.0 for Vaadin 24 up to 24.4 and Quarkus 3.8 (LTS)
 
 
 ## devUI URL

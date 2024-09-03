@@ -34,8 +34,8 @@
         <failsafe-plugin.version>${surefire-plugin.version}</failsafe-plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
 
-        <vaadin.flow.version>24.4-SNAPSHOT</vaadin.flow.version>
-        <quarkus.version>3.8.4</quarkus.version>
+        <vaadin.flow.version>24.5-SNAPSHOT</vaadin.flow.version>
+        <quarkus.version>3.12.2</quarkus.version>
         <open.telemetry.alpha.version>1.16.0-alpha</open.telemetry.alpha.version>
         <open.telemetry.version>1.16.0</open.telemetry.version>
 
