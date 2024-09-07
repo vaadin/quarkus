@@ -17,6 +17,12 @@
     <packaging>pom</packaging>
 
     <name>Vaadin Quarkus - Parent</name>
+    <scm>
+        <connection>scm:git:git@github.com:vaadin/quarkus.git</connection>
+        <developerConnection>scm:git:git@github.com:vaadin/quarkus.git</developerConnection>
+        <url>https://github.com/vaadin/quarkus</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <modules>
         <module>deployment</module>

@@ -6,6 +6,7 @@ metadata:
     - flow
     - web
   guide: "https://vaadin.com/docs/latest/flow/integrations/quarkus"
+  icon-url: "https://vaadin.com/images/trademark/PNG/VaadinLogomark_RGB_500x500.png"
   categories:
     - "web"
   status: "stable"
