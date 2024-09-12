@@ -32,6 +32,14 @@
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
+            <artifactId>flow-dnd</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>flow-react</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
             <artifactId>reusable-theme</artifactId>
             <version>${project.version}</version>
         </dependency>
