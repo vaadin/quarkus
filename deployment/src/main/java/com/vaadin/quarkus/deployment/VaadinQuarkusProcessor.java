@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,18 +32,23 @@ import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
 import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem;
 import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfiguratorBuildItem;
 import io.quarkus.arc.deployment.CustomScopeBuildItem;
+import io.quarkus.arc.deployment.IgnoreSplitPackageBuildItem;
+import io.quarkus.bootstrap.model.ApplicationModel;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
+import io.quarkus.deployment.builditem.RemovedResourceBuildItem;
+import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
+import io.quarkus.maven.dependency.ArtifactKey;
 import io.quarkus.undertow.deployment.ServletBuildItem;
 import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
 import io.quarkus.vertx.http.deployment.FilterBuildItem;
 import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
 import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
-import org.atmosphere.cpr.ApplicationConfig;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
@@ -81,6 +89,66 @@ class VaadinQuarkusProcessor {
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    void indexOptionalVaadinDependencies(
+            BuildProducer<IndexDependencyBuildItem> producer) {
+        // Optional dependencies
+        producer.produce(
+                new IndexDependencyBuildItem("com.vaadin", "flow-react"));
+        producer.produce(new IndexDependencyBuildItem("com.vaadin",
+                "flow-polymer-template"));
+
+        // Development dependencies
+        producer.produce(new IndexDependencyBuildItem("com.vaadin",
+                "vaadin-dev-server"));
+        producer.produce(new IndexDependencyBuildItem("com.vaadin", "copilot"));
+        producer.produce(
+                new IndexDependencyBuildItem("com.vaadin", "ui-tests"));
+    }
+
+    /*
+     * Removes vaadin-core-jandex artifact, if vaadin-jandex is also present
+     */
+    @BuildStep
+    void removeUnusedJandexIndex(CurateOutcomeBuildItem curateOutcome,
+            BuildProducer<RemovedResourceBuildItem> removedResourceProducer,
+            BuildProducer<IgnoreSplitPackageBuildItem> ignoreSplitPackage) {
+        Predicate<String> isVaadinJandex = Pattern
+                .compile("vaadin(-core)?-jandex").asMatchPredicate();
+        ApplicationModel applicationModel = curateOutcome.getApplicationModel();
+        Set<String> vaadinIndexes = applicationModel.getDependencies().stream()
+                .filter(archive -> "com.vaadin"
+                        .equals(archive.getKey().getGroupId())
+                        && isVaadinJandex
+                                .test(archive.getKey().getArtifactId()))
+                .map(archive -> archive.getKey().toGacString())
+                .collect(Collectors.toSet());
+        if (vaadinIndexes.size() > 1) {
+            ArtifactKey artifactKey = ArtifactKey.of("com.vaadin",
+                    "vaadin-core-jandex", null, "jar");
+            // To prevent the vaadin-core-index to be indexed, it should add to
+            // the removed resources, but producing a RemovedResourceBuildItem
+            // does not prevent the split package processor to log all classes
+            // present in both vaadin-jandex and vaadin-core-jandex The
+            // removedResources map in ApplicationModel is computed before the
+            // SplitPackageProcessor and it is mutable, but the javadocs don't
+            // specify if updating it is allowed or not. To prevent issues in
+            // the future, try to put the artifact in the collection, but
+            // fallback to producing a RemovedResourceBuildItem and a
+            // IgnoreSplitPackageBuildItem to prevent the verbose and useless
+            // log.
+            try {
+                applicationModel.getRemovedResources().put(artifactKey,
+                        Set.of());
+            } catch (Exception ex) {
+                removedResourceProducer.produce(
+                        new RemovedResourceBuildItem(artifactKey, Set.of()));
+                ignoreSplitPackage.produce(new IgnoreSplitPackageBuildItem(
+                        Set.of("com.vaadin.*")));
+            }
+        }
     }
 
     @BuildStep
@@ -145,8 +213,7 @@ class VaadinQuarkusProcessor {
                     .builder(QuarkusVaadinServlet.class.getName(),
                             QuarkusVaadinServlet.class.getName())
                     .addMapping("/*").setAsyncSupported(true)
-                    .setLoadOnStartup(1)
-                    .build());
+                    .setLoadOnStartup(1).build());
         }
     }
 
