@@ -35,7 +35,7 @@
         <maven.compiler.parameters>true</maven.compiler.parameters>
 
         <vaadin.flow.version>24.4-SNAPSHOT</vaadin.flow.version>
-        <quarkus.version>3.0.1.Final</quarkus.version>
+        <quarkus.version>3.2.12.Final</quarkus.version>
         <open.telemetry.alpha.version>1.16.0-alpha</open.telemetry.alpha.version>
         <open.telemetry.version>1.16.0</open.telemetry.version>
 
@@ -102,16 +102,16 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-bom</artifactId>
-                <version>${quarkus.version}</version>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-bom</artifactId>
+                <version>${vaadin.flow.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.vaadin</groupId>
-                <artifactId>flow-bom</artifactId>
-                <version>${vaadin.flow.version}</version>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
