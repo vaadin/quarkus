@@ -36,10 +36,6 @@
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>flow-react</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
             <artifactId>vaadin-dev-server</artifactId>
         </dependency>
 
@@ -223,6 +219,25 @@
                     </plugins>
                 </pluginManagement>
             </build>
+        </profile>
+        <!--
+            2.0 version of the addon targets  Vaadin [24,24.5), but flow-react was
+            introduced in 24.4. This profile allows to exclude the dependency by
+            setting the -Dvaadin.exclude-flow-react system property
+        -->
+        <profile>
+            <id>add-flow-react-dependency</id>
+            <activation>
+                <property>
+                    <name>!vaadin.exclude-flow-react</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>flow-react</artifactId>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 </project>
