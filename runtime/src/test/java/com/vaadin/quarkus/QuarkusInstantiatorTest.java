@@ -24,6 +24,8 @@ import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.auth.DefaultMenuAccessControl;
+import com.vaadin.flow.server.auth.MenuAccessControl;
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 import com.vaadin.quarkus.context.ServiceUnderTestContext;
 import io.quarkus.test.junit.QuarkusTest;
@@ -114,6 +116,22 @@ public class QuarkusInstantiatorTest {
 
     }
 
+    @VaadinServiceEnabled
+    @Singleton
+    public static class TestMenuAccessControl implements MenuAccessControl {
+
+        @Override
+        public void setPopulateClientSideMenu(
+                PopulateClientMenu populateClientSideMenu) {
+
+        }
+
+        @Override
+        public PopulateClientMenu getPopulateClientSideMenu() {
+            return null;
+        }
+    }
+
     @Singleton
     public static class ServiceInitObserver {
 
@@ -164,6 +182,15 @@ public class QuarkusInstantiatorTest {
         I18NProvider i18NProvider = instantiator.getI18NProvider();
         Assertions.assertNotNull(i18NProvider);
         Assertions.assertTrue(i18NProvider instanceof I18NTestProvider);
+    }
+
+    @Test
+    public void getMenuAccessControl_beanNotProvided_instanceReturned() {
+        MenuAccessControl menuAccessControl = instantiator
+                .getMenuAccessControl();
+        Assertions.assertNotNull(menuAccessControl);
+        Assertions
+                .assertTrue(menuAccessControl instanceof TestMenuAccessControl);
     }
 
     /*
