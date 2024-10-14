@@ -185,7 +185,7 @@ public class QuarkusInstantiatorTest {
     }
 
     @Test
-    public void getMenuAccessControl_beanNotProvided_instanceReturned() {
+    public void getMenuAccessControl_beanProvided_instanceReturned() {
         MenuAccessControl menuAccessControl = instantiator
                 .getMenuAccessControl();
         Assertions.assertNotNull(menuAccessControl);
