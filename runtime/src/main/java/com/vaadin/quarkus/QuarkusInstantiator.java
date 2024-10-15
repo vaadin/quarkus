@@ -28,6 +28,7 @@ import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.di.InstantiatorFactory;
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.server.VaadinServiceInitListener;
+import com.vaadin.flow.server.auth.MenuAccessControl;
 
 /**
  * Instantiator implementation for Quarkus.
@@ -100,6 +101,13 @@ public class QuarkusInstantiator implements Instantiator {
             });
         }
         return lookup.lookupOrElseGet(delegate::getI18NProvider);
+    }
+
+    @Override
+    public MenuAccessControl getMenuAccessControl() {
+        final BeanLookup<MenuAccessControl> lookup = new BeanLookup<>(
+                getBeanManager(), MenuAccessControl.class, BeanLookup.SERVICE);
+        return lookup.lookupOrElseGet(delegate::getMenuAccessControl);
     }
 
     private static Logger getLogger() {
