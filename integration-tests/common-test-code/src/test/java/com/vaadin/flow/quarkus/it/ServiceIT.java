@@ -115,8 +115,8 @@ public class ServiceIT extends AbstractCdiIT {
     }
 
     private void assertSystemMessageEquals(String expected) {
-        WebElement message = findElement(
-                By.cssSelector("div.v-system-error div.message"));
+        WebElement message = waitUntil(d -> findElement(
+                By.cssSelector("div.v-system-error div.message")));
         Assertions.assertEquals(expected, message.getText());
     }
 
