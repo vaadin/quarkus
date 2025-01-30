@@ -72,8 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'quarkusbot' || github.event_name == 'workflow_dispatch'
     env:
-      JAVA_VERSION: 11
-      FLOW_VERSION: 23.3-SNAPSHOT
+      FLOW_VERSION: 23.5-SNAPSHOT
     steps:
       - name: Install yq
         uses: dcarbone/install-yq-action@v1.0.1
