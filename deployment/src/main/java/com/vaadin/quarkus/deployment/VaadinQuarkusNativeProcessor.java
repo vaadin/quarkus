@@ -211,7 +211,7 @@ public class VaadinQuarkusNativeProcessor {
                         "vaadin-i18n/**")
                 .includePatterns("org/atmosphere/util/version\\.properties")
                 .includePatterns(
-                        "META-INF/maven/com.github.mcollovati/quarkus-hilla-commons/pom\\.properties")
+                        "META-INF/maven/com.vaadin/vaadin-core/pom\\.properties")
                 .build());
 
         runtimeInitializedPackage
