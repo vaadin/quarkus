@@ -101,10 +101,13 @@ import com.vaadin.quarkus.graal.DelayedSchedulerExecutorsFactory;
  * A processor that applies necessary steps to build a native image for a Vaadin
  * application.
  * <p>
- * </p>
- * - Patches Atmosphere - Defers Atmosphere initialization ar RUNTIME_INIT -
- * Generates stub classes for DAU integration if license checker is not present
- * at runtime - Registers classes for reflection
+ * <ul>
+ * <li>Patches Atmosphere
+ * <li>Defers Atmosphere initialization at RUNTIME_INIT
+ * <li>Generates stub classes for DAU integration if license checker is not
+ * present at runtime
+ * <li>Registers classes for reflection
+ * </ul>
  */
 public class VaadinQuarkusNativeProcessor {
 
