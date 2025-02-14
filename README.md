@@ -1,7 +1,7 @@
 # vaadin-quarkus
 An extension to Quarkus to support Vaadin Flow.
 
-Supports Quarkus 3.12+
+Supports Quarkus 3.15+
 
 To try it out, you can get a project https://github.com/vaadin/base-starter-flow-quarkus/
 
