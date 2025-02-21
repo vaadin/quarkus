@@ -1,6 +1,7 @@
 package com.vaadin.quarkus;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Vetoed;
 import jakarta.enterprise.inject.spi.BeanManager;
@@ -24,10 +25,11 @@ import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.server.auth.DefaultMenuAccessControl;
 import com.vaadin.flow.server.auth.MenuAccessControl;
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 import com.vaadin.quarkus.context.ServiceUnderTestContext;
+
+import io.quarkus.arc.Unremovable;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -84,9 +86,10 @@ public class QuarkusInstantiatorTest {
 
     }
 
-    @Singleton
+    @Dependent
+    @Unremovable
     @Tag("div")
-    public static class SingletonComponent extends Component {
+    public static class CdiComponent extends Component {
         @Inject
         BeanManager beanManager;
     }
@@ -234,10 +237,9 @@ public class QuarkusInstantiatorTest {
     }
 
     @Test
-    @Disabled("Unmanaged instance are currently not supported in Quarkus add-on, see comments in QuarkusInstantiator.getOrCreate")
     public void createComponent_componentIsCreated() {
-        SingletonComponent component = instantiator
-                .createComponent(SingletonComponent.class);
+        CdiComponent component = instantiator
+                .createComponent(CdiComponent.class);
         Assertions.assertNotNull(component);
         Assertions.assertNotNull(component.beanManager);
     }
@@ -245,12 +247,12 @@ public class QuarkusInstantiatorTest {
     @Test
     public void createComponent_componentIsCreatedOnEveryCall()
             throws ServletException {
-        SingletonComponent component = instantiator
-                .createComponent(SingletonComponent.class);
+        CdiComponent component = instantiator
+                .createComponent(CdiComponent.class);
         Assertions.assertNotNull(component);
 
-        SingletonComponent anotherComponent = instantiator
-                .createComponent(SingletonComponent.class);
+        CdiComponent anotherComponent = instantiator
+                .createComponent(CdiComponent.class);
         Assertions.assertNotEquals(component, anotherComponent);
     }
 
