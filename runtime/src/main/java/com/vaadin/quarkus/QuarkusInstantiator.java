@@ -123,6 +123,6 @@ public class QuarkusInstantiator implements Instantiator {
     @Override
     public <T extends Component> T createComponent(
             final Class<T> componentClass) {
-        return this.delegate.createComponent(componentClass);
+        return getOrCreate(componentClass);
     }
 }
