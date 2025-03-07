@@ -15,7 +15,7 @@
  */
 package com.vaadin.quarkus.deployment;
 
-import jakarta.inject.Inject;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -42,6 +42,7 @@ import io.quarkus.gizmo.ClassCreator;
 import io.quarkus.gizmo.MethodCreator;
 import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
 import io.quarkus.vertx.http.deployment.DefaultRouteBuildItem;
+import jakarta.inject.Inject;
 import org.atmosphere.cache.UUIDBroadcasterCache;
 import org.atmosphere.client.TrackMessageSizeInterceptor;
 import org.atmosphere.config.managed.ManagedServiceInterceptor;
@@ -193,6 +194,60 @@ public class VaadinQuarkusNativeProcessor {
                         .getConstructorCreator(new String[0]);
                 ctorCreator.setModifiers(Opcodes.ACC_PUBLIC);
                 ctorCreator.returnValue(null);
+            }
+        }
+    }
+
+    /*
+     * Some Vaadin Java components like Grid and Combobox define methods using
+     * VaadinSpringDataHelper utility from vaadin-spring module. In a Quarkus
+     * application that module is usually not present, so we provide a stub
+     * implementation that throws exception when methods are invoked.
+     */
+    @BuildStep(onlyIf = IsNativeBuild.class)
+    void generateVaadinSpringDataHelpers(
+            BuildProducer<GeneratedNativeImageClassBuildItem> producer) {
+        String vaadinSpringDataHelperClassName = "com.vaadin.flow.spring.data.VaadinSpringDataHelpers";
+
+        if (!QuarkusClassLoader
+                .isClassPresentAtRuntime(vaadinSpringDataHelperClassName)) {
+            ClassCreator.Builder builder = ClassCreator.interfaceBuilder()
+                    .className(vaadinSpringDataHelperClassName)
+                    .interfaces(Serializable.class.getName())
+                    .classOutput((className, bytes) -> producer.produce(
+                            new GeneratedNativeImageClassBuildItem(className,
+                                    bytes)));
+            try (ClassCreator classCreator = builder.build()) {
+
+                MethodCreator methodCreator = classCreator.getMethodCreator(
+                        "toSpringDataSort",
+                        "Lorg/springframework/data/domain/Sort;",
+                        "Lcom/vaadin/flow/data/provider/Query;");
+                methodCreator
+                        .setModifiers(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC);
+                methodCreator.throwException(RuntimeException.class,
+                        "VaadinSpringDataHelpers.toSpringDataSort invoked but vaadin-spring is not available");
+                methodCreator.returnValue(null);
+
+                methodCreator = classCreator.getMethodCreator(
+                        "toSpringPageRequest",
+                        "Lorg/springframework/data/domain/PageRequest;",
+                        "Lcom/vaadin/flow/data/provider/Query;");
+                methodCreator
+                        .setModifiers(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC);
+                methodCreator.throwException(RuntimeException.class,
+                        "VaadinSpringDataHelpers.toSpringPageRequest invoked but vaadin-spring is not available");
+                methodCreator.returnValue(null);
+
+                methodCreator = classCreator.getMethodCreator(
+                        "fromPagingRepository",
+                        "Lcom/vaadin/flow/data/provider/CallbackDataProvider$FetchCallback;",
+                        "Lcom/vaadin/flow/data/repository/PagingAndSortingRepository;");
+                methodCreator
+                        .setModifiers(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC);
+                methodCreator.throwException(RuntimeException.class,
+                        "VaadinSpringDataHelpers.fromPagingRepository invoked but vaadin-spring is not available");
+                methodCreator.returnValue(null);
             }
         }
     }
