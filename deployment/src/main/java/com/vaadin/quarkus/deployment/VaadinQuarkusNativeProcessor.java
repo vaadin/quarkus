@@ -266,7 +266,8 @@ public class VaadinQuarkusNativeProcessor {
                         "vaadin-i18n/**")
                 .includePatterns("org/atmosphere/util/version\\.properties")
                 .includePatterns(
-                        "META-INF/maven/com.vaadin/vaadin-core/pom\\.properties")
+                        "META-INF/maven/com.vaadin/vaadin-core/pom\\.properties",
+                        "vaadin-featureflags\\.properties")
                 .build());
 
         runtimeInitializedPackage
