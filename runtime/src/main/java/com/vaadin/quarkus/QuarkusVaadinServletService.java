@@ -15,17 +15,15 @@
  */
 package com.vaadin.quarkus;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.spi.Context;
-import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.event.Event;
-import jakarta.enterprise.inject.AmbiguousResolutionException;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
-
 import java.util.Optional;
 import java.util.Set;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +49,7 @@ import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.SystemMessagesProvider;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 
 /**
  * An implementation of {@link com.vaadin.flow.server.VaadinService} for Quarkus
@@ -98,8 +97,9 @@ public class QuarkusVaadinServletService extends VaadinServletService {
 
     @Override
     public Optional<Instantiator> loadInstantiators() throws ServiceException {
-        final Set<Bean<?>> beans = beanManager.getBeans(InstantiatorFactory.class,
-                BeanLookup.SERVICE);
+        final Set<Bean<?>> beans = beanManager.getBeans(
+                InstantiatorFactory.class,
+                VaadinServiceEnabled.Literal.INSTANCE);
         if (beans == null || beans.isEmpty()) {
             throw new ServiceException("Cannot init VaadinService "
                     + "because no CDI instantiator factory bean found.");
@@ -109,10 +109,8 @@ public class QuarkusVaadinServletService extends VaadinServletService {
             // noinspection unchecked
             bean = (Bean<InstantiatorFactory>) beanManager.resolve(beans);
         } catch (final AmbiguousResolutionException e) {
-            throw new ServiceException(
-                    "There are multiple eligible CDI "
-                            + InstantiatorFactory.class.getSimpleName() + " beans.",
-                    e);
+            throw new ServiceException("There are multiple eligible CDI "
+                    + InstantiatorFactory.class.getSimpleName() + " beans.", e);
         }
 
         // Return the contextual instance (rather than CDI proxy) as it will be
@@ -192,7 +190,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
     public <T> Optional<T> lookup(Class<T> type) throws ServiceException {
         try {
             T instance = new BeanLookup<>(getBeanManager(), type,
-                    BeanLookup.SERVICE).lookup();
+                    VaadinServiceEnabled.Literal.INSTANCE).lookup();
             return Optional.ofNullable(instance);
         } catch (AmbiguousResolutionException e) {
             throw new ServiceException("There are multiple eligible CDI "

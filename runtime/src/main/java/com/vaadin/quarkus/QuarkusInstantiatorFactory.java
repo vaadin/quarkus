@@ -24,7 +24,6 @@ import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
  * @see InstantiatorFactory
  */
 @VaadinServiceEnabled
-@Unremovable
 @ApplicationScoped
 public class QuarkusInstantiatorFactory implements InstantiatorFactory {
 

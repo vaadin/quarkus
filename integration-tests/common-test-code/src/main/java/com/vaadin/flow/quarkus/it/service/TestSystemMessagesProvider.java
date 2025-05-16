@@ -27,7 +27,6 @@ import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 
 @VaadinServiceEnabled
 @VaadinServiceScoped
-@Unremovable
 public class TestSystemMessagesProvider implements SystemMessagesProvider {
 
     public static final String EXPIRED_BY_TEST = "EXPIRED BY TEST";
