@@ -28,7 +28,6 @@ import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 
 @VaadinServiceEnabled
 @VaadinServiceScoped
-@Unremovable
 public class TestErrorHandler implements ErrorHandler {
 
     @Inject

@@ -15,16 +15,15 @@
  */
 package com.vaadin.quarkus;
 
-import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.inject.AmbiguousResolutionException;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.enterprise.util.AnnotationLiteral;
-
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 
@@ -39,8 +38,6 @@ import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
  */
 class BeanLookup<T> {
 
-    static final Annotation SERVICE = new ServiceLiteral();
-
     private final BeanManager beanManager;
     private final Class<T> type;
     private final Annotation[] qualifiers;
@@ -52,11 +49,6 @@ class BeanLookup<T> {
 
     private static final Annotation[] ANY = new Annotation[] {
             new AnyLiteral() };
-
-    private static class ServiceLiteral
-            extends AnnotationLiteral<VaadinServiceEnabled>
-            implements VaadinServiceEnabled {
-    }
 
     @FunctionalInterface
     public interface UnsatisfiedHandler {

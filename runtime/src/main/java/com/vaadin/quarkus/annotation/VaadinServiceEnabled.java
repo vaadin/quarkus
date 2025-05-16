@@ -16,10 +16,12 @@
 
 package com.vaadin.quarkus.annotation;
 
-import jakarta.inject.Qualifier;
-
+import java.io.Serial;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.inject.Qualifier;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -37,4 +39,25 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({ TYPE, METHOD, FIELD, PARAMETER })
 public @interface VaadinServiceEnabled {
+
+    /**
+     * Supports inline instantiation of the {@link VaadinServiceEnabled}
+     * annotation.
+     *
+     * @since 2.2
+     */
+    final class Literal extends AnnotationLiteral<VaadinServiceEnabled>
+            implements VaadinServiceEnabled {
+        /**
+         * Singleton instance of the {@code Literal} class, which allows inline
+         * instantiation of the {@link VaadinServiceEnabled} annotation. This
+         * instance provides a reusable, predefined implementation of the
+         * annotation for use in various contexts.
+         */
+        public static final Literal INSTANCE = new Literal();
+
+        @Serial
+        private static final long serialVersionUID = 1L;
+    }
+
 }
