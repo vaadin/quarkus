@@ -15,17 +15,19 @@
  */
 package com.vaadin.quarkus;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.Context;
 import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
-
-import java.util.Optional;
-import java.util.Set;
-
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +53,7 @@ import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.SystemMessagesProvider;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 
 /**
  * An implementation of {@link com.vaadin.flow.server.VaadinService} for Quarkus
@@ -97,9 +100,36 @@ public class QuarkusVaadinServletService extends VaadinServletService {
     }
 
     @Override
+    protected Executor createDefaultExecutor() {
+        Instance<Executor> customExecutor = beanManager.createInstance()
+                .select(Executor.class, BeanLookup.SERVICE);
+        if (customExecutor.isResolvable()) {
+            getLogger().debug("Using custom Vaadin Executor {}",
+                    customExecutor.getHandle().getBean());
+            return customExecutor.get();
+        } else if (customExecutor.isAmbiguous()) {
+            String candidates = customExecutor.handlesStream()
+                    .map(handle -> handle.getBean().toString())
+                    .collect(Collectors.joining(", ", "[", "]"));
+            String message = String.format(
+                    "Multiple Executor beans annotated with @%1$s found: %2$s. "
+                            + "Please make sure a single instance is resolvable.",
+                    VaadinServiceEnabled.class.getSimpleName(), candidates);
+            throw new IllegalStateException(message);
+        }
+        Instance<ManagedExecutor> managedExecutors = beanManager
+                .createInstance().select(ManagedExecutor.class);
+        if (managedExecutors.isResolvable()) {
+            getLogger().debug("Using container Managed Executor");
+            return managedExecutors.get();
+        }
+        return super.createDefaultExecutor();
+    }
+
+    @Override
     public Optional<Instantiator> loadInstantiators() throws ServiceException {
-        final Set<Bean<?>> beans = beanManager.getBeans(InstantiatorFactory.class,
-                BeanLookup.SERVICE);
+        final Set<Bean<?>> beans = beanManager
+                .getBeans(InstantiatorFactory.class, BeanLookup.SERVICE);
         if (beans == null || beans.isEmpty()) {
             throw new ServiceException("Cannot init VaadinService "
                     + "because no CDI instantiator factory bean found.");
@@ -109,10 +139,8 @@ public class QuarkusVaadinServletService extends VaadinServletService {
             // noinspection unchecked
             bean = (Bean<InstantiatorFactory>) beanManager.resolve(beans);
         } catch (final AmbiguousResolutionException e) {
-            throw new ServiceException(
-                    "There are multiple eligible CDI "
-                            + InstantiatorFactory.class.getSimpleName() + " beans.",
-                    e);
+            throw new ServiceException("There are multiple eligible CDI "
+                    + InstantiatorFactory.class.getSimpleName() + " beans.", e);
         }
 
         // Return the contextual instance (rather than CDI proxy) as it will be
