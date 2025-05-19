@@ -15,7 +15,6 @@
  */
 package com.vaadin.quarkus.deployment;
 
-import jakarta.servlet.annotation.WebServlet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -33,6 +32,7 @@ import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem;
 import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfiguratorBuildItem;
 import io.quarkus.arc.deployment.CustomScopeBuildItem;
 import io.quarkus.arc.deployment.IgnoreSplitPackageBuildItem;
+import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.bootstrap.model.ApplicationModel;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -49,6 +49,7 @@ import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
 import io.quarkus.vertx.http.deployment.FilterBuildItem;
 import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
 import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
+import jakarta.servlet.annotation.WebServlet;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
@@ -67,6 +68,7 @@ import com.vaadin.quarkus.annotation.NormalRouteScoped;
 import com.vaadin.quarkus.annotation.NormalUIScoped;
 import com.vaadin.quarkus.annotation.RouteScoped;
 import com.vaadin.quarkus.annotation.UIScoped;
+import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
 import com.vaadin.quarkus.context.RouteContextWrapper;
@@ -161,6 +163,13 @@ class VaadinQuarkusProcessor {
         // Make and Route annotated Component a bean for injection
         additionalBeanDefiningAnnotationRegistry
                 .produce(new BeanDefiningAnnotationBuildItem(ROUTE_ANNOTATION));
+    }
+
+    @BuildStep
+    void markVaadinServiceEnabledBeanUnremovable(
+            BuildProducer<UnremovableBeanBuildItem> producer) {
+        producer.produce(UnremovableBeanBuildItem.targetWithAnnotation(
+                DotName.createSimple(VaadinServiceEnabled.class)));
     }
 
     @BuildStep

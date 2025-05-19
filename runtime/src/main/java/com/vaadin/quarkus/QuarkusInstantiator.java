@@ -29,6 +29,7 @@ import com.vaadin.flow.di.InstantiatorFactory;
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.server.auth.MenuAccessControl;
+import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 
 /**
  * Instantiator implementation for Quarkus.
@@ -86,7 +87,8 @@ public class QuarkusInstantiator implements Instantiator {
     @Override
     public I18NProvider getI18NProvider() {
         final BeanLookup<I18NProvider> lookup = new BeanLookup<>(
-                getBeanManager(), I18NProvider.class, BeanLookup.SERVICE);
+                getBeanManager(), I18NProvider.class,
+                VaadinServiceEnabled.Literal.INSTANCE);
         if (i18NLoggingEnabled.compareAndSet(true, false)) {
             lookup.setUnsatisfiedHandler(() -> getLogger().info(
                     "Can't find any @VaadinServiceScoped bean implementing '{}'. "
@@ -106,7 +108,8 @@ public class QuarkusInstantiator implements Instantiator {
     @Override
     public MenuAccessControl getMenuAccessControl() {
         final BeanLookup<MenuAccessControl> lookup = new BeanLookup<>(
-                getBeanManager(), MenuAccessControl.class, BeanLookup.SERVICE);
+                getBeanManager(), MenuAccessControl.class,
+                VaadinServiceEnabled.Literal.INSTANCE);
         return lookup.lookupOrElseGet(delegate::getMenuAccessControl);
     }
 
