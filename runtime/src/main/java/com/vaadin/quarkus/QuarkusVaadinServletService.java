@@ -17,13 +17,17 @@ package com.vaadin.quarkus;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.Context;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +97,33 @@ public class QuarkusVaadinServletService extends VaadinServletService {
     public void fireUIInitListeners(UI ui) {
         addUIListeners(ui);
         super.fireUIInitListeners(ui);
+    }
+
+    @Override
+    protected Executor createDefaultExecutor() {
+        Instance<Executor> customExecutor = beanManager.createInstance()
+                .select(Executor.class, VaadinServiceEnabled.Literal.INSTANCE);
+        if (customExecutor.isResolvable()) {
+            getLogger().debug("Using custom Vaadin Executor {}",
+                    customExecutor.getHandle().getBean());
+            return customExecutor.get();
+        } else if (customExecutor.isAmbiguous()) {
+            String candidates = customExecutor.handlesStream()
+                    .map(handle -> handle.getBean().toString())
+                    .collect(Collectors.joining(", ", "[", "]"));
+            String message = String.format(
+                    "Multiple Executor beans annotated with @%1$s found: %2$s. "
+                            + "Please make sure a single instance is resolvable.",
+                    VaadinServiceEnabled.class.getSimpleName(), candidates);
+            throw new IllegalStateException(message);
+        }
+        Instance<ManagedExecutor> managedExecutors = beanManager
+                .createInstance().select(ManagedExecutor.class);
+        if (managedExecutors.isResolvable()) {
+            getLogger().debug("Using container Managed Executor");
+            return managedExecutors.get();
+        }
+        return super.createDefaultExecutor();
     }
 
     @Override

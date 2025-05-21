@@ -17,6 +17,7 @@ package com.vaadin.quarkus.deployment;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -32,6 +33,8 @@ import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem;
 import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfiguratorBuildItem;
 import io.quarkus.arc.deployment.CustomScopeBuildItem;
 import io.quarkus.arc.deployment.IgnoreSplitPackageBuildItem;
+import io.quarkus.arc.deployment.ValidationPhaseBuildItem;
+import io.quarkus.arc.processor.BeanInfo;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.bootstrap.model.ApplicationModel;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -163,6 +166,40 @@ class VaadinQuarkusProcessor {
         // Make and Route annotated Component a bean for injection
         additionalBeanDefiningAnnotationRegistry
                 .produce(new BeanDefiningAnnotationBuildItem(ROUTE_ANNOTATION));
+    }
+
+    @BuildStep
+    public void ensureSingleVaadinExecutor(
+            ValidationPhaseBuildItem validationPhaseBuildItem,
+            BuildProducer<ValidationPhaseBuildItem.ValidationErrorBuildItem> validationErrors) {
+
+        DotName executorName = DotName
+                .createSimple("java.util.concurrent.Executor");
+        DotName vaadinServiceEnabledName = DotName
+                .createSimple(VaadinServiceEnabled.class);
+
+        // Look for Executor beans with @VaadinServiceEnabled annotation
+        List<BeanInfo> candidates = validationPhaseBuildItem.getContext()
+                .beans()
+                .filter(info -> info.hasType(executorName) && info
+                        .getQualifier(vaadinServiceEnabledName).isPresent())
+                .stream().toList();
+
+        if (candidates.size() > 1) {
+            // Multiple beans found, throw an exception
+            String candidatesInfo = candidates.stream().map(BeanInfo::toString)
+                    .collect(Collectors.joining(", "));
+
+            validationErrors.produce(
+                    new ValidationPhaseBuildItem.ValidationErrorBuildItem(
+                            new IllegalStateException(
+                                    "There must be at most one Executor bean annotated with @"
+                                            + VaadinServiceEnabled.class
+                                                    .getSimpleName()
+                                            + " in the application. " + "Found "
+                                            + candidates.size() + ": "
+                                            + candidates)));
+        }
     }
 
     @BuildStep
