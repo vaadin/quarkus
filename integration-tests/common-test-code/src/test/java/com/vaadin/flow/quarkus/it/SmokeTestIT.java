@@ -1,14 +1,13 @@
 package com.vaadin.flow.quarkus.it;
 
-import com.vaadin.flow.component.html.testbench.SpanElement;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import com.vaadin.flow.component.html.testbench.LabelElement;
 import com.vaadin.flow.component.html.testbench.NativeButtonElement;
+import com.vaadin.flow.component.html.testbench.SpanElement;
 import com.vaadin.flow.test.AbstractChromeIT;
 
 @QuarkusIntegrationTest
