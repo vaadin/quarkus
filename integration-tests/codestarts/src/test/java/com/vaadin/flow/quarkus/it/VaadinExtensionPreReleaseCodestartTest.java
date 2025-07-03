@@ -32,11 +32,11 @@ public class VaadinExtensionPreReleaseCodestartTest {
         codestartTest.checkGeneratedSource("org.acme.example.GreetService");
 
         codestartTest.assertThatGeneratedTreeMatchSnapshots(Language.JAVA,
-                "frontend");
+                "src/main/frontend");
 
         codestartTest.assertThatGeneratedFile(Language.JAVA, ".gitignore")
                 .satisfies(checkContains("node_modules/"),
-                        checkContains("frontend/generated/"),
+                        checkContains("src/main/frontend/generated/"),
                         checkContains("vite.generated.ts"));
 
         // Check POM file: vaadin-bom, deps, production profile
