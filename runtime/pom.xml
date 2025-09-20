@@ -65,6 +65,9 @@
                         <configuration>
                             <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}
                             </deployment>
+                            <conditionalDevDependencies>
+                                <dependency>com.vaadin:vaadin-dev:25.0-SNAPSHOT</dependency>
+                            </conditionalDevDependencies>
                         </configuration>
                     </execution>
                 </executions>

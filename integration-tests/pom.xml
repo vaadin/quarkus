@@ -26,6 +26,7 @@
         <!-- Run common-test-code in dev and prod modes -->
         <module>production</module>
         <module>development</module>
+        <module>embedded-plugin</module>
 
         <!-- Codestarts tests -->
         <module>codestarts</module>
