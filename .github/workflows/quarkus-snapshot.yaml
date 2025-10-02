@@ -80,7 +80,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: 17
           distribution: 'temurin'
 
       - name: Checkout repo
