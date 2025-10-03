@@ -10,7 +10,7 @@ on:
 env:
   ECOSYSTEM_CI_REPO: quarkusio/quarkus-ecosystem-ci
   ECOSYSTEM_CI_REPO_FILE: context.yaml
-  JAVA_VERSION: 17
+  JAVA_VERSION: 21
 
   #########################
   # Repo specific setting #
@@ -35,18 +35,18 @@ jobs:
         uses: dcarbone/install-yq-action@v1.0.1
 
       - name: Set up Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           path: current-repo
 
       - name: Checkout Ecosystem
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           repository: ${{ env.ECOSYSTEM_CI_REPO }}
           path: ecosystem-ci
@@ -72,25 +72,25 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'quarkusbot' || github.event_name == 'workflow_dispatch'
     env:
-      FLOW_VERSION: 23.5-SNAPSHOT
+      FLOW_VERSION: 23.6-SNAPSHOT
     steps:
       - name: Install yq
         uses: dcarbone/install-yq-action@v1.0.1
 
       - name: Set up Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: 17
           distribution: 'temurin'
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           path: current-repo
           ref: "1.1"
 
       - name: Checkout Ecosystem
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           repository: ${{ env.ECOSYSTEM_CI_REPO }}
           path: ecosystem-ci
