@@ -16,14 +16,15 @@
 
 package com.vaadin.quarkus;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.servlet.ServletContext;
-
-import java.util.Properties;
-
+import com.vaadin.flow.di.Lookup;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.startup.ApplicationConfiguration;
+
+import javax.enterprise.inject.spi.BeanManager;
+import javax.servlet.ServletContext;
+import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,8 +38,13 @@ public class TestQuarkusVaadinServletService
                 mock(DeploymentConfiguration.class), beanManager);
         when(getServlet().getServletName()).thenReturn(servletName);
         when(getServlet().getService()).thenReturn(this);
-        when(getServlet().getServletContext())
-                .thenReturn(mock(ServletContext.class));
+        ServletContext servletContext = mock(ServletContext.class);
+        when(getServlet().getServletContext()).thenReturn(servletContext);
+        when(servletContext.getAttribute(Lookup.class.getName()))
+                .thenReturn(mock(Lookup.class));
+        when(servletContext
+                .getAttribute(ApplicationConfiguration.class.getName()))
+                        .thenReturn(mock(ApplicationConfiguration.class));
         DeploymentConfiguration config = getDeploymentConfiguration();
         Properties properties = new Properties();
         when(config.getInitParameters()).thenReturn(properties);
