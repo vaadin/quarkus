@@ -50,7 +50,7 @@ public class WorkspaceInfoCollector implements CodeGenProvider {
             return false;
         }
         if (!config.getOptionalValue("vaadin.build.enabled", Boolean.class)
-                .orElse(false)) {
+                .orElse(true)) {
             LOGGER.info(
                     "Workspace information for Vaadin embedded plugin not collected because Vaadin embedded plugin is disabled");
             return false;

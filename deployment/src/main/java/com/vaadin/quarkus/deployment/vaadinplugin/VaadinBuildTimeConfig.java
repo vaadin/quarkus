@@ -36,7 +36,7 @@ public interface VaadinBuildTimeConfig {
     /**
      * Gets if Vaadin Quarkus Plugins is enabled.
      */
-    @WithDefault("false")
+    @WithDefault("true")
     boolean enabled();
 
     /**
