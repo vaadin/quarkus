@@ -62,11 +62,14 @@ public final class VaadinPlugin {
      *            the Vaadin build configuration.
      * @param applicationModel
      *            the application model.
+     * @param workspaceModule
+     *            the workspace module.
      */
     private VaadinPlugin(VaadinBuildTimeConfig vaadinConfig,
-            ApplicationModel applicationModel, WorkspaceModule appModule) {
+            ApplicationModel applicationModel,
+            WorkspaceModule workspaceModule) {
         this.pluginAdapter = new QuarkusPluginAdapter(vaadinConfig,
-                applicationModel, appModule);
+                applicationModel, workspaceModule);
     }
 
     /**
