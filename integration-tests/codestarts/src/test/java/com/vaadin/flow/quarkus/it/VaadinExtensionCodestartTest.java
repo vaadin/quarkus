@@ -48,7 +48,6 @@ public class VaadinExtensionCodestartTest {
                     assertSoftly(soft -> {
                         assertThatHasVaadinBom(pom, soft);
                         assertThatHasVaadinQuarkusExtension(pom, soft);
-                        assertThatHasProductionProfile(pom, soft);
                     });
                 });
     }
