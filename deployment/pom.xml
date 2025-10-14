@@ -32,6 +32,11 @@
             <artifactId>vaadin-quarkus</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>flow-plugin-base</artifactId>
+            <version>${vaadin.flow.version}</version>
+        </dependency>
 
         <!-- Test scope -->
         <dependency>
