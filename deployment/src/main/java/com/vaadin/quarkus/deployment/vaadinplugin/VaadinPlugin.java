@@ -95,7 +95,7 @@ public final class VaadinPlugin {
                 module = WorkspaceInfo.load(outputTarget);
             } catch (Exception e) {
                 throw new BuildException(
-                        "Cannot load workspace information for Vaadin plugin",
+                        "Cannot load workspace information for Vaadin plugin. quarkus.bootstrap.workspace-discovery=true might be required.",
                         e, List.of());
             }
         }
