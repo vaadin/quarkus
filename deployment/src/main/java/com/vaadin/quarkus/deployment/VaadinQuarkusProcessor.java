@@ -15,52 +15,6 @@
  */
 package com.vaadin.quarkus.deployment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
-import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
-import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem;
-import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfiguratorBuildItem;
-import io.quarkus.arc.deployment.CustomScopeBuildItem;
-import io.quarkus.arc.deployment.IgnoreSplitPackageBuildItem;
-import io.quarkus.arc.deployment.ValidationPhaseBuildItem;
-import io.quarkus.arc.processor.BeanInfo;
-import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
-import io.quarkus.bootstrap.model.ApplicationModel;
-import io.quarkus.deployment.annotations.BuildProducer;
-import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.annotations.ExecutionTime;
-import io.quarkus.deployment.annotations.Record;
-import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
-import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
-import io.quarkus.deployment.builditem.RemovedResourceBuildItem;
-import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
-import io.quarkus.maven.dependency.ArtifactKey;
-import io.quarkus.undertow.deployment.ServletBuildItem;
-import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
-import io.quarkus.vertx.http.deployment.FilterBuildItem;
-import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
-import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
-import jakarta.servlet.annotation.WebServlet;
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.AnnotationValue;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.IndexView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
@@ -80,6 +34,59 @@ import com.vaadin.quarkus.context.UIContextWrapper;
 import com.vaadin.quarkus.context.UIScopedContext;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 import com.vaadin.quarkus.context.VaadinSessionScopedContext;
+import com.vaadin.quarkus.deployment.vaadinplugin.VaadinBuildTimeConfig;
+import com.vaadin.quarkus.deployment.vaadinplugin.VaadinPlugin;
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
+import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
+import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem;
+import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfiguratorBuildItem;
+import io.quarkus.arc.deployment.CustomScopeBuildItem;
+import io.quarkus.arc.deployment.IgnoreSplitPackageBuildItem;
+import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
+import io.quarkus.arc.deployment.ValidationPhaseBuildItem;
+import io.quarkus.arc.processor.BeanInfo;
+import io.quarkus.bootstrap.model.ApplicationModel;
+import io.quarkus.builder.BuildException;
+import io.quarkus.deployment.IsNormal;
+import io.quarkus.deployment.annotations.BuildProducer;
+import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.ExecutionTime;
+import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
+import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
+import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
+import io.quarkus.deployment.builditem.QuarkusBuildCloseablesBuildItem;
+import io.quarkus.deployment.builditem.RemovedResourceBuildItem;
+import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
+import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
+import io.quarkus.maven.dependency.ArtifactKey;
+import io.quarkus.undertow.deployment.ServletBuildItem;
+import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
+import io.quarkus.vertx.http.deployment.FilterBuildItem;
+import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
+import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
+import jakarta.servlet.annotation.WebServlet;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationValue;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class VaadinQuarkusProcessor {
 
@@ -339,6 +346,32 @@ class VaadinQuarkusProcessor {
     @BuildStep
     CustomScopeBuildItem rRouteScope() {
         return new CustomScopeBuildItem(RouteScoped.class);
+    }
+
+    @BuildStep(onlyIf = IsNormal.class)
+    void buildFrontendTask(CurateOutcomeBuildItem outcomeBuildItem,
+            OutputTargetBuildItem outputTarget,
+            VaadinBuildTimeConfig vaadinConfig,
+            QuarkusBuildCloseablesBuildItem closeablesBuildItem,
+
+            // Parameter used only to make sure the build step gets executed
+            @SuppressWarnings("unused") BuildProducer<GeneratedResourceBuildItem> producer)
+            throws BuildException {
+        if (vaadinConfig.enabled()) {
+            VaadinPlugin vaadinPlugin = VaadinPlugin.of(vaadinConfig,
+                    outcomeBuildItem.getApplicationModel(),
+                    outputTarget.getOutputDirectory());
+            vaadinPlugin.prepareFrontend();
+
+            // Allows the build to register additional files to be packaged into
+            // the application
+            BiConsumer<String, byte[]> emitter = (path, content) -> producer
+                    .produce(new GeneratedResourceBuildItem(path, content));
+            vaadinPlugin.buildFrontend(emitter);
+
+            // Register a task to clean the generated files
+            closeablesBuildItem.add(vaadinPlugin::clean);
+        }
     }
 
     @BuildStep

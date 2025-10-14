@@ -9,7 +9,6 @@ import org.apache.maven.model.io.DefaultModelReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static com.vaadin.flow.quarkus.it.CodestartTestUtils.assertThatHasProductionProfile;
 import static com.vaadin.flow.quarkus.it.CodestartTestUtils.assertThatHasVaadinBom;
 import static com.vaadin.flow.quarkus.it.CodestartTestUtils.assertThatHasVaadinQuarkusExtension;
 import static io.quarkus.devtools.testing.SnapshotTesting.checkContains;
@@ -48,7 +47,6 @@ public class VaadinExtensionCodestartTest {
                     assertSoftly(soft -> {
                         assertThatHasVaadinBom(pom, soft);
                         assertThatHasVaadinQuarkusExtension(pom, soft);
-                        assertThatHasProductionProfile(pom, soft);
                     });
                 });
     }
