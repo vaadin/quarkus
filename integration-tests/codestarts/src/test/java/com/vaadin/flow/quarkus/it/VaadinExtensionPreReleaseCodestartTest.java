@@ -31,7 +31,7 @@ public class VaadinExtensionPreReleaseCodestartTest {
         codestartTest.checkGeneratedSource("org.acme.example.GreetService");
 
         codestartTest.assertThatGeneratedTreeMatchSnapshots(Language.JAVA,
-                "src/main/frontend");
+                "src/main/resources");
 
         codestartTest.assertThatGeneratedFile(Language.JAVA, ".gitignore")
                 .satisfies(checkContains("node_modules/"),

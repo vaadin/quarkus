@@ -1,5 +1,5 @@
 /
-themes/
-themes/starter-theme/
-themes/starter-theme/styles.css
-themes/starter-theme/theme.json
+META-INF/
+META-INF/resources/
+META-INF/resources/styles.css
+application.properties

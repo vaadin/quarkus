@@ -1,8 +1,8 @@
 package ilove.quark.us.example;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.component.dependency.StyleSheet;
 
-@Theme("starter-theme")
+@StyleSheet("styles.css")
 public class AppConfig implements AppShellConfigurator {
 }
