@@ -53,6 +53,7 @@ import java.util.function.BiConsumer;
 public final class VaadinPlugin {
 
     private final QuarkusPluginAdapter pluginAdapter;
+    private final TaskCleanFrontendFiles cleanTask;
 
     /**
      * Creates a new instance of Quarkus Vaadin plugin for the given build
@@ -70,6 +71,7 @@ public final class VaadinPlugin {
             WorkspaceModule workspaceModule) {
         this.pluginAdapter = new QuarkusPluginAdapter(vaadinConfig,
                 applicationModel, workspaceModule);
+        this.cleanTask = createCleanFrontendFilesTask(this.pluginAdapter);
     }
 
     /**
@@ -249,14 +251,7 @@ public final class VaadinPlugin {
      * `TaskCleanFrontendFiles` for cleanup operations.
      */
     public void clean() {
-        if (pluginAdapter.cleanFrontendFiles()) {
-            Options options = new Options(null, pluginAdapter.getClassFinder(),
-                    pluginAdapter.npmFolder())
-                    .withFrontendDirectory(pluginAdapter.frontendDirectory())
-                    .withFrontendGeneratedFolder(
-                            pluginAdapter.generatedTsFolder());
-            TaskCleanFrontendFiles cleanTask = new TaskCleanFrontendFiles(
-                    options);
+        if (cleanTask != null) {
             try {
                 cleanTask.execute();
             } catch (ExecutionFailedException exception) {
@@ -264,6 +259,19 @@ public final class VaadinPlugin {
                         exception);
             }
         }
+    }
+
+    private TaskCleanFrontendFiles createCleanFrontendFilesTask(
+            QuarkusPluginAdapter pluginAdapter) {
+        if (pluginAdapter.cleanFrontendFiles()) {
+            Options options = new Options(null, pluginAdapter.getClassFinder(),
+                    pluginAdapter.npmFolder())
+                    .withFrontendDirectory(pluginAdapter.frontendDirectory())
+                    .withFrontendGeneratedFolder(
+                            pluginAdapter.generatedTsFolder());
+            return new TaskCleanFrontendFiles(options);
+        }
+        return null;
     }
 
     private FrontendDependenciesScanner createFrontendScanner() {
