@@ -15,56 +15,11 @@
  */
 package com.vaadin.quarkus.deployment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
-import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
-import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem;
-import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfiguratorBuildItem;
-import io.quarkus.arc.deployment.CustomScopeBuildItem;
-import io.quarkus.arc.deployment.IgnoreSplitPackageBuildItem;
-import io.quarkus.arc.deployment.ValidationPhaseBuildItem;
-import io.quarkus.arc.processor.BeanInfo;
-import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
-import io.quarkus.bootstrap.model.ApplicationModel;
-import io.quarkus.deployment.annotations.BuildProducer;
-import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.annotations.ExecutionTime;
-import io.quarkus.deployment.annotations.Record;
-import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
-import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
-import io.quarkus.deployment.builditem.RemovedResourceBuildItem;
-import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
-import io.quarkus.maven.dependency.ArtifactKey;
-import io.quarkus.undertow.deployment.ServletBuildItem;
-import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
-import io.quarkus.vertx.http.deployment.FilterBuildItem;
-import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
-import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
-import jakarta.servlet.annotation.WebServlet;
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.AnnotationValue;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.IndexView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinServlet;
+import com.vaadin.quarkus.BodyHandlerRecorder;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
 import com.vaadin.quarkus.WebsocketHttpSessionAttachRecorder;
 import com.vaadin.quarkus.annotation.NormalRouteScoped;
@@ -80,6 +35,52 @@ import com.vaadin.quarkus.context.UIContextWrapper;
 import com.vaadin.quarkus.context.UIScopedContext;
 import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 import com.vaadin.quarkus.context.VaadinSessionScopedContext;
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
+import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
+import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem;
+import io.quarkus.arc.deployment.ContextRegistrationPhaseBuildItem.ContextConfiguratorBuildItem;
+import io.quarkus.arc.deployment.CustomScopeBuildItem;
+import io.quarkus.arc.deployment.IgnoreSplitPackageBuildItem;
+import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
+import io.quarkus.arc.deployment.ValidationPhaseBuildItem;
+import io.quarkus.arc.processor.BeanInfo;
+import io.quarkus.bootstrap.model.ApplicationModel;
+import io.quarkus.deployment.annotations.BuildProducer;
+import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.ExecutionTime;
+import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
+import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
+import io.quarkus.deployment.builditem.RemovedResourceBuildItem;
+import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
+import io.quarkus.maven.dependency.ArtifactKey;
+import io.quarkus.undertow.deployment.ServletBuildItem;
+import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
+import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
+import io.quarkus.vertx.http.deployment.FilterBuildItem;
+import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
+import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
+import jakarta.servlet.annotation.WebServlet;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationValue;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class VaadinQuarkusProcessor {
 
@@ -353,6 +354,21 @@ class VaadinQuarkusProcessor {
                 webSocketDeploymentInfoBuildItem.getInfo(),
                 serverWebSocketContainerBuildItem.getContainer(),
                 deployment.getDeploymentManager()), 120));
+    }
+
+    // In hybrid environment sometimes the requests hangs while reading body,
+    // causing the UI to freeze until read
+    // timeout is reached.
+    // Requiring the installation of vert.x body handler seems to fix the issue.
+    // See https://github.com/vaadin/quarkus/issues/138
+    @BuildStep
+    @Record(ExecutionTime.RUNTIME_INIT)
+    void installRequestBodyHandler(BodyHandlerRecorder recorder,
+            BodyHandlerBuildItem bodyHandlerBuildItem,
+            BuildProducer<FilterBuildItem> producer) {
+        producer.produce(new FilterBuildItem(
+                recorder.installBodyHandler(bodyHandlerBuildItem.getHandler()),
+                120));
     }
 
     private Collection<ClassInfo> registerUserServlets(
