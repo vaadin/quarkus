@@ -19,6 +19,7 @@ import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinServlet;
+import com.vaadin.quarkus.BodyHandlerRecorder;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
 import com.vaadin.quarkus.WebsocketHttpSessionAttachRecorder;
 import com.vaadin.quarkus.annotation.NormalRouteScoped;
@@ -64,6 +65,7 @@ import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
 import io.quarkus.maven.dependency.ArtifactKey;
 import io.quarkus.undertow.deployment.ServletBuildItem;
 import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
+import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
 import io.quarkus.vertx.http.deployment.FilterBuildItem;
 import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
 import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
@@ -386,6 +388,21 @@ class VaadinQuarkusProcessor {
                 webSocketDeploymentInfoBuildItem.getInfo(),
                 serverWebSocketContainerBuildItem.getContainer(),
                 deployment.getDeploymentManager()), 120));
+    }
+
+    // In hybrid environment sometimes the requests hangs while reading body,
+    // causing the UI to freeze until read
+    // timeout is reached.
+    // Requiring the installation of vert.x body handler seems to fix the issue.
+    // See See https://github.com/vaadin/quarkus/issues/138
+    @BuildStep
+    @Record(ExecutionTime.RUNTIME_INIT)
+    void installRequestBodyHandler(BodyHandlerRecorder recorder,
+            BodyHandlerBuildItem bodyHandlerBuildItem,
+            BuildProducer<FilterBuildItem> producer) {
+        producer.produce(new FilterBuildItem(
+                recorder.installBodyHandler(bodyHandlerBuildItem.getHandler()),
+                120));
     }
 
     private Collection<ClassInfo> registerUserServlets(
