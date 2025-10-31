@@ -252,7 +252,7 @@ public class VaadinQuarkusNativeProcessor {
         }
     }
 
-    @BuildStep
+    @BuildStep(onlyIf = IsNativeBuild.class)
     void vaadinNativeSupport(CombinedIndexBuildItem combinedIndex,
             BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackage,
             BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResource,
@@ -350,10 +350,11 @@ public class VaadinQuarkusNativeProcessor {
     private Stream<ClassInfo> collectClassesInPackage(IndexView index,
             String basePackage, boolean recursive) {
         Predicate<ClassInfo> predicate = recursive
-                ? classInfo -> classInfo.name().packagePrefix()
-                        .startsWith(basePackage)
-                : classInfo -> classInfo.name().packagePrefix()
-                        .equals(basePackage);
+                ? classInfo -> classInfo.name().packagePrefix() != null
+                        && classInfo.name().packagePrefix()
+                                .startsWith(basePackage)
+                : classInfo -> classInfo.name().packagePrefix() != null
+                        && classInfo.name().packagePrefix().equals(basePackage);
         return index.getKnownClasses().stream().filter(predicate);
     }
 
