@@ -67,19 +67,21 @@ public class RouteScopedContext extends AbstractContext {
             return super.newContextualStorage(key);
         }
 
-
         /**
-         * <a href="https://stackoverflow.com/questions/48902847/cdi-observer-condition-in-dependent-bean">...</a>
-         * <a href="https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#conditional_observer_methods">...</a>
+         * <a href=
+         * "https://stackoverflow.com/questions/48902847/cdi-observer-condition-in-dependent-bean">...</a>
+         * <a href=
+         * "https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#conditional_observer_methods">...</a>
          * <p>
-         * Removed conditional observer method because it is not supported 1.2 CDI spec.
+         * Removed conditional observer method because it is not supported 1.2
+         * CDI spec.
          * <p>
-         * Beans with scope @Dependent may not have conditional observer methods.
-         * If a bean with scope @Dependent has an observer method declared receive=IF_EXISTS,
-         * the container automatically detects the problem and treats it as a definition error.
+         * Beans with scope @Dependent may not have conditional observer
+         * methods. If a bean with scope @Dependent has an observer method
+         * declared receive=IF_EXISTS, the container automatically detects the
+         * problem and treats it as a definition error.
          */
-        private void onAfterNavigation(
-                @Observes AfterNavigationEvent event) {
+        private void onAfterNavigation(@Observes AfterNavigationEvent event) {
             Set<Class<?>> activeChain = event.getActiveChain().stream()
                     .map(Object::getClass).collect(Collectors.toSet());
 
@@ -137,9 +139,6 @@ public class RouteScopedContext extends AbstractContext {
         private static String getWindowName(UI ui) {
             ExtendedClientDetails details = ui.getInternals()
                     .getExtendedClientDetails();
-            if (details == null) {
-                return null;
-            }
             return details.getWindowName();
         }
 
@@ -147,7 +146,7 @@ public class RouteScopedContext extends AbstractContext {
             ExtendedClientDetails details = ui.getInternals()
                     .getExtendedClientDetails();
             RouteStorageKey key = new RouteStorageKey(owner, getUIStoreId(ui));
-            if (details == null) {
+            if (details.getWindowName() == null) {
                 ui.getPage().retrieveExtendedClientDetails(
                         det -> relocate(ui, key));
             }
@@ -162,7 +161,7 @@ public class RouteScopedContext extends AbstractContext {
         private String getUIStoreId(UI ui) {
             ExtendedClientDetails details = ui.getInternals()
                     .getExtendedClientDetails();
-            if (details == null) {
+            if (details.getWindowName() == null) {
                 return "uid-" + ui.getUIId();
             } else {
                 return "win-" + getWindowName(ui);
