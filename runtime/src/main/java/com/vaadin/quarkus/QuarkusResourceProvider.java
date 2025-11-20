@@ -15,6 +15,8 @@
  */
 package com.vaadin.quarkus;
 
+import com.vaadin.flow.di.ResourceProvider;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,17 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.io.IOUtils;
-
-import com.vaadin.flow.di.ResourceProvider;
-
 /**
  * A {@link ResourceProvider} implementation that delegates resource loading to
  * current thread context ClassLoader.
  */
 public class QuarkusResourceProvider implements ResourceProvider {
 
-    private Map<String, CachedStreamData> cache = new ConcurrentHashMap<>();
+    private final Map<String, CachedStreamData> cache = new ConcurrentHashMap<>();
 
     @Override
     public URL getApplicationResource(String path) {
@@ -64,7 +62,7 @@ public class QuarkusResourceProvider implements ResourceProvider {
             URL url = getClientResource(key);
             try (InputStream stream = url.openStream()) {
                 ByteArrayOutputStream tempBuffer = new ByteArrayOutputStream();
-                IOUtils.copy(stream, tempBuffer);
+                stream.transferTo(tempBuffer);
                 return new CachedStreamData(tempBuffer.toByteArray(), null);
             } catch (IOException e) {
                 return new CachedStreamData(null, e);
