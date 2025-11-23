@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import io.quarkus.bootstrap.classloading.QuarkusClassLoader;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.BuildSteps;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.annotations.Record;
@@ -98,10 +99,10 @@ import com.vaadin.flow.server.auth.AccessDeniedErrorRouter;
 import com.vaadin.flow.server.menu.AvailableViewInfo;
 import com.vaadin.flow.server.menu.RouteParamType;
 import com.vaadin.flow.shared.ui.Dependency;
+import com.vaadin.flow.signals.Id;
 import com.vaadin.quarkus.deployment.nativebuild.AtmospherePatches;
 import com.vaadin.quarkus.graal.AtmosphereDeferredInitializerRecorder;
 import com.vaadin.quarkus.graal.DelayedSchedulerExecutorsFactory;
-import com.vaadin.flow.signals.Id;
 
 /**
  * A processor that applies necessary steps to build a native image for a Vaadin
@@ -115,9 +116,9 @@ import com.vaadin.flow.signals.Id;
  * <li>Registers classes for reflection
  * </ul>
  */
+@BuildSteps(onlyIf = VaadinQuarkusNativeProcessor.IsNativeBuild.class)
 public class VaadinQuarkusNativeProcessor {
 
-    @BuildStep(onlyIf = IsNativeBuild.class)
     void patchAtmosphere(CombinedIndexBuildItem index,
             BuildProducer<BytecodeTransformerBuildItem> producer) {
         AtmospherePatches patcher = new AtmospherePatches(
@@ -125,7 +126,7 @@ public class VaadinQuarkusNativeProcessor {
         patcher.apply(producer);
     }
 
-    @BuildStep(onlyIf = IsNativeBuild.class)
+    @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
     @Produce(DefaultRouteBuildItem.class)
     void deferAtmosphereInit(AtmosphereDeferredInitializerRecorder recorder,
@@ -139,7 +140,7 @@ public class VaadinQuarkusNativeProcessor {
      * application is build with subscription key and the license-checker is not
      * configured as explicit project dependency.
      */
-    @BuildStep(onlyIf = IsNativeBuild.class)
+    @BuildStep
     void generateDummyDauClassesIfLicenseCheckerIsNotPresent(
             BuildProducer<GeneratedNativeImageClassBuildItem> producer) {
         String dauIntegration = "com.vaadin.pro.licensechecker.dau.DauIntegration";
@@ -209,7 +210,7 @@ public class VaadinQuarkusNativeProcessor {
      * application that module is usually not present, so we provide a stub
      * implementation that throws exception when methods are invoked.
      */
-    @BuildStep(onlyIf = IsNativeBuild.class)
+    @BuildStep
     void generateVaadinSpringDataHelpers(
             BuildProducer<GeneratedNativeImageClassBuildItem> producer) {
         String vaadinSpringDataHelperClassName = "com.vaadin.flow.spring.data.VaadinSpringDataHelpers";
@@ -257,7 +258,7 @@ public class VaadinQuarkusNativeProcessor {
         }
     }
 
-    @BuildStep(onlyIf = IsNativeBuild.class)
+    @BuildStep
     void vaadinNativeSupport(CombinedIndexBuildItem combinedIndex,
             BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackage,
             BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResource,
