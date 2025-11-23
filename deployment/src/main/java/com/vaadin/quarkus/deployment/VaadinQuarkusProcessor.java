@@ -19,6 +19,7 @@ import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinServlet;
+import com.vaadin.quarkus.BodyHandlerRecorder;
 import com.vaadin.quarkus.QuarkusVaadinServlet;
 import com.vaadin.quarkus.WebsocketHttpSessionAttachRecorder;
 import com.vaadin.quarkus.annotation.NormalRouteScoped;
@@ -64,9 +65,11 @@ import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
 import io.quarkus.maven.dependency.ArtifactKey;
 import io.quarkus.undertow.deployment.ServletBuildItem;
 import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
+import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
 import io.quarkus.vertx.http.deployment.FilterBuildItem;
 import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
 import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationValue;
@@ -83,6 +86,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -388,6 +392,21 @@ class VaadinQuarkusProcessor {
                 deployment.getDeploymentManager()), 120));
     }
 
+    // In environment with few resources sometimes the requests hang while
+    // reading body, causing the UI to freeze until read timeout is reached.
+    // Requiring the installation of vert.x body handler seems to fix the issue.
+    // See https://github.com/vaadin/quarkus/issues/138
+    @BuildStep(onlyIf = IsBodyHandlerEnabled.class)
+    @Record(ExecutionTime.RUNTIME_INIT)
+    void installRequestBodyHandler(BodyHandlerRecorder recorder,
+            BodyHandlerBuildItem bodyHandlerBuildItem,
+            BuildProducer<FilterBuildItem> producer) {
+        LOG.debug("Installing request body handler");
+        producer.produce(new FilterBuildItem(
+                recorder.installBodyHandler(bodyHandlerBuildItem.getHandler()),
+                120));
+    }
+
     private Collection<ClassInfo> registerUserServlets(
             BuildProducer<ServletBuildItem> servletProducer,
             Collection<ClassInfo> vaadinServlets) {
@@ -457,6 +476,16 @@ class VaadinQuarkusProcessor {
                 .value("asyncSupported");
         if (asyncSupported != null) {
             servletBuildItem.setAsyncSupported(asyncSupported.asBoolean());
+        }
+    }
+
+    public static class IsBodyHandlerEnabled implements BooleanSupplier {
+        @Inject
+        VaadinBuildTimeConfig vaadinConfig;
+
+        @Override
+        public boolean getAsBoolean() {
+            return vaadinConfig.requestBodyHandlerEnabled();
         }
     }
 }

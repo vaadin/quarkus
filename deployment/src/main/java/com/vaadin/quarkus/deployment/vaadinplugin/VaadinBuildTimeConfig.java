@@ -264,4 +264,20 @@ public interface VaadinBuildTimeConfig {
      */
     @WithDefault("false")
     boolean commercialWithBanner();
+
+    /**
+     * Determines whether the eager handling of HTTP request bodies should be
+     * enabled.
+     * <p>
+     * In environments with few resources, sometimes requests hang while reading
+     * the body, causing the UI to freeze until the read timeout is reached.
+     * When enabled, this configures a Vert.x handler that delegates Flow
+     * requests to the Quarkus request body handler to read the request body
+     * eagerly before proceeding with the execution, preventing UI freezes.
+     *
+     * @return true if the handling of HTTP request bodies is enabled; false
+     *         otherwise
+     */
+    @WithDefault("true")
+    boolean requestBodyHandlerEnabled();
 }
