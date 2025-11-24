@@ -217,7 +217,7 @@ class VaadinQuarkusProcessor {
                 DotName.createSimple(VaadinServiceEnabled.class)));
     }
 
-    @BuildStep
+    @BuildStep(onlyIf = IsNormal.class)
     void uberJarMergedResources(BuildProducer<UberJarMergedResourceBuildItem> producer) {
         producer.produce(new UberJarMergedResourceBuildItem(
                 "META-INF/services/com.vaadin.flow.server.VaadinServiceInitListener"));
