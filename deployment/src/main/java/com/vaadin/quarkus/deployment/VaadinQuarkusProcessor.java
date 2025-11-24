@@ -61,6 +61,7 @@ import io.quarkus.deployment.builditem.QuarkusBuildCloseablesBuildItem;
 import io.quarkus.deployment.builditem.RemovedResourceBuildItem;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
+import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
 import io.quarkus.maven.dependency.ArtifactKey;
 import io.quarkus.undertow.deployment.ServletBuildItem;
 import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
@@ -214,6 +215,12 @@ class VaadinQuarkusProcessor {
             BuildProducer<UnremovableBeanBuildItem> producer) {
         producer.produce(UnremovableBeanBuildItem.targetWithAnnotation(
                 DotName.createSimple(VaadinServiceEnabled.class)));
+    }
+
+    @BuildStep
+    void uberJarMergedResources(BuildProducer<UberJarMergedResourceBuildItem> producer) {
+        producer.produce(new UberJarMergedResourceBuildItem(
+                "META-INF/services/com.vaadin.flow.server.VaadinServiceInitListener"));
     }
 
     @BuildStep
