@@ -27,7 +27,6 @@
     <modules>
         <module>deployment</module>
         <module>runtime</module>
-        <module>build-tools</module>
     </modules>
 
     <properties>
@@ -36,6 +35,8 @@
         <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spotless.plugin.version>3.1.0</spotless.plugin.version>
+        <spotless.license-header>${maven.multiModuleProjectDirectory}/eclipse/apache2-license-header.txt</spotless.license-header>
 
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
@@ -198,22 +199,50 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>net.revelc.code.formatter</groupId>
-                <artifactId>formatter-maven-plugin</artifactId>
-                <version>2.26.0</version>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.plugin.version}</version>
                 <configuration>
-                    <configFile>eclipse/VaadinJavaConventions.xml</configFile>
-                    <!-- Provide a dummy JS config file to avoid errors -->
-                    <configJsFile>eclipse/VaadinJavaConventions.xml</configJsFile>
-                    <lineEnding>LF</lineEnding>
+                    <java>
+                        <eclipse>
+                            <file>${maven.multiModuleProjectDirectory}/eclipse/VaadinJavaConventions.xml</file>
+                        </eclipse>
+                        <endWithNewline/>
+                        <removeUnusedImports/>
+                        <importOrder>
+                            <file>${maven.multiModuleProjectDirectory}/eclipse/flow.importorder</file>
+                        </importOrder>
+                        <forbidWildcardImports/>
+                        <licenseHeader>
+                            <file>${spotless.license-header}</file>
+                        </licenseHeader>
+                    </java>
+                    <typescript>
+                        <includes>
+                            <include>src/**/*.js</include>
+                            <include>src/**/*.ts</include>
+                            <include>frontend/**/*.js</include>
+                            <include>frontend/**/*.ts</include>
+                        </includes>
+                        <excludes>
+                            <exclude>src/main/frontend/generated/**</exclude>
+                        </excludes>
+                    </typescript>
+                    <css>
+                        <includes>
+                            <include>src/**/*.css</include>
+                            <include>frontend/**/*.css</include>
+                        </includes>
+                        <excludes>
+                            <exclude>src/main/frontend/generated/**</exclude>
+                        </excludes>
+                    </css>
+                    <pom>
+                        <sortPom>
+                            <expandEmptyElements>false</expandEmptyElements>
+                        </sortPom>
+                    </pom>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>${project.groupId}</groupId>
-                        <artifactId>vaadin-quarkus-buildtools</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
