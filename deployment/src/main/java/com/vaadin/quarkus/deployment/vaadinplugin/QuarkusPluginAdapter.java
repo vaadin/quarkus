@@ -15,21 +15,6 @@
  */
 package com.vaadin.quarkus.deployment.vaadinplugin;
 
-import com.vaadin.flow.internal.StringUtil;
-import com.vaadin.flow.plugin.base.BuildFrontendUtil;
-import com.vaadin.flow.plugin.base.PluginAdapterBuild;
-import com.vaadin.flow.server.frontend.FrontendUtils;
-import com.vaadin.flow.server.frontend.installer.Platform;
-import com.vaadin.flow.server.frontend.scanner.ClassFinder;
-import com.vaadin.flow.server.scanner.ReflectionsClassFinder;
-import com.vaadin.flow.utils.FlowFileUtils;
-import io.quarkus.bootstrap.model.ApplicationModel;
-import io.quarkus.bootstrap.workspace.SourceDir;
-import io.quarkus.bootstrap.workspace.WorkspaceModule;
-import io.quarkus.runtime.configuration.ConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,6 +28,22 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import io.quarkus.bootstrap.model.ApplicationModel;
+import io.quarkus.bootstrap.workspace.SourceDir;
+import io.quarkus.bootstrap.workspace.WorkspaceModule;
+import io.quarkus.runtime.configuration.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.flow.internal.StringUtil;
+import com.vaadin.flow.plugin.base.BuildFrontendUtil;
+import com.vaadin.flow.plugin.base.PluginAdapterBuild;
+import com.vaadin.flow.server.frontend.FrontendUtils;
+import com.vaadin.flow.server.frontend.installer.Platform;
+import com.vaadin.flow.server.frontend.scanner.ClassFinder;
+import com.vaadin.flow.server.scanner.ReflectionsClassFinder;
+import com.vaadin.flow.utils.FlowFileUtils;
 
 /**
  * Quarkus implementation of Vaadin build plugin adapter.

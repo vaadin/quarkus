@@ -15,13 +15,12 @@
  */
 package com.vaadin.quarkus.context;
 
-import jakarta.enterprise.context.spi.Contextual;
-import jakarta.enterprise.inject.spi.BeanManager;
-
 import java.lang.annotation.Annotation;
 
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.Unremovable;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;

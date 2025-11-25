@@ -15,14 +15,19 @@
  */
 package com.vaadin.quarkus.deployment.vaadinplugin;
 
-import com.vaadin.flow.internal.JacksonUtils;
-import io.quarkus.bootstrap.workspace.*;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import io.quarkus.bootstrap.workspace.ArtifactSources;
+import io.quarkus.bootstrap.workspace.DefaultArtifactSources;
+import io.quarkus.bootstrap.workspace.SourceDir;
+import io.quarkus.bootstrap.workspace.WorkspaceModule;
+import io.quarkus.bootstrap.workspace.WorkspaceModuleId;
+
+import com.vaadin.flow.internal.JacksonUtils;
 
 /**
  * The WorkspaceInfo class provides methods for saving and loading project
@@ -80,11 +85,8 @@ class WorkspaceInfo {
      *            the directory where the project information file is located
      * @return a {@code WorkspaceModule} object built from the project
      *         information file, or {@code null} if the file does not exist
-     * @throws Exception
-     *             if an error occurs while reading or parsing the project
-     *             information file
      */
-    static WorkspaceModule load(Path workDir) throws Exception {
+    static WorkspaceModule load(Path workDir) {
         Path projectInfoFile = resolveProjectInfoFile(workDir);
         if (Files.exists(projectInfoFile)) {
             var info = JacksonUtils.getMapper()

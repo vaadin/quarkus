@@ -13,14 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.flow.quarkus.it.uievents;
+
+import java.util.EventObject;
+import java.util.List;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import java.util.EventObject;
-import java.util.List;
 
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.PollEvent;

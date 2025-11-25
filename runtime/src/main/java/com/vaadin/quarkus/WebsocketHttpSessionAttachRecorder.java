@@ -15,8 +15,6 @@
  */
 package com.vaadin.quarkus;
 
-import jakarta.servlet.http.HttpSession;
-
 import java.security.Principal;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -46,6 +44,7 @@ import io.undertow.websockets.vertx.VertxWebSocketHandler;
 import io.undertow.websockets.vertx.VertxWebSocketHttpExchange;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
+import jakarta.servlet.http.HttpSession;
 
 import com.vaadin.flow.server.HandlerHelper;
 import com.vaadin.flow.shared.ApplicationConstants;
@@ -124,8 +123,8 @@ public class WebsocketHttpSessionAttachRecorder {
                 throws Exception {
             ServletContextImpl servletContext = deployment.getServletContext();
             final ServletPathMatch pathMatch = new ServletPathMatches(
-                    deployment).getServletHandlerByPath(
-                            exchange.getRelativePath());
+                    deployment)
+                    .getServletHandlerByPath(exchange.getRelativePath());
             final HttpServletResponseImpl response = new HttpServletResponseImpl(
                     exchange, servletContext);
             final HttpServletRequestImpl request = new HttpServletRequestImpl(

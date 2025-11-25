@@ -15,12 +15,12 @@
  */
 package com.vaadin.quarkus.annotation;
 
-import jakarta.inject.Scope;
-
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import jakarta.inject.Scope;
 
 import com.vaadin.flow.component.UI;
 

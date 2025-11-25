@@ -15,11 +15,10 @@
  */
 package com.vaadin.quarkus.context;
 
-import jakarta.enterprise.context.Dependent;
-
 import java.util.Set;
 
 import io.quarkus.arc.Unremovable;
+import jakarta.enterprise.context.Dependent;
 
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.quarkus.context.RouteScopedContext.ContextualStorageManager;

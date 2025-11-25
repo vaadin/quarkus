@@ -15,27 +15,18 @@
  */
 package com.vaadin.quarkus.deployment;
 
-import com.vaadin.flow.router.HasErrorParameter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLayout;
-import com.vaadin.flow.server.VaadinServlet;
-import com.vaadin.quarkus.QuarkusVaadinServlet;
-import com.vaadin.quarkus.WebsocketHttpSessionAttachRecorder;
-import com.vaadin.quarkus.annotation.NormalRouteScoped;
-import com.vaadin.quarkus.annotation.NormalUIScoped;
-import com.vaadin.quarkus.annotation.RouteScoped;
-import com.vaadin.quarkus.annotation.UIScoped;
-import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
-import com.vaadin.quarkus.annotation.VaadinServiceScoped;
-import com.vaadin.quarkus.annotation.VaadinSessionScoped;
-import com.vaadin.quarkus.context.RouteContextWrapper;
-import com.vaadin.quarkus.context.RouteScopedContext;
-import com.vaadin.quarkus.context.UIContextWrapper;
-import com.vaadin.quarkus.context.UIScopedContext;
-import com.vaadin.quarkus.context.VaadinServiceScopedContext;
-import com.vaadin.quarkus.context.VaadinSessionScopedContext;
-import com.vaadin.quarkus.deployment.vaadinplugin.VaadinBuildTimeConfig;
-import com.vaadin.quarkus.deployment.vaadinplugin.VaadinPlugin;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
 import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
@@ -76,17 +67,27 @@ import org.jboss.jandex.IndexView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.vaadin.flow.router.HasErrorParameter;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
+import com.vaadin.flow.server.VaadinServlet;
+import com.vaadin.quarkus.QuarkusVaadinServlet;
+import com.vaadin.quarkus.WebsocketHttpSessionAttachRecorder;
+import com.vaadin.quarkus.annotation.NormalRouteScoped;
+import com.vaadin.quarkus.annotation.NormalUIScoped;
+import com.vaadin.quarkus.annotation.RouteScoped;
+import com.vaadin.quarkus.annotation.UIScoped;
+import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
+import com.vaadin.quarkus.annotation.VaadinServiceScoped;
+import com.vaadin.quarkus.annotation.VaadinSessionScoped;
+import com.vaadin.quarkus.context.RouteContextWrapper;
+import com.vaadin.quarkus.context.RouteScopedContext;
+import com.vaadin.quarkus.context.UIContextWrapper;
+import com.vaadin.quarkus.context.UIScopedContext;
+import com.vaadin.quarkus.context.VaadinServiceScopedContext;
+import com.vaadin.quarkus.context.VaadinSessionScopedContext;
+import com.vaadin.quarkus.deployment.vaadinplugin.VaadinBuildTimeConfig;
+import com.vaadin.quarkus.deployment.vaadinplugin.VaadinPlugin;
 
 class VaadinQuarkusProcessor {
 

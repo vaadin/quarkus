@@ -15,9 +15,9 @@
  */
 package com.vaadin.flow.quarkus.it.routecontext;
 
-import jakarta.annotation.PostConstruct;
-
 import java.util.UUID;
+
+import jakarta.annotation.PostConstruct;
 
 import com.vaadin.quarkus.annotation.NormalRouteScoped;
 import com.vaadin.quarkus.annotation.RouteScopeOwner;
