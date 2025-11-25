@@ -15,6 +15,9 @@
  */
 package com.vaadin.quarkus.deployment.vaadinplugin;
 
+import java.nio.file.Path;
+import java.util.Map;
+
 import io.quarkus.bootstrap.model.ApplicationModel;
 import io.quarkus.bootstrap.prebuild.CodeGenException;
 import io.quarkus.bootstrap.workspace.WorkspaceModule;
@@ -23,9 +26,6 @@ import io.quarkus.deployment.CodeGenProvider;
 import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.file.Path;
-import java.util.Map;
 
 /**
  * Workaround to collect workspace info when it is not available at build time.

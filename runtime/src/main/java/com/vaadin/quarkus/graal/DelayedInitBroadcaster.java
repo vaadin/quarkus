@@ -42,7 +42,7 @@ public class DelayedInitBroadcaster extends DefaultBroadcaster {
             AtmosphereConfig config) {
         return new DelayedInitBroadcasterConfig(
                 config.framework().broadcasterFilters(), config, getID())
-                        .init();
+                .init();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class DelayedInitBroadcaster extends DefaultBroadcaster {
     }
 
     void delayedInit() {
-        if (getBroadcasterConfig()instanceof DelayedInitBroadcasterConfig cfg) {
+        if (getBroadcasterConfig() instanceof DelayedInitBroadcasterConfig cfg) {
             if (executorsInitialized.compareAndSet(false, true)) {
                 cfg.configExecutors();
                 if (started.get()) {

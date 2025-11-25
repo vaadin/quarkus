@@ -25,8 +25,6 @@ import jakarta.enterprise.inject.AmbiguousResolutionException;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 
-import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
-
 /**
  * Utility class for Quarkus CDI lookup, and instantiation.
  * <p>

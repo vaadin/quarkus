@@ -15,11 +15,11 @@
  */
 package com.vaadin.flow.quarkus.it.uicontext;
 
+import java.util.UUID;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
-
-import java.util.UUID;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.quarkus.it.Counter;

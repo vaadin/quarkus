@@ -13,8 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.flow.quarkus.it;
+
+import java.io.IOException;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.FilterChain;
@@ -23,8 +24,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
-
-import java.io.IOException;
 
 @WebFilter(urlPatterns = "/*", asyncSupported = true)
 public class CounterFilter implements jakarta.servlet.Filter {

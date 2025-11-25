@@ -15,10 +15,10 @@
  */
 package com.vaadin.flow.quarkus.it.service;
 
-import jakarta.annotation.PostConstruct;
-
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import jakarta.annotation.PostConstruct;
 
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 

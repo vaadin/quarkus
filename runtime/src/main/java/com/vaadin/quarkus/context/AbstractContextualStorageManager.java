@@ -13,10 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.quarkus.context;
-
-import jakarta.annotation.PreDestroy;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -25,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import jakarta.annotation.PreDestroy;
 
 /**
  * Base class for manage and store ContextualStorages.

@@ -13,13 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.quarkus.context;
 
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
-
-import io.quarkus.test.junit.QuarkusTest;
 
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 

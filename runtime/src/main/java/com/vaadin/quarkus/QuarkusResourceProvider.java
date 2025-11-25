@@ -15,8 +15,6 @@
  */
 package com.vaadin.quarkus;
 
-import com.vaadin.flow.di.ResourceProvider;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.vaadin.flow.di.ResourceProvider;
 
 /**
  * A {@link ResourceProvider} implementation that delegates resource loading to

@@ -15,9 +15,6 @@
  */
 package com.vaadin.quarkus.context;
 
-import jakarta.enterprise.context.ContextNotActiveException;
-import jakarta.enterprise.context.spi.CreationalContext;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +24,8 @@ import java.util.Set;
 import io.quarkus.arc.InjectableBean;
 import io.quarkus.arc.InjectableContext;
 import io.quarkus.arc.InjectableContext.ContextState;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.spi.CreationalContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

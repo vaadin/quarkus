@@ -15,11 +15,11 @@
  */
 package com.vaadin.quarkus.annotation;
 
-import jakarta.enterprise.context.NormalScope;
-
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import jakarta.enterprise.context.NormalScope;
 
 import com.vaadin.flow.server.VaadinSession;
 
