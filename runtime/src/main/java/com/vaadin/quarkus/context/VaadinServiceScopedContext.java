@@ -13,17 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.quarkus.context;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.spi.Contextual;
-import jakarta.enterprise.event.Observes;
 
 import java.lang.annotation.Annotation;
 
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.Unremovable;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.event.Observes;
 
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.VaadinServlet;

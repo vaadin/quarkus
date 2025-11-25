@@ -13,18 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.quarkus.context;
-
-import jakarta.annotation.Priority;
-import jakarta.enterprise.context.Dependent;
-import jakarta.enterprise.inject.Alternative;
-import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.lang.reflect.Proxy;
 
 import io.quarkus.arc.Unremovable;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.quarkus.context.UiContextTest.TestUIScopedContext;
 

@@ -15,16 +15,16 @@
  */
 package com.vaadin.quarkus;
 
-import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.inject.AmbiguousResolutionException;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
-
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 

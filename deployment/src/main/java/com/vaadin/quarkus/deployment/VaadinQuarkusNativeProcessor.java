@@ -15,9 +15,6 @@
  */
 package com.vaadin.quarkus.deployment;
 
-import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
-import jakarta.inject.Inject;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -39,12 +36,14 @@ import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.GeneratedNativeImageClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
 import io.quarkus.deployment.pkg.NativeConfig;
 import io.quarkus.gizmo.ClassCreator;
 import io.quarkus.gizmo.MethodCreator;
 import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
 import io.quarkus.vertx.http.deployment.DefaultRouteBuildItem;
+import jakarta.inject.Inject;
 import org.atmosphere.cache.UUIDBroadcasterCache;
 import org.atmosphere.client.TrackMessageSizeInterceptor;
 import org.atmosphere.config.managed.ManagedServiceInterceptor;
