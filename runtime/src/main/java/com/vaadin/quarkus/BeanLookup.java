@@ -15,15 +15,16 @@
  */
 package com.vaadin.quarkus;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.AmbiguousResolutionException;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
+
+import java.lang.annotation.Annotation;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 
@@ -100,5 +101,20 @@ class BeanLookup<T> {
 
     T lookup() {
         return lookupOrElseGet(() -> null);
+    }
+
+    Stream<T> lookupAll() {
+        final Set<Bean<?>> beans = this.beanManager.getBeans(this.type,
+                VaadinServiceEnabled.Literal.INSTANCE);
+        if (beans == null || beans.isEmpty()) {
+            this.unsatisfiedHandler.handle();
+            return Stream.empty();
+        }
+        return beans.stream().map(bean -> {
+            final CreationalContext<?> ctx = this.beanManager
+                    .createCreationalContext(bean);
+            // noinspection unchecked
+            return (T) this.beanManager.getReference(bean, this.type, ctx);
+        });
     }
 }
