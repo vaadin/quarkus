@@ -12,22 +12,13 @@ import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InterceptorBinding;
 import jakarta.interceptor.InvocationContext;
 import jakarta.servlet.ServletException;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Locale;
-
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.di.Instantiator;
-import com.vaadin.flow.i18n.I18NProvider;
-import com.vaadin.flow.server.ServiceInitEvent;
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.server.auth.MenuAccessControl;
-import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
-import com.vaadin.quarkus.context.ServiceUnderTestContext;
 
 import io.quarkus.arc.Unremovable;
 import io.quarkus.test.junit.QuarkusTest;
@@ -37,6 +28,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.i18n.I18NProvider;
+import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinServiceInitListener;
+import com.vaadin.flow.server.auth.MenuAccessControl;
+import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
+import com.vaadin.quarkus.context.ServiceUnderTestContext;
 
 @QuarkusTest
 public class QuarkusInstantiatorTest {
@@ -150,6 +152,23 @@ public class QuarkusInstantiatorTest {
 
     }
 
+    @Singleton
+    @VaadinServiceEnabled
+    public static class CdiBeanServiceInitListener
+            implements VaadinServiceInitListener {
+
+        ServiceInitEvent event;
+
+        public void serviceInit(ServiceInitEvent event) {
+            this.event = event;
+        }
+
+        public ServiceInitEvent getEvent() {
+            return event;
+        }
+
+    }
+
     @Inject
     private BeanManager beanManager;
 
@@ -196,12 +215,11 @@ public class QuarkusInstantiatorTest {
                 .assertTrue(menuAccessControl instanceof TestMenuAccessControl);
     }
 
-    /*
-     * @Test public void
-     * getServiceInitListeners_javaSPIListenerExists_containsJavaSPIListener() {
-     * Assertions.assertTrue(instantiator.getServiceInitListeners().anyMatch(
-     * listener -> listener instanceof JavaSPIVaadinServiceInitListener)); }
-     */
+    @Test
+    public void getServiceInitListeners_CDIBeanListenerExists_containsCDIBeanListener() {
+        Assertions.assertTrue(instantiator.getServiceInitListeners().anyMatch(
+                listener -> listener instanceof CdiBeanServiceInitListener));
+    }
 
     @Test
     public void getServiceInitListeners_eventFired_cdiObserverCalled() {
