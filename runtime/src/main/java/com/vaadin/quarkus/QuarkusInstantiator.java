@@ -15,10 +15,11 @@
  */
 package com.vaadin.quarkus;
 
+import jakarta.enterprise.inject.spi.BeanManager;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import jakarta.enterprise.inject.spi.BeanManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +120,13 @@ public class QuarkusInstantiator implements Instantiator {
 
     @Override
     public Stream<VaadinServiceInitListener> getServiceInitListeners() {
-        return Stream.concat(delegate.getServiceInitListeners(),
+
+        final BeanLookup<VaadinServiceInitListener> lookup = new BeanLookup<>(
+                getBeanManager(), VaadinServiceInitListener.class,
+                VaadinServiceEnabled.Literal.INSTANCE);
+        return Stream.concat(
+                Stream.concat(delegate.getServiceInitListeners(),
+                        lookup.lookupAll()),
                 Stream.of(event -> getBeanManager().getEvent().fire(event)));
     }
 
