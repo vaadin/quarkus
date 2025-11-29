@@ -15,16 +15,17 @@
  */
 package com.vaadin.quarkus.deployment.vaadinplugin;
 
-import com.vaadin.flow.server.Constants;
-import com.vaadin.flow.server.frontend.FrontendTools;
+import java.io.File;
+import java.util.List;
+import java.util.Optional;
+
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 
-import java.io.File;
-import java.util.List;
-import java.util.Optional;
+import com.vaadin.flow.server.Constants;
+import com.vaadin.flow.server.frontend.FrontendTools;
 
 import static com.vaadin.flow.server.Constants.VAADIN_SERVLET_RESOURCES;
 import static com.vaadin.flow.server.frontend.FrontendUtils.FRONTEND;
@@ -130,13 +131,6 @@ public interface VaadinBuildTimeConfig {
      * Example: {@literal https://nodejs.org/dist/}
      */
     Optional<String> nodeDownloadRoot();
-
-    /**
-     * Setting defining if the automatically installed node version may be
-     * updated to the default Vaadin node version.
-     */
-    @WithDefault("" + Constants.DEFAULT_NODE_AUTO_UPDATE)
-    boolean nodeAutoUpdate();
 
     /**
      * The node. js version to be used when node. js is installed automatically
