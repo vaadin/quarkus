@@ -312,11 +312,6 @@ class QuarkusPluginAdapter implements PluginAdapterBuild {
     }
 
     @Override
-    public boolean nodeAutoUpdate() {
-        return config.nodeAutoUpdate();
-    }
-
-    @Override
     public String nodeVersion() {
         return config.nodeVersion();
     }
