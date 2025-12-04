@@ -34,6 +34,7 @@ import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.auth.AccessDeniedErrorRouter;
 import com.vaadin.flow.server.menu.AvailableViewInfo;
 import com.vaadin.flow.server.menu.RouteParamType;
+import com.vaadin.flow.shared.ui.Dependency;
 import com.vaadin.quarkus.deployment.nativebuild.AtmospherePatches;
 import com.vaadin.quarkus.graal.AtmosphereDeferredInitializerRecorder;
 import com.vaadin.quarkus.graal.DelayedSchedulerExecutorsFactory;
@@ -279,7 +280,8 @@ public class VaadinQuarkusNativeProcessor {
                 .builder(AvailableViewInfo.class,
                         AvailableViewInfo.DetailSerializer.class,
                         AvailableViewInfo.DetailDeserializer.class,
-                        MenuData.class, RouteParamType.class, Id.class)
+                        MenuData.class, RouteParamType.class, Id.class,
+                        Dependency.class)
                 .constructors().methods().fields().build());
 
         Set<ClassInfo> classes = new HashSet<>();
