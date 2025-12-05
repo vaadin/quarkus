@@ -15,30 +15,18 @@
  */
 package com.vaadin.quarkus.deployment;
 
+import jakarta.inject.Inject;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.di.LookupInitializer;
-import com.vaadin.flow.router.AccessDeniedException;
-import com.vaadin.flow.router.HasErrorParameter;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Layout;
-import com.vaadin.flow.router.Menu;
-import com.vaadin.flow.router.MenuData;
-import com.vaadin.flow.router.NotFoundException;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.router.RouterLayout;
-import com.vaadin.flow.server.auth.AccessDeniedErrorRouter;
-import com.vaadin.flow.server.menu.AvailableViewInfo;
-import com.vaadin.flow.server.menu.RouteParamType;
-import com.vaadin.flow.shared.ui.Dependency;
-import com.vaadin.quarkus.deployment.nativebuild.AtmospherePatches;
-import com.vaadin.quarkus.graal.AtmosphereDeferredInitializerRecorder;
-import com.vaadin.quarkus.graal.DelayedSchedulerExecutorsFactory;
-import com.vaadin.signals.Id;
 import io.quarkus.bootstrap.classloading.QuarkusClassLoader;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -56,7 +44,6 @@ import io.quarkus.gizmo.ClassCreator;
 import io.quarkus.gizmo.MethodCreator;
 import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
 import io.quarkus.vertx.http.deployment.DefaultRouteBuildItem;
-import jakarta.inject.Inject;
 import org.atmosphere.cache.UUIDBroadcasterCache;
 import org.atmosphere.client.TrackMessageSizeInterceptor;
 import org.atmosphere.config.managed.ManagedServiceInterceptor;
@@ -90,14 +77,30 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.objectweb.asm.Opcodes;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.di.LookupInitializer;
+import com.vaadin.flow.router.AccessDeniedException;
+import com.vaadin.flow.router.HasErrorParameter;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Layout;
+import com.vaadin.flow.router.Menu;
+import com.vaadin.flow.router.MenuData;
+import com.vaadin.flow.router.NotFoundException;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.router.RouterLayout;
+import com.vaadin.flow.server.auth.AccessDeniedErrorRouter;
+import com.vaadin.flow.server.menu.AvailableViewInfo;
+import com.vaadin.flow.server.menu.RouteParamType;
+import com.vaadin.flow.shared.ui.Dependency;
+import com.vaadin.quarkus.deployment.nativebuild.AtmospherePatches;
+import com.vaadin.quarkus.graal.AtmosphereDeferredInitializerRecorder;
+import com.vaadin.quarkus.graal.DelayedSchedulerExecutorsFactory;
+import com.vaadin.signals.Id;
 
 /**
  * A processor that applies necessary steps to build a native image for a Vaadin
@@ -311,6 +314,7 @@ public class VaadinQuarkusNativeProcessor {
         classes.addAll(index.getAllKnownSubclasses(
                 "com.vaadin.flow.data.converter.Converter"));
         classes.addAll(getJsonClasses(index));
+        classes.addAll(detectClientCallablesTypes(index));
 
         reflectiveClass
                 .produce(
@@ -323,6 +327,13 @@ public class VaadinQuarkusNativeProcessor {
                                 .constructors().methods().fields().build());
 
         registerAtmosphereClasses(reflectiveClass);
+    }
+
+    Set<ClassInfo> detectClientCallablesTypes(IndexView index) {
+        return index.getAnnotations(DotName.createSimple(ClientCallable.class))
+                .stream().map(ann -> ann.target().asMethod())
+                .flatMap(m -> TypeInspector.collectTypes(m, index).stream())
+                .collect(Collectors.toSet());
     }
 
     private Set<ClassInfo> getJsonClasses(IndexView index) {
