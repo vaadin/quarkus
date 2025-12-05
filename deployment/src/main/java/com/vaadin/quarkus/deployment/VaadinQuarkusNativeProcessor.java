@@ -75,6 +75,7 @@ import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
+import org.jboss.jandex.MethodInfo;
 import org.objectweb.asm.Opcodes;
 
 import com.vaadin.flow.component.ClientCallable;
@@ -330,8 +331,20 @@ public class VaadinQuarkusNativeProcessor {
     }
 
     Set<ClassInfo> detectClientCallablesTypes(IndexView index) {
+
+        // Get all known subclasses of Component, including Component itself
+        Set<DotName> componentClasses = new HashSet<>();
+        componentClasses.add(DotName.createSimple(Component.class.getName()));
+        index.getAllKnownSubclasses(Component.class).stream()
+                .map(ClassInfo::name).forEach(componentClasses::add);
+
+        // Return a predicate that checks if the declaring class is in the set
+        Predicate<MethodInfo> componentPredicate = method -> componentClasses
+                .contains(method.declaringClass().name());
+
         return index.getAnnotations(DotName.createSimple(ClientCallable.class))
                 .stream().map(ann -> ann.target().asMethod())
+                .filter(componentPredicate)
                 .flatMap(m -> TypeInspector.collectTypes(m, index).stream())
                 .collect(Collectors.toSet());
     }
