@@ -184,7 +184,17 @@ public interface VaadinBuildTimeConfig {
      * the token file.
      */
     @WithDefault(VAADIN_SERVLET_RESOURCES)
-    File resourceOutputDirectory();
+    File generatedResourceOutputDirectory();
+
+    /**
+     * The resources output directory for META-INF/resources in the classes
+     * output directory.
+     *
+     * @return the META-INF/resources directory, usually
+     *         {output}/classes/META-INF/resources
+     */
+    @WithDefault("META-INF/resources/")
+    File resourcesOutputDirectory();
 
     /**
      * The folder where the frontend build tool should output index. js and

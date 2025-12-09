@@ -188,6 +188,12 @@ class QuarkusPluginAdapter implements PluginAdapterBuild {
                 "vaadin.build.frontedDirectory");
     }
 
+    @Override
+    public File resourcesOutputDirectory() {
+        return resolveBuildDirectory(config.resourcesOutputDirectory(),
+                "vaadin.build.resourcesOutputDirectory");
+    }
+
     private File resolveProjectDirectory(File directory, String name) {
         return resolveDirectory(projectBaseDirectory().toFile(), directory,
                 name);
@@ -355,7 +361,7 @@ class QuarkusPluginAdapter implements PluginAdapterBuild {
 
     @Override
     public File servletResourceOutputDirectory() {
-        return resolveBuildDirectory(config.resourceOutputDirectory(),
+        return resolveBuildDirectory(config.generatedResourceOutputDirectory(),
                 "resourceOutputDirectory");
     }
 
