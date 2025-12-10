@@ -15,6 +15,7 @@
  */
 package com.vaadin.quarkus.deployment;
 
+import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
 import jakarta.inject.Inject;
 
 import java.io.Serializable;
@@ -261,7 +262,8 @@ public class VaadinQuarkusNativeProcessor {
     void vaadinNativeSupport(CombinedIndexBuildItem combinedIndex,
             BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackage,
             BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResource,
-            BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+            BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+            BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchy) {
 
         IndexView index = combinedIndex.getIndex();
 
@@ -314,8 +316,6 @@ public class VaadinQuarkusNativeProcessor {
         classes.addAll(index.getAllKnownSubclasses(HasUrlParameter.class));
         classes.addAll(index.getAllKnownSubclasses(
                 "com.vaadin.flow.data.converter.Converter"));
-        classes.addAll(getJsonClasses(index));
-        classes.addAll(detectClientCallablesTypes(index));
 
         reflectiveClass
                 .produce(
@@ -326,6 +326,13 @@ public class VaadinQuarkusNativeProcessor {
                                                 .toString())
                                         .toArray(String[]::new))
                                 .constructors().methods().fields().build());
+
+        Set<ClassInfo> classesWithHierarchy = new HashSet<>();
+        classesWithHierarchy.addAll(getJsonClasses(index));
+        classesWithHierarchy.addAll(detectClientCallablesTypes(index));
+        classesWithHierarchy.stream().map(
+                c -> ReflectiveHierarchyBuildItem.builder(c.name()).build())
+                .forEach(reflectiveHierarchy::produce);
 
         registerAtmosphereClasses(reflectiveClass);
     }
