@@ -224,7 +224,7 @@ class VaadinQuarkusNativeProcessorTest {
 
     public static class ComplexDto {
         private String id;
-        private SimpleDto nested;
+        private NestedDto nested;
 
         public String getId() {
             return id;
@@ -234,11 +234,11 @@ class VaadinQuarkusNativeProcessorTest {
             this.id = id;
         }
 
-        public SimpleDto getNested() {
+        public NestedDto getNested() {
             return nested;
         }
 
-        public void setNested(SimpleDto nested) {
+        public void setNested(NestedDto nested) {
             this.nested = nested;
         }
     }
