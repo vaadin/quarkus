@@ -26,6 +26,11 @@ import org.jboss.jandex.ParameterizedType;
 import org.jboss.jandex.Type;
 import org.jboss.jandex.TypeVariable;
 
+/**
+ * A utility class for inspecting and extracting concrete class types from
+ * various type structures, including parameterized types, type variables,
+ * method signatures, and complex type hierarchies.
+ */
 class TypeInspector {
 
     /**
