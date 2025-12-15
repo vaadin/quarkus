@@ -1,0 +1,69 @@
+name: Vaadin Quarkus Native Validation
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+env:
+  _HEAD_REF: ${{ github.head_ref }}
+  _REF_NAME: ${{ github.ref_name }}
+jobs:
+  build:
+    environment: ${{ github.event.pull_request.head.repo.fork && 'pr-tests' || '' }}
+    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "Concurrency Group = ${_HEAD_REF:-$_REF_NAME}"
+      - name: Check secrets
+        run: |
+          [ -z "${{secrets.TB_LICENSE}}" ] \
+            && echo "🚫 **TB_LICENSE** is not defined, check that **${{github.repository}}** repo has a valid secret" \
+            | tee -a $GITHUB_STEP_SUMMARY && exit 1 || exit 0
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{env._HEAD_SHA}}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.9.0'
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "25"
+          distribution: 'graalvm'
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.8.7
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+      - name: Compile and Install Vaadin Quarkus
+        run: |
+          cmd="mvn install -B -ntp -DskipTests"
+          eval $cmd -T 2C -q || eval $cmd
+      - name: Set TB License
+        run: |
+          TB_LICENSE=${{secrets.TB_LICENSE}}
+          mkdir -p ~/.vaadin/
+          echo '{"username":"'`echo $TB_LICENSE | cut -d / -f1`'","proKey":"'`echo $TB_LICENSE | cut -d / -f2`'"}' > ~/.vaadin/proKey
+      - name: Test with native image
+        run: |
+          mvn verify -B -ntp -pl :vaadin-quarkus-embedded-plugin-tests -Dnative
+      - name: Package test-report files
+        if: ${{ failure() || success() }}
+        run: find . -name surefire-reports -o -name failsafe-reports -o -name error-screenshots -o -name "mvn-*.out" | tar -czf tests-report-native.tgz -T -
+      - uses: actions/upload-artifact@v4
+        if: ${{ failure() || success() }}
+        with:
+          name: tests-output-it-native
+          path: tests-report-*.tgz
+
+          
+
