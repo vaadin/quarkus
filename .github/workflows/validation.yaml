@@ -46,7 +46,7 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
       - name: Compile and Install Vaadin Quarkus
         run: |
-          cmd="mvn install -B -ntp -DskipTests  -pl \!flow-plugins/flow-gradle-plugin"
+          cmd="mvn install -B -ntp -DskipTests"
           eval $cmd -T 2C -q || eval $cmd
       - name: Set TB License
         run: |
