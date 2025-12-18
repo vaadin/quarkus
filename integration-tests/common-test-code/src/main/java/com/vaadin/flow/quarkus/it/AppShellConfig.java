@@ -15,10 +15,11 @@
  */
 package com.vaadin.flow.quarkus.it;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.theme.Theme;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @Theme("reusable-theme")
 @Push
