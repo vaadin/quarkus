@@ -15,6 +15,18 @@
  */
 package com.vaadin.quarkus.deployment.vaadinplugin;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
+
+import io.quarkus.bootstrap.model.ApplicationModel;
+import io.quarkus.bootstrap.workspace.WorkspaceModule;
+import io.quarkus.builder.BuildException;
+
 import com.vaadin.experimental.FeatureFlags;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -31,17 +43,6 @@ import com.vaadin.flow.server.frontend.scanner.FrontendDependenciesScanner;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.pro.licensechecker.LicenseChecker;
 import com.vaadin.pro.licensechecker.MissingLicenseKeyException;
-import io.quarkus.bootstrap.model.ApplicationModel;
-import io.quarkus.bootstrap.workspace.WorkspaceModule;
-import io.quarkus.builder.BuildException;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.concurrent.TimeoutException;
-import java.util.function.BiConsumer;
 
 /**
  * Implementation of the Vaadin plugin.

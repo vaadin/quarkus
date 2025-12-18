@@ -13,17 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.flow.quarkus.test.executor;
 
 import java.util.concurrent.Executor;
 
 import io.quarkus.arc.Unremovable;
-import io.quarkus.runtime.Startup;
 import io.quarkus.test.QuarkusUnitTest;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;

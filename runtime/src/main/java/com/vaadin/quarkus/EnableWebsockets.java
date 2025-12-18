@@ -15,12 +15,12 @@
  */
 package com.vaadin.quarkus;
 
+import java.util.Collections;
+import java.util.Set;
+
 import jakarta.websocket.Endpoint;
 import jakarta.websocket.server.ServerApplicationConfig;
 import jakarta.websocket.server.ServerEndpointConfig;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Only purpose of this class is to automatically enable quarkus WebSocket

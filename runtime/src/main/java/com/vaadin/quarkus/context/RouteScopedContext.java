@@ -13,13 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.quarkus.context;
-
-import jakarta.enterprise.context.spi.Contextual;
-import jakarta.enterprise.event.Observes;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -31,6 +25,10 @@ import java.util.stream.Collectors;
 
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.Unremovable;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
@@ -43,8 +41,6 @@ import com.vaadin.quarkus.annotation.NormalRouteScoped;
 import com.vaadin.quarkus.annotation.NormalUIScoped;
 import com.vaadin.quarkus.annotation.RouteScopeOwner;
 import com.vaadin.quarkus.annotation.VaadinSessionScoped;
-
-import static jakarta.enterprise.event.Reception.IF_EXISTS;
 
 /**
  * Context for {@link NormalRouteScoped NormalRouteScoped} beans.

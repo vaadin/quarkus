@@ -13,10 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.flow.quarkus.it.service;
-
-import io.quarkus.arc.Unremovable;
 
 import com.vaadin.flow.server.CustomizedSystemMessages;
 import com.vaadin.flow.server.SystemMessages;

@@ -15,8 +15,6 @@
  */
 package com.vaadin.quarkus.deployment.nativebuild;
 
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletConnection;
 import java.util.Arrays;
 import java.util.ServiceLoader;
 import java.util.concurrent.ScheduledExecutorService;
@@ -29,6 +27,8 @@ import io.quarkus.gizmo.ClassTransformer;
 import io.quarkus.gizmo.Gizmo;
 import io.quarkus.gizmo.MethodCreator;
 import io.quarkus.gizmo.MethodDescriptor;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletConnection;
 import org.atmosphere.cpr.AtmosphereConfig;
 import org.atmosphere.cpr.AtmosphereFramework;
 import org.atmosphere.inject.InjectableObjectFactory;
@@ -150,9 +150,10 @@ public class AtmospherePatches {
      *
      * <pre>
      * {@code
-     *      private static ScheduledExecutorService newScheduler(AtmosphereConfig config) {
-     *          return ExecutorsFactory.getScheduler_original(config);
-     *      }
+     * private static ScheduledExecutorService newScheduler(
+     *         AtmosphereConfig config) {
+     *     return ExecutorsFactory.getScheduler_original(config);
+     * }
      * }
      * </pre>
      */

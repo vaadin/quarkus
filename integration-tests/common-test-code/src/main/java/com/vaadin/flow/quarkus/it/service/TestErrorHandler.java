@@ -13,12 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.flow.quarkus.it.service;
 
 import jakarta.inject.Inject;
-
-import io.quarkus.arc.Unremovable;
 
 import com.vaadin.flow.quarkus.it.Counter;
 import com.vaadin.flow.server.ErrorEvent;

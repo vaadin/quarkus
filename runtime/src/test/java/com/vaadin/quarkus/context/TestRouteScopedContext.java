@@ -15,9 +15,9 @@
  */
 package com.vaadin.quarkus.context;
 
-import jakarta.enterprise.inject.spi.BeanManager;
-
 import java.lang.reflect.Proxy;
+
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;

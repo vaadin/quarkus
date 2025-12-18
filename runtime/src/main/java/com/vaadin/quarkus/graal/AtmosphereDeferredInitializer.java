@@ -15,11 +15,11 @@
  */
 package com.vaadin.quarkus.graal;
 
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import org.atmosphere.cpr.AtmosphereFramework;
 
 /**

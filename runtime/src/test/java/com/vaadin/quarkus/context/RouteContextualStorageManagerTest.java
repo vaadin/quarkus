@@ -13,12 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.quarkus.context;
-
-import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.event.Event;
-import jakarta.inject.Inject;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -28,6 +23,9 @@ import java.util.function.Supplier;
 
 import io.quarkus.arc.InjectableBean;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
