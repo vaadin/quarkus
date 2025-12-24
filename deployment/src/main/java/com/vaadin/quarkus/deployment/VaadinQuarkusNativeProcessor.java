@@ -313,6 +313,8 @@ public class VaadinQuarkusNativeProcessor {
         classes.addAll(index.getAllKnownSubclasses(HasErrorParameter.class));
         classes.addAll(index.getAllKnownSubclasses(ComponentEvent.class));
         classes.addAll(index.getAllKnownSubclasses(HasUrlParameter.class));
+        classes.add(index.getClassByName(
+                "com.vaadin.flow.component.littemplate.LitTemplateParser$LitTemplateParserFactory"));
         classes.addAll(index.getAllKnownSubclasses(
                 "com.vaadin.flow.data.converter.Converter"));
 
