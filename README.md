@@ -5,8 +5,9 @@ Supports Quarkus 3.27+
 
 To try it out, you can get a project https://github.com/vaadin/base-starter-flow-quarkus/
 
-This branch is compatible with upcoming Vaadin 25.0+ platform versions and uses Quarkus 3.27 (LTS). See other branches for other Vaadin versions:
+This branch is compatible with upcoming Vaadin 25.1+ platform versions and uses Quarkus 3.27 (LTS). See other branches for other Vaadin versions:
 
+* 3.0 for Vaadin 25.0 and Quarkus 3.27
 * 2.2 for Vaadin 24 and Quarkus 3.20
 * 1.1 for Vaadin 23 and Quarkus 2
 
