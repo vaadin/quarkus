@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   pull_request_target:
     types: [opened, synchronize, reopened]
-    branches: [main]
+    branches: [main, "3.0"]
 permissions:
   contents: read
 concurrency:
