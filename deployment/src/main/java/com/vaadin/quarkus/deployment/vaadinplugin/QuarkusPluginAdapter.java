@@ -324,6 +324,11 @@ class QuarkusPluginAdapter implements PluginAdapterBuild {
     }
 
     @Override
+    public String nodeFolder() {
+        return config.nodeFolder().map(File::getAbsolutePath).orElse(null);
+    }
+
+    @Override
     public File npmFolder() {
         return config.npmFolder()
                 .map(dir -> resolveProjectDirectory(dir, "npmFolder"))
