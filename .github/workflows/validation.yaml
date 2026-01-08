@@ -11,6 +11,7 @@ concurrency:
   cancel-in-progress: true
 env:
   _HEAD_REF: ${{ github.head_ref }}
+  _HEAD_SHA: ${{ github.event.pull_request.head.sha }}
   _REF_NAME: ${{ github.ref_name }}
 jobs:
   build:
