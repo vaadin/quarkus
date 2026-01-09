@@ -37,10 +37,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.internal.FrontendUtils;
+import com.vaadin.flow.internal.Platform;
 import com.vaadin.flow.internal.StringUtil;
 import com.vaadin.flow.plugin.base.BuildFrontendUtil;
 import com.vaadin.flow.plugin.base.PluginAdapterBuild;
-import com.vaadin.flow.server.frontend.installer.Platform;
+import com.vaadin.flow.server.frontend.installer.NodeInstaller;
 import com.vaadin.flow.server.frontend.scanner.ClassFinder;
 import com.vaadin.flow.server.scanner.ReflectionsClassFinder;
 import com.vaadin.flow.utils.FlowFileUtils;
@@ -307,8 +308,8 @@ class QuarkusPluginAdapter implements PluginAdapterBuild {
 
     @Override
     public URI nodeDownloadRoot() throws URISyntaxException {
-        String nodeDownloadRoot = config.nodeDownloadRoot()
-                .orElseGet(() -> Platform.guess().getNodeDownloadRoot());
+        String nodeDownloadRoot = config.nodeDownloadRoot().orElseGet(
+                () -> NodeInstaller.getDownloadRoot(Platform.guess()));
         try {
             return new URI(nodeDownloadRoot);
         } catch (URISyntaxException e) {
