@@ -141,6 +141,16 @@ public interface VaadinBuildTimeConfig {
     String nodeVersion();
 
     /**
+     * The folder containing the Node.js executable.
+     * <p>
+     * When set, Node.js will be exclusively used from this folder. If not
+     * found, the build will fail. If not provided, Vaadin will try to detect an
+     * existing compatible Node.js installation or install it in Vaadin home
+     * directory.
+     */
+    Optional<File> nodeFolder();
+
+    /**
      * The folder where `package. json` file is located. Default is project root
      * dir.
      */
