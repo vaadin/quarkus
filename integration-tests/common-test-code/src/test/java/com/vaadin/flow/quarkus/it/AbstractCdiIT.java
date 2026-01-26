@@ -37,6 +37,7 @@ abstract public class AbstractCdiIT extends AbstractChromeIT {
     }
 
     protected String getText(String id) {
+        waitForElementPresent(By.id(id));
         return findElement(By.id(id)).getText();
     }
 
