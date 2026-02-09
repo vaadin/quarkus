@@ -101,7 +101,7 @@ import com.vaadin.flow.shared.ui.Dependency;
 import com.vaadin.quarkus.deployment.nativebuild.AtmospherePatches;
 import com.vaadin.quarkus.graal.AtmosphereDeferredInitializerRecorder;
 import com.vaadin.quarkus.graal.DelayedSchedulerExecutorsFactory;
-import com.vaadin.signals.Id;
+import com.vaadin.flow.signals.Id;
 
 /**
  * A processor that applies necessary steps to build a native image for a Vaadin
