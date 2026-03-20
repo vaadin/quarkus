@@ -60,20 +60,6 @@
         <version>33.4.8-jre</version>
         <scope>test</scope>
       </dependency>
-
-      <!-- Uncomment to pin JNA version to prevent clashes between Vaadin License Checker and Quarkus BOM -->
-      <!--
-            <dependency>
-                <groupId>net.java.dev.jna</groupId>
-                <artifactId>jna</artifactId>
-                <version>5.14.0</version>
-            </dependency>
-            <dependency>
-                <groupId>net.java.dev.jna</groupId>
-                <artifactId>jna-platform</artifactId>
-                <version>5.14.0</version>
-            </dependency>
-            -->
     </dependencies>
   </dependencyManagement>
 

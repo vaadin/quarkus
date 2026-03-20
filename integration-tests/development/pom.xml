@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>vaadin-quarkus-development-tests</artifactId>
-  <packaging>jar</packaging>
+  <packaging>quarkus</packaging>
   <name>Vaadin Quarkus - Integration Tests in Development mode</name>
 
   <properties>
@@ -124,15 +124,7 @@
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>build</goal>
-              <goal>generate-code</goal>
-              <goal>generate-code-tests</goal>
-            </goals>
-          </execution>
-        </executions>
+        <extensions>true</extensions>
       </plugin>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
