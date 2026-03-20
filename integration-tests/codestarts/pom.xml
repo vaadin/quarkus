@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>vaadin-quarkus-codestarts-tests</artifactId>
-  <packaging>jar</packaging>
+  <packaging>quarkus</packaging>
   <name>Vaadin Quarkus - Codestarts tests</name>
 
   <properties>
@@ -42,13 +42,7 @@
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
+        <extensions>true</extensions>
       </plugin>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
