@@ -98,10 +98,10 @@ import com.vaadin.flow.server.auth.AccessDeniedErrorRouter;
 import com.vaadin.flow.server.menu.AvailableViewInfo;
 import com.vaadin.flow.server.menu.RouteParamType;
 import com.vaadin.flow.shared.ui.Dependency;
+import com.vaadin.flow.signals.Id;
 import com.vaadin.quarkus.deployment.nativebuild.AtmospherePatches;
 import com.vaadin.quarkus.graal.AtmosphereDeferredInitializerRecorder;
 import com.vaadin.quarkus.graal.DelayedSchedulerExecutorsFactory;
-import com.vaadin.flow.signals.Id;
 
 /**
  * A processor that applies necessary steps to build a native image for a Vaadin
