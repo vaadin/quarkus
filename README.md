@@ -1,11 +1,13 @@
 # vaadin-quarkus
 An extension to Quarkus to support Vaadin Flow.
 
-Supports Quarkus 3.27+
+Supports Quarkus 3.32+
+
+> **NOTE:** The minimum supported Quarkus version for Vaadin 25.0 has been raised from 3.27 LTS to 3.32 LTS. This change is required because Flow now depends on Jackson 3.1.x and Jackson Annotations 2.21.x to address a security vulnerability. 
 
 To try it out, you can get a project https://github.com/vaadin/base-starter-flow-quarkus/
 
-This branch is compatible with upcoming Vaadin 25.0+ platform versions and uses Quarkus 3.27 (LTS). See other branches for other Vaadin versions:
+This branch is compatible with upcoming Vaadin 25.0+ platform versions and uses Quarkus 3.32 (LTS). See other branches for other Vaadin versions:
 
 * 2.2 for Vaadin 24 and Quarkus 3.20
 * 1.1 for Vaadin 23 and Quarkus 2
