@@ -13,18 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.quarkus.it.instantiator;
+package com.vaadin.flow.quarkus.it.routecontext;
 
-import jakarta.interceptor.AroundInvoke;
-import jakarta.interceptor.Interceptor;
-import jakarta.interceptor.InvocationContext;
+import jakarta.enterprise.event.Observes;
 
-@Interceptor
-@Useless
-public class UselessInterceptor {
+import com.vaadin.quarkus.annotation.RouteScopeOwner;
+import com.vaadin.quarkus.annotation.RouteScoped;
 
-    @AroundInvoke
-    public Object intercept(InvocationContext ctx) throws Exception {
-        return ctx.proceed();
+@RouteScoped
+@RouteScopeOwner(ProxiedView.class)
+public class ProxiedViewPresenter extends AbstractCountedBean {
+
+    private String lastEvent = "";
+
+    public void onEvent(@Observes String eventName) {
+        lastEvent = eventName;
+    }
+
+    public String getLastEvent() {
+        return lastEvent;
     }
 }

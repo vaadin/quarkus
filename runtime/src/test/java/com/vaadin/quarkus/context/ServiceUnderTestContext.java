@@ -24,6 +24,7 @@ import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.flow.server.ServiceDestroyEvent;
+import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.quarkus.QuarkusVaadinServletService;
 import com.vaadin.quarkus.TestQuarkusVaadinServletService;
@@ -42,6 +43,11 @@ public class ServiceUnderTestContext implements UnderTestContext {
     public void activate() {
         NDX++;
         service = new TestQuarkusVaadinServletService(beanManager, NDX + "");
+        try {
+            service.init();
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
         VaadinService.setCurrent(service);
     }
 

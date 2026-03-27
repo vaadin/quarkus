@@ -38,6 +38,8 @@ import com.vaadin.flow.quarkus.it.routecontext.MainLayout;
 import com.vaadin.flow.quarkus.it.routecontext.MasterView;
 import com.vaadin.flow.quarkus.it.routecontext.PostponeView;
 import com.vaadin.flow.quarkus.it.routecontext.PreserveOnRefreshBean;
+import com.vaadin.flow.quarkus.it.routecontext.ProxiedView;
+import com.vaadin.flow.quarkus.it.routecontext.ProxiedViewPresenter;
 import com.vaadin.flow.quarkus.it.routecontext.RerouteView;
 import com.vaadin.flow.quarkus.it.routecontext.RootView;
 
@@ -290,6 +292,18 @@ public class RouteContextIT extends AbstractCdiIT {
         assertConstructed(ErrorBean2.class, 1);
         assertDestroyed(ErrorBean1.class, 0);
         assertDestroyed(ErrorBean2.class, 0);
+    }
+
+    @Test
+    public void proxiedView_presenterObservesEventsAfterNavigation()
+            throws IOException {
+        follow(RootView.PROXIED);
+        // The presenter should have observed the "afterNavigation" event
+        // fired by the view in its afterNavigation() callback
+        assertTextEquals("afterNavigation", ProxiedView.PRESENTER_LABEL);
+        // Presenter bean should be constructed and NOT destroyed
+        assertConstructed(ProxiedViewPresenter.class, 1);
+        assertDestroyed(ProxiedViewPresenter.class, 0);
     }
 
     private void assertRootViewIsDisplayed() {
