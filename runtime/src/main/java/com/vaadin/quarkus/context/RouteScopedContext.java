@@ -33,6 +33,7 @@ import jakarta.enterprise.inject.spi.BeanManager;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.ExtendedClientDetails;
+import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.RouterLayout;
@@ -78,11 +79,13 @@ public class RouteScopedContext extends AbstractContext {
          * problem and treats it as a definition error.
          */
         private void onAfterNavigation(@Observes AfterNavigationEvent event) {
+            UI ui = event.getLocationChangeEvent().getUI();
+            Instantiator instantiator = Instantiator.get(ui);
             Set<Class<?>> activeChain = event.getActiveChain().stream()
-                    .map(Object::getClass).collect(Collectors.toSet());
+                    .map(instantiator::getApplicationClass)
+                    .collect(Collectors.toSet());
 
-            destroyDescopedBeans(event.getLocationChangeEvent().getUI(),
-                    activeChain);
+            destroyDescopedBeans(ui, activeChain);
 
         }
 

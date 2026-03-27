@@ -26,6 +26,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.modifier.SyntheticState;
+import net.bytebuddy.description.modifier.Visibility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -202,6 +205,39 @@ public class RouteContextualStorageManagerTest {
 
         Assertions.assertTrue(destroyedBeans.contains(bean1));
         Assertions.assertTrue(destroyedBeans.contains(bean2));
+    }
+
+    @Test
+    public void afterNavigation_proxySubclassInActiveChain_beansArePreserved()
+            throws Exception {
+        Mockito.when(event.getNavigationTarget())
+                .thenReturn((Class) Group1.class);
+        beforeNavigationTrigger.fire(event);
+
+        MemberOfGroup1 bean1 = getMemberOfGroupProducer(contextual).get();
+        bean1.setState(STATE);
+
+        // Simulate Arc proxy subclass in active chain:
+        // Arc creates a synthetic subclass (e.g. FooView_Subclass) when
+        // proxying a view annotated with security annotations.
+        // Use ByteBuddy with ACC_SYNTHETIC to match Arc's behavior.
+        Class<? extends Group1> proxyClass = new ByteBuddy()
+                .subclass(Group1.class)
+                .modifiers(Visibility.PUBLIC, SyntheticState.SYNTHETIC).make()
+                .load(Group1.class.getClassLoader()).getLoaded()
+                .asSubclass(Group1.class);
+        Assertions.assertTrue(proxyClass.isSynthetic(),
+                "Generated proxy class should be synthetic");
+        Group1 proxyInstance = proxyClass.getDeclaredConstructor()
+                .newInstance();
+
+        Mockito.when(afterEvent.getActiveChain())
+                .thenReturn(Collections.singletonList(proxyInstance));
+        afterNavigationTrigger.fire(afterEvent);
+
+        Assertions.assertFalse(destroyedBeans.contains(bean1),
+                "Route-scoped bean should not be destroyed when the active "
+                        + "chain contains a proxy subclass of the owner");
     }
 
     @Test
