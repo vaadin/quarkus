@@ -29,6 +29,7 @@ public class MainLayout extends Div implements RouterLayout {
     public static final String INVALID = "invalid";
     public static final String PARENT_NO_OWNER = "parent-no-owner";
     public static final String CHILD_NO_OWNER = "child-no-owner";
+    public static final String PROXIED = "proxied-route-scope";
 
     private Span uiIdLabel;
 
@@ -36,7 +37,8 @@ public class MainLayout extends Div implements RouterLayout {
         add(new RouterLink(PRESERVE, PreserveOnRefreshView.class),
                 new RouterLink(INVALID, InvalidView.class),
                 new RouterLink(PARENT_NO_OWNER, ParentNoOwnerView.class),
-                new RouterLink(CHILD_NO_OWNER, ChildNoOwnerView.class));
+                new RouterLink(CHILD_NO_OWNER, ChildNoOwnerView.class),
+                new RouterLink(PROXIED, ProxiedView.class));
     }
 
     @Override
