@@ -1,8 +1,15 @@
 package com.vaadin.flow.quarkus.it.instantiator;
 
-import io.quarkus.arc.Unremovable;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 
-@Unremovable
+@Interceptor
 @Useless
 public class UselessInterceptor {
+
+    @AroundInvoke
+    public Object intercept(InvocationContext ctx) throws Exception {
+        return ctx.proceed();
+    }
 }

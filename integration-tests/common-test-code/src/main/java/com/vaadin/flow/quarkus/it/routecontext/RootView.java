@@ -33,6 +33,7 @@ public class RootView extends AbstractCountedView {
     public static final String POSTPONE = "postpone";
     public static final String EVENT = "event";
     public static final String ERROR = "ERROR";
+    public static final String PROXIED = "proxied-route-scope";
 
     @PostConstruct
     private void init() {
@@ -41,7 +42,8 @@ public class RootView extends AbstractCountedView {
                 new Div(new RouterLink(REROUTE, RerouteView.class)),
                 new Div(new RouterLink(POSTPONE, PostponeView.class)),
                 new Div(new RouterLink(EVENT, EventView.class)),
-                new Div(new RouterLink(ERROR, ErrorView.class)));
+                new Div(new RouterLink(ERROR, ErrorView.class)),
+                new Div(new RouterLink(PROXIED, ProxiedView.class)));
     }
 
 }

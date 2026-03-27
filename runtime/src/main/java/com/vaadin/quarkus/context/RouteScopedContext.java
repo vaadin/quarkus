@@ -35,6 +35,7 @@ import io.quarkus.arc.Unremovable;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.ExtendedClientDetails;
+import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.RouterLayout;
@@ -67,24 +68,28 @@ public class RouteScopedContext extends AbstractContext {
             return super.newContextualStorage(key);
         }
 
-
         /**
-         * <a href="https://stackoverflow.com/questions/48902847/cdi-observer-condition-in-dependent-bean">...</a>
-         * <a href="https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#conditional_observer_methods">...</a>
+         * <a href=
+         * "https://stackoverflow.com/questions/48902847/cdi-observer-condition-in-dependent-bean">...</a>
+         * <a href=
+         * "https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#conditional_observer_methods">...</a>
          * <p>
-         * Removed conditional observer method because it is not supported 1.2 CDI spec.
+         * Removed conditional observer method because it is not supported 1.2
+         * CDI spec.
          * <p>
-         * Beans with scope @Dependent may not have conditional observer methods.
-         * If a bean with scope @Dependent has an observer method declared receive=IF_EXISTS,
-         * the container automatically detects the problem and treats it as a definition error.
+         * Beans with scope @Dependent may not have conditional observer
+         * methods. If a bean with scope @Dependent has an observer method
+         * declared receive=IF_EXISTS, the container automatically detects the
+         * problem and treats it as a definition error.
          */
-        private void onAfterNavigation(
-                @Observes AfterNavigationEvent event) {
+        private void onAfterNavigation(@Observes AfterNavigationEvent event) {
+            UI ui = event.getLocationChangeEvent().getUI();
+            Instantiator instantiator = Instantiator.get(ui);
             Set<Class<?>> activeChain = event.getActiveChain().stream()
-                    .map(Object::getClass).collect(Collectors.toSet());
+                    .map(instantiator::getApplicationClass)
+                    .collect(Collectors.toSet());
 
-            destroyDescopedBeans(event.getLocationChangeEvent().getUI(),
-                    activeChain);
+            destroyDescopedBeans(ui, activeChain);
 
         }
 
