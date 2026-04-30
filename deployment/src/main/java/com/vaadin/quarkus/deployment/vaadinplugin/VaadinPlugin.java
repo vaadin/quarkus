@@ -20,7 +20,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
 import io.quarkus.bootstrap.model.ApplicationModel;
@@ -171,7 +170,7 @@ public final class VaadinPlugin {
                         pluginAdapter.servletResourceOutputDirectory())) {
             try {
                 BuildFrontendUtil.runFrontendBuild(pluginAdapter);
-            } catch (URISyntaxException | TimeoutException exception) {
+            } catch (URISyntaxException exception) {
                 throw new BuildException(exception.getMessage(), exception,
                         List.of());
             }
