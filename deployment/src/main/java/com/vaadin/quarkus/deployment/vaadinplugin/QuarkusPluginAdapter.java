@@ -452,6 +452,11 @@ class QuarkusPluginAdapter implements PluginAdapterBuild {
         return config.commercialWithBanner();
     }
 
+    @Override
+    public int minimumFrontendPackageAgeDays() {
+        return config.minimumFrontendPackageAgeDays();
+    }
+
     /**
      * Gets whether to cleans generated frontend files after the execution of
      * the frontend build. This is generally enabled by default to ensure a

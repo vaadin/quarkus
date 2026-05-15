@@ -278,4 +278,14 @@ public interface VaadinBuildTimeConfig {
      */
     @WithDefault("false")
     boolean commercialWithBanner();
+
+    /**
+     * Minimum age (in days) a frontend (npm) package version must have before
+     * npm, pnpm or bun is allowed to install it. Mitigates supply-chain attacks
+     * where a compromised version is briefly available on the registry.
+     * Defaults to {@code 0} (disabled); set to a positive value to enable.
+     * Requires pnpm &ge; 10.16.0 or bun &ge; 1.3.0 when those tools are used.
+     */
+    @WithDefault("0")
+    int minimumFrontendPackageAgeDays();
 }
