@@ -37,7 +37,7 @@
 
     <compiler-plugin.version>3.14.0</compiler-plugin.version>
     <surefire-plugin.version>3.5.3</surefire-plugin.version>
-    <failsafe-plugin.version>${surefire-plugin.version}</failsafe-plugin.version>
+    <failsafe-plugin.version>3.5.5</failsafe-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
 
     <vaadin.flow.version>25.2-SNAPSHOT</vaadin.flow.version>
