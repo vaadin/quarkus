@@ -16,3 +16,11 @@ This branch is compatible with upcoming Vaadin 25.1+ platform versions and uses 
 
 ## devUI URL
 After executing the quarkus project with dev profile `mvn quarkus:dev`, the devUI can be accessed (with not overwritten configuration) at URL: `http://localhost:8080/q/dev-ui/extensions`
+
+## Push dispatch
+
+The extension sets `quarkus.websocket.dispatch-to-worker=true` as a default. This routes inbound Vaadin Push websocket frames through the Quarkus worker thread pool instead of the Vert.x event loop.
+
+**The Quarkus default (`false`) is unsafe for Vaadin applications.** Vaadin's `PushHandler` acquires the session lock before dispatching, and application code is free to block while holding that lock (e.g. synchronous REST calls or database operations inside `BeforeEnterObserver` / `AfterNavigationListener`). With the Quarkus default, that blocking happens on the same Vert.x event loop that Push uses — deadlocking the loop and, if the REST client's response is pinned to the same loop, hanging the request indefinitely.
+
+Override to `false` only if you fully control all session-locked code paths and have a reason to prefer event-loop dispatch (e.g. measurable latency-sensitive Push patterns with strictly non-blocking handlers).
