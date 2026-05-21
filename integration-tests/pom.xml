@@ -26,6 +26,7 @@
     <module>production</module>
     <module>development</module>
     <module>embedded-plugin</module>
+    <module>push-dispatch-it</module>
 
     <!-- Codestarts tests -->
     <module>codestarts</module>
