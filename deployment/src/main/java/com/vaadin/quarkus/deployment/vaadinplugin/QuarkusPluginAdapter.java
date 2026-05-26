@@ -407,6 +407,11 @@ class QuarkusPluginAdapter implements PluginAdapterBuild {
     }
 
     @Override
+    public List<String> excludePostinstallPackages() {
+        return config.excludePostinstallPackages().orElseGet(List::of);
+    }
+
+    @Override
     public boolean isFrontendHotdeploy() {
         return true;
     }
