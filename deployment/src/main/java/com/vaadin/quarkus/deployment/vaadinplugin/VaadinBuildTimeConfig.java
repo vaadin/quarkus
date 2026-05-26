@@ -231,6 +231,14 @@ public interface VaadinBuildTimeConfig {
     Optional<List<String>> postinstallPackages();
 
     /**
+     * Npm packages to exclude from running post install scripts.
+     * <p>
+     * Used to skip built-in entries (e.g. {@code esbuild}) when their
+     * postinstall step is known to fail or is not needed.
+     */
+    Optional<List<String>> excludePostinstallPackages();
+
+    /**
      * Whether to disable dev bundle rebuild.
      */
     @WithDefault("false")
