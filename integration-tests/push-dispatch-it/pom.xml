@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.vaadin</groupId>
     <artifactId>vaadin-quarkus-integration-tests</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>vaadin-quarkus-push-dispatch-tests</artifactId>
@@ -33,14 +33,6 @@
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>flow-html-components</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>flow-dnd</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>flow-react</artifactId>
     </dependency>
 
     <dependency>
@@ -76,11 +68,6 @@
     </dependency>
 
     <!-- Test dependencies -->
-    <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>flow-html-components-testbench</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>flow-test-util</artifactId>
