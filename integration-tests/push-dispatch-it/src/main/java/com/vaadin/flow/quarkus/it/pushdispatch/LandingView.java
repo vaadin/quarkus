@@ -15,11 +15,8 @@
  */
 package com.vaadin.flow.quarkus.it.pushdispatch;
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Hr;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
@@ -40,60 +37,47 @@ public class LandingView extends Div {
     public static final String LINK_ID = "link-to-push-blocking";
 
     public LandingView() {
-        add(new H1("Vaadin Quarkus — Push dispatch deadlock repro"));
-
-        add(new Paragraph(
-                "This module reproduces the deadlock that the Vaadin Quarkus "
-                        + "extension's default `quarkus.websocket.dispatch-to-worker=true` "
-                        + "protects against. With `@Push(WEBSOCKET)` the Vaadin "
-                        + "navigation request flows over the Push websocket on the "
-                        + "Vert.x event loop, so an `afterNavigation` hook that "
-                        + "calls a synchronous Quarkus REST client ends up running "
-                        + "blocking code on the event loop."));
-
-        add(new Paragraph(new Span("Click the link below to navigate to "),
-                code("/push-blocking"),
-                new Span(
-                        ", whose `afterNavigation` calls the REST endpoint at "),
-                code("/api/slow"),
-                new Span(" (sleeps 5s, returns \"ready\").")));
-
-        add(new H1("Expected result"));
-        add(new Paragraph(new Span("With the extension's default ("),
-                code("quarkus.websocket.dispatch-to-worker=true"),
-                new Span(") the navigation runs on a worker thread, the REST "
-                        + "call returns normally, and the next page shows "),
-                code(PushBlockingAfterNavView.READY_TEXT), new Span(".")));
-        add(new Paragraph(new Span("With the Quarkus default ("),
-                code("dispatch-to-worker=false"),
-                new Span(") the navigation runs on the Vert.x event loop. "
-                        + "RESTEasy Reactive refuses to block on that thread "
-                        + "and throws "),
-                code("BlockingNotAllowedException"),
-                new Span("; Vaadin routes " + "to "),
-                code("PushBlockingErrorView"), new Span(", which shows "),
-                code(PushBlockingErrorView.ERROR_TEXT),
-                new Span(" plus the full server-side stack trace.")));
-
-        add(new Paragraph(new Span("Toggle the failure mode by uncommenting "),
-                code("quarkus.websocket.dispatch-to-worker=false"),
-                new Span(" in "), code("application.properties"),
-                new Span(" and restarting.")));
-
-        add(new Hr());
+        add(new Html(
+                """
+                        <div>
+                          <h1>Vaadin Quarkus — Push dispatch deadlock repro</h1>
+                          <p>This module reproduces the deadlock that the Vaadin Quarkus
+                             extension's default
+                             <code>quarkus.websocket.dispatch-to-worker=true</code>
+                             protects against. With <code>@Push(WEBSOCKET)</code> the
+                             Vaadin navigation request flows over the Push websocket on
+                             the Vert.x event loop, so an <code>afterNavigation</code>
+                             hook that calls a synchronous Quarkus REST client ends up
+                             running blocking code on the event loop.</p>
+                          <p>Click the link below to navigate to
+                             <code>/push-blocking</code>, whose
+                             <code>afterNavigation</code> calls the REST endpoint at
+                             <code>/api/slow</code> (sleeps 5s, returns "ready").</p>
+                          <h1>Expected result</h1>
+                          <p>With the extension's default
+                             (<code>quarkus.websocket.dispatch-to-worker=true</code>) the
+                             navigation runs on a worker thread, the REST call returns
+                             normally, and the next page shows <code>%s</code>.</p>
+                          <p>With the Quarkus default
+                             (<code>dispatch-to-worker=false</code>) the navigation runs
+                             on the Vert.x event loop. RESTEasy Reactive refuses to block
+                             on that thread and throws
+                             <code>BlockingNotAllowedException</code>; Vaadin routes to
+                             <code>PushBlockingErrorView</code>, which shows
+                             <code>%s</code> plus the full server-side stack trace.</p>
+                          <p>Toggle the failure mode by uncommenting
+                             <code>quarkus.websocket.dispatch-to-worker=false</code> in
+                             <code>application.properties</code> and restarting.</p>
+                          <hr/>
+                        </div>
+                        """
+                        .formatted(PushBlockingAfterNavView.READY_TEXT,
+                                PushBlockingErrorView.ERROR_TEXT)));
 
         RouterLink link = new RouterLink("Go to /push-blocking",
                 PushBlockingAfterNavView.class);
         link.setId(LINK_ID);
         add(link);
-    }
-
-    private static Span code(String text) {
-        Span s = new Span(text);
-        s.getStyle().set("font-family", "monospace");
-        s.getStyle().set("background", "rgba(0,0,0,0.07)");
-        s.getStyle().set("padding", "0 0.25em");
-        return s;
     }
 
 }
