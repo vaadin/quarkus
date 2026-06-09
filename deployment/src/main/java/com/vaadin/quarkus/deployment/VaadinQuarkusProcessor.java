@@ -43,6 +43,7 @@ import io.quarkus.deployment.IsNormal;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
+import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
@@ -55,9 +56,11 @@ import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
 import io.quarkus.maven.dependency.ArtifactKey;
 import io.quarkus.undertow.deployment.ServletBuildItem;
 import io.quarkus.undertow.deployment.ServletDeploymentManagerBuildItem;
+import io.quarkus.vertx.http.deployment.DefaultRouteBuildItem;
 import io.quarkus.vertx.http.deployment.FilterBuildItem;
 import io.quarkus.websockets.client.deployment.ServerWebSocketContainerBuildItem;
 import io.quarkus.websockets.client.deployment.WebSocketDeploymentInfoBuildItem;
+import io.quarkus.websockets.client.deployment.WebsocketConfig;
 import jakarta.servlet.annotation.WebServlet;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationValue;
@@ -88,6 +91,7 @@ import com.vaadin.quarkus.context.VaadinServiceScopedContext;
 import com.vaadin.quarkus.context.VaadinSessionScopedContext;
 import com.vaadin.quarkus.deployment.vaadinplugin.VaadinBuildTimeConfig;
 import com.vaadin.quarkus.deployment.vaadinplugin.VaadinPlugin;
+import com.vaadin.quarkus.push.PushDispatchRecorder;
 
 class VaadinQuarkusProcessor {
 
@@ -387,6 +391,16 @@ class VaadinQuarkusProcessor {
                 webSocketDeploymentInfoBuildItem.getInfo(),
                 serverWebSocketContainerBuildItem.getContainer(),
                 deployment.getDeploymentManager()), 120));
+    }
+
+    @BuildStep
+    @Record(ExecutionTime.RUNTIME_INIT)
+    @Produce(DefaultRouteBuildItem.class)
+    void announcePushDispatch(WebsocketConfig websocketConfig,
+            PushDispatchRecorder recorder) {
+        if (websocketConfig.dispatchToWorker()) {
+            recorder.logDispatchOnWorker();
+        }
     }
 
     private Collection<ClassInfo> registerUserServlets(
