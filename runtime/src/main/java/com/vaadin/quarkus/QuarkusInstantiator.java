@@ -27,6 +27,7 @@ import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.di.InstantiatorFactory;
 import com.vaadin.flow.i18n.I18NProvider;
+import com.vaadin.flow.router.PageTitleGenerator;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.server.auth.MenuAccessControl;
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
@@ -111,6 +112,14 @@ public class QuarkusInstantiator implements Instantiator {
                 getBeanManager(), MenuAccessControl.class,
                 VaadinServiceEnabled.Literal.INSTANCE);
         return lookup.lookupOrElseGet(delegate::getMenuAccessControl);
+    }
+
+    @Override
+    public PageTitleGenerator getPageTitleGenerator() {
+        final BeanLookup<PageTitleGenerator> lookup = new BeanLookup<>(
+                getBeanManager(), PageTitleGenerator.class,
+                VaadinServiceEnabled.Literal.INSTANCE);
+        return lookup.lookupOrElseGet(delegate::getPageTitleGenerator);
     }
 
     private static Logger getLogger() {
