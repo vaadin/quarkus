@@ -47,6 +47,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.i18n.I18NProvider;
+import com.vaadin.flow.router.PageTitleContext;
+import com.vaadin.flow.router.PageTitleGenerator;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
@@ -151,6 +153,16 @@ public class QuarkusInstantiatorTest {
         }
     }
 
+    @VaadinServiceEnabled
+    @Singleton
+    public static class TestPageTitleGenerator implements PageTitleGenerator {
+
+        @Override
+        public String generatePageTitle(PageTitleContext context) {
+            return null;
+        }
+    }
+
     @Singleton
     public static class ServiceInitObserver {
 
@@ -227,6 +239,15 @@ public class QuarkusInstantiatorTest {
         Assertions.assertNotNull(menuAccessControl);
         Assertions
                 .assertTrue(menuAccessControl instanceof TestMenuAccessControl);
+    }
+
+    @Test
+    public void getPageTitleGenerator_beanProvided_instanceReturned() {
+        PageTitleGenerator pageTitleGenerator = instantiator
+                .getPageTitleGenerator();
+        Assertions.assertNotNull(pageTitleGenerator);
+        Assertions.assertTrue(
+                pageTitleGenerator instanceof TestPageTitleGenerator);
     }
 
     @Test
