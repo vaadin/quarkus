@@ -50,9 +50,10 @@ jobs:
 
       - name: Set TB License
         run: |
-          TB_LICENSE=${{secrets.TB_LICENSE}}
           mkdir -p ~/.vaadin/
           echo '{"username":"'`echo $TB_LICENSE | cut -d / -f1`'","proKey":"'`echo $TB_LICENSE | cut -d / -f2`'"}' > ~/.vaadin/proKey
+        env:
+          TB_LICENSE: ${{ secrets.TB_LICENSE }}
 
       - uses: browser-actions/setup-chrome@latest
         with:
