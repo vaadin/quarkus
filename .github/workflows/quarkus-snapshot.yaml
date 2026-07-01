@@ -17,6 +17,11 @@ env:
   #########################
 
   ECOSYSTEM_CI_REPO_PATH: vaadin
+
+  # The setup-and-test script assumes the property within pom.xml that determines the
+  # quarkus version is called "quarkus.version".
+  # Use this env var to override the property to something else
+  # (like "quarkus.platform.version" for example)
   QUARKUS_VERSION_POM_PROPERTY: quarkus.version
 
 jobs:
