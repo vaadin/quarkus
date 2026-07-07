@@ -1,7 +1,7 @@
 name: Vaadin Quarkus Native Validation
 on:
   workflow_dispatch:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
     branches: [main, "3.0"]
 permissions:
@@ -10,29 +10,31 @@ concurrency:
   group: ${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   _HEAD_REF: ${{ github.head_ref }}
   _HEAD_SHA: ${{ github.event.pull_request.head.sha }}
   _REF_NAME: ${{ github.ref_name }}
 jobs:
   build:
-    environment: ${{ github.event.pull_request.head.repo.fork && 'pr-tests' || '' }}
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     timeout-minutes: 30
     runs-on: ubuntu-24.04
     steps:
       - run: echo "Concurrency Group = ${_HEAD_REF:-$_REF_NAME}"
       - name: Check secrets
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         run: |
           [ -z "${{secrets.TB_LICENSE}}" ] \
             && echo "🚫 **TB_LICENSE** is not defined, check that **${{github.repository}}** repo has a valid secret" \
             | tee -a $GITHUB_STEP_SUMMARY && exit 1 || exit 0
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{env._HEAD_SHA}}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '24.9.0'
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: "25"
           distribution: 'graalvm'
@@ -40,7 +42,7 @@ jobs:
         uses: stCarolas/setup-maven@v5
         with:
           maven-version: 3.8.7
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -50,8 +52,9 @@ jobs:
           cmd="mvn install -B -ntp -DskipTests"
           eval $cmd -T 2C -q || eval $cmd
       - name: Set TB License
+        env:
+          TB_LICENSE: ${{ secrets.TB_LICENSE }}
         run: |
-          TB_LICENSE=${{secrets.TB_LICENSE}}
           mkdir -p ~/.vaadin/
           echo '{"username":"'`echo $TB_LICENSE | cut -d / -f1`'","proKey":"'`echo $TB_LICENSE | cut -d / -f2`'"}' > ~/.vaadin/proKey
       - name: Test with native image
@@ -60,7 +63,7 @@ jobs:
       - name: Package test-report files
         if: ${{ failure() || success() }}
         run: find . -name surefire-reports -o -name failsafe-reports -o -name error-screenshots -o -name "mvn-*.out" | tar -czf tests-report-native.tgz -T -
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: ${{ failure() || success() }}
         with:
           name: tests-output-it-native
