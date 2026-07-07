@@ -15,6 +15,17 @@ This branch is compatible with upcoming Vaadin 25.2+ platform versions and uses 
 
 > **NOTE:** The minimum supported Quarkus version for Vaadin 25.0 has been raised from 3.27 LTS to 3.32. This change is required because Flow now depends on Jackson 3.1.x and Jackson Annotations 2.21.x to address a security vulnerability.
 
+## Configuration
+
+Vaadin configuration parameters can be set through MicroProfile Config, i.e. in `application.properties` or `application.yaml`, using the `vaadin.` prefix. The part after the prefix is the standard Vaadin init parameter name (see `com.vaadin.flow.server.InitParameters`). For example:
+
+```properties
+vaadin.heartbeatInterval=120
+vaadin.closeIdleSessions=true
+```
+
+Values defined this way override the corresponding servlet init parameters declared via `@WebServlet` / `@WebInitParam`.
+
 ## devUI URL
 After executing the quarkus project with dev profile `mvn quarkus:dev`, the devUI can be accessed (with not overwritten configuration) at URL: `http://localhost:8080/q/dev-ui/extensions`
 
