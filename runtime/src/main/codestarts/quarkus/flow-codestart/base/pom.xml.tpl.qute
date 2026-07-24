@@ -18,13 +18,19 @@
 
     <dependencies>
 
-        {#if !input['selected-extensions-ga'].contains("com.vaadin:vaadin-quarkus-extension") }
+        <!--
+        Always declare the extension dependency using the vaadin.version property.
+        When vaadin-quarkus-extension is the selected extension (e.g. through the
+        Vaadin platform, `-Dextensions=vaadin`), Quarkus injects the same
+        dependency with a hard-coded version. The smart POM merge collapses both
+        entries by groupId:artifactId and, being source-dominant, keeps this
+        property-based version.
+        -->
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-quarkus-extension</artifactId>
             <version>$\{vaadin.version\}</version>
         </dependency>
-        {/if}
 
         <!-- Uncomment the following if you are using any of the Pro components -->
         <!--
