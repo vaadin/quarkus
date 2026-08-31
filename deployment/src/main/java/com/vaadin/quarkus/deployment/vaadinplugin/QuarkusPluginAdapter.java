@@ -458,7 +458,7 @@ class QuarkusPluginAdapter implements PluginAdapterBuild {
     }
 
     @Override
-    public int minimumFrontendPackageAgeDays() {
+    public Integer minimumFrontendPackageAgeDays() {
         return config.minimumFrontendPackageAgeDays();
     }
 
