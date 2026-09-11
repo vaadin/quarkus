@@ -25,6 +25,8 @@ import java.util.function.BiConsumer;
 import io.quarkus.bootstrap.model.ApplicationModel;
 import io.quarkus.bootstrap.workspace.WorkspaceModule;
 import io.quarkus.builder.BuildException;
+import io.quarkus.deployment.annotations.BuildProducer;
+import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 
 import com.vaadin.experimental.FeatureFlags;
 import com.vaadin.flow.component.dependency.JavaScript;
@@ -199,6 +201,31 @@ public final class VaadinPlugin {
     }
 
     /**
+     * Creates the emitter that registers the generated Vaadin files with the
+     * application.
+     * <p>
+     * </p>
+     * The emitter skips the files that packaging already copies into the
+     * artifact by itself, so that they are not added a second time.
+     *
+     * @param packagedRootDirectories
+     *            the directories Quarkus packages the application from, as
+     *            reported by
+     *            {@link io.quarkus.deployment.builditem.ArchiveRootBuildItem#getRootDirectories()}.
+     * @param producer
+     *            the producer registering the files with the application.
+     * @return the emitter to pass to {@link #buildFrontend(BiConsumer)}.
+     * @see GeneratedResourceEmitter
+     */
+    public BiConsumer<String, byte[]> createGeneratedResourceEmitter(
+            Iterable<Path> packagedRootDirectories,
+            BuildProducer<GeneratedResourceBuildItem> producer) {
+        return GeneratedResourceEmitter.of(packagedRootDirectories,
+                pluginAdapter.servletResourceOutputDirectory().toPath(),
+                producer);
+    }
+
+    /**
      * Deletes the build info token file from the build output directory.
      * <p>
      * </p>
@@ -209,6 +236,11 @@ public final class VaadinPlugin {
      * correct one. It would also be picked up by a later Quarkus dev mode run
      * from the same output directory, starting the application in production
      * mode. The Vaadin Maven plugin deletes the file for the same reasons.
+     * <p>
+     * </p>
+     * Deleting it here is why {@link GeneratedResourceEmitter} emits the token
+     * file whichever way the application is packaged: once it is gone from the
+     * output directory, emitting is the only way it reaches the application.
      *
      * @throws BuildException
      *             if the token file cannot be deleted.
