@@ -195,6 +195,32 @@ public final class VaadinPlugin {
         pluginAdapter.logInfo("Build frontend completed in " + ms + " ms.");
 
         emitGeneratedFiles(emitter);
+        removeTokenFile();
+    }
+
+    /**
+     * Deletes the build info token file from the build output directory.
+     * <p>
+     * </p>
+     * The token file has already been added to the application as a generated
+     * resource, so the copy on disk is not needed to package it. Leaving it
+     * there adds the same file to the artifact twice, which makes Flow log a
+     * warning that it cannot tell which {@literal flow-build-info.json} is the
+     * correct one. It would also be picked up by a later Quarkus dev mode run
+     * from the same output directory, starting the application in production
+     * mode. The Vaadin Maven plugin deletes the file for the same reasons.
+     *
+     * @throws BuildException
+     *             if the token file cannot be deleted.
+     */
+    void removeTokenFile() throws BuildException {
+        try {
+            BuildFrontendUtil.removeBuildFile(pluginAdapter);
+        } catch (IOException e) {
+            throw new BuildException(
+                    "Failed to delete the Vaadin build info token file from the build output directory.",
+                    e, List.of());
+        }
     }
 
     private void emitGeneratedFiles(BiConsumer<String, byte[]> emitter)
