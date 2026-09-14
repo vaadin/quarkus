@@ -16,6 +16,7 @@
 package com.vaadin.quarkus.deployment.vaadinplugin;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -148,6 +149,14 @@ public final class VaadinPlugin {
      * in the classpath,</li>
      * <li>Update {@link FrontendUtils#VITE_CONFIG} file.</li>
      * </ul>
+     * <p>
+     * </p>
+     * Once the build is done the generated files are handed to the emitter and
+     * the build info token file is deleted from the build output directory. A
+     * file that cannot be read fails the build, so that the token file is never
+     * deleted after failing to reach the application: that would package an
+     * application without a {@literal flow-build-info.json} while the build
+     * reports success.
      *
      * @param emitter
      *            generated files emitter.
@@ -255,44 +264,67 @@ public final class VaadinPlugin {
         }
     }
 
-    private void emitGeneratedFiles(BiConsumer<String, byte[]> emitter)
+    /**
+     * Hands every file the Vaadin build produced to the emitter.
+     * <p>
+     * </p>
+     * A file that cannot be read fails the build instead of being skipped with
+     * a warning. The emitter is the only way some of those files reach the
+     * application, the build info token file in particular, which
+     * {@link #removeTokenFile()} deletes from the build output directory right
+     * after this method returns. Skipping one would package an application
+     * missing it, with nothing but a warning to say so.
+     *
+     * @param emitter
+     *            generated files emitter.
+     * @throws BuildException
+     *             if the generated resources directory cannot be walked, or one
+     *             of the files in it cannot be read.
+     */
+    void emitGeneratedFiles(BiConsumer<String, byte[]> emitter)
             throws BuildException {
         Path vaadinMetaInfDir = pluginAdapter.servletResourceOutputDirectory()
                 .toPath();
         Path buildFolder = pluginAdapter.buildDir();
 
-        if (Files.exists(vaadinMetaInfDir)) {
-            try (var stream = Files.walk(vaadinMetaInfDir)) {
-                stream.filter(Files::isRegularFile).forEach(filePath -> {
-                    try {
-                        // Calculate relative path from target/classes
-                        Path relativePath = buildFolder.relativize(filePath);
-                        byte[] content = Files.readAllBytes(filePath);
-                        emitter.accept(
-                                relativePath.toString().replace('\\', '/'),
-                                content);
-
-                        pluginAdapter.logDebug(
-                                "Added Vaadin resource: " + relativePath);
-                    } catch (IOException e) {
-                        pluginAdapter
-                                .logWarn("Failed to read Vaadin resource file: "
-                                        + filePath, e);
-                    }
-                });
-
-                pluginAdapter.logInfo(
-                        "Added Vaadin frontend resources from META-INF/VAADIN to artifact");
-
-            } catch (IOException e) {
-                throw new BuildException(
-                        "Failed to scan Vaadin resources directory", e,
-                        List.of());
-            }
-        } else {
+        if (!Files.exists(vaadinMetaInfDir)) {
             pluginAdapter.logInfo(
                     "No META-INF/VAADIN directory found, skipping resource addition");
+            return;
         }
+
+        List<Path> generatedFiles;
+        // Files.walk reports a failure to walk the tree as an
+        // UncheckedIOException thrown by the terminal operation, so the files
+        // are collected inside the try block.
+        try (var stream = Files.walk(vaadinMetaInfDir)) {
+            generatedFiles = stream.filter(Files::isRegularFile).toList();
+        } catch (IOException | UncheckedIOException e) {
+            throw new BuildException(
+                    "Failed to list the files produced by the Vaadin build in "
+                            + vaadinMetaInfDir
+                            + ". The generated META-INF/VAADIN resources cannot be added to the application.",
+                    e, List.of());
+        }
+
+        for (Path filePath : generatedFiles) {
+            // Calculate relative path from target/classes
+            Path relativePath = buildFolder.relativize(filePath);
+            byte[] content;
+            try {
+                content = Files.readAllBytes(filePath);
+            } catch (IOException e) {
+                throw new BuildException("Failed to read " + filePath
+                        + ", a file produced by the Vaadin build in the META-INF/VAADIN directory. The application would be packaged without it.",
+                        e, List.of());
+            }
+            emitter.accept(relativePath.toString().replace('\\', '/'), content);
+
+            pluginAdapter.logDebug("Added Vaadin resource: " + relativePath);
+        }
+
+        pluginAdapter.logInfo(
+                "Added Vaadin frontend resources from META-INF/VAADIN to artifact");
     }
 
     /**
