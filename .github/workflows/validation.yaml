@@ -62,12 +62,18 @@ jobs:
         # again: the production and development test modules each carry a
         # frontend bundle, so a rebuild per job costs minutes that the
         # download does not.
+        #
+        # Not for forks: every job that would restore it is skipped there, and
+        # cleanup-artifacts cannot delete it either, because a pull request
+        # from a fork only gets a read-only token.
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         run: |
           VERSION=$(mvn -N -q -DforceStdout help:evaluate -Dexpression='project.version')
           echo "Saving com.vaadin artifacts at $VERSION"
           tar cf workspace.tar -C ~/ $(cd ~/ && echo .m2/repository/com/vaadin/*/$VERSION)
           tar rf workspace.tar $(find . -d -name target)
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         with:
           name: saved-workspace
           path: workspace.tar
@@ -289,7 +295,11 @@ jobs:
         with:
           name: tests-output
       - name: extract downloaded files
-        run: for i in *.tgz; do tar xvf $i; done
+        # One directory per archive: the embedded-plugin module runs the same
+        # IT classes in the matrix leg and under -Dnative, so both archives
+        # carry the same failsafe report paths and extracting them side by
+        # side would drop the JVM results. junit_files matches either way.
+        run: for i in *.tgz; do d="${i%.tgz}"; mkdir -p "$d" && tar xf "$i" -C "$d"; done
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
         with:
