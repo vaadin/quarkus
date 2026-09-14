@@ -250,7 +250,6 @@ public final class VaadinPlugin {
      * TypeScript folder to locate the files. - Makes use of the
      * `TaskCleanFrontendFiles` for cleanup operations.
      * <p>
-     * </p>
      * Unlike the Vaadin Maven plugin, which only cleans when a frontend bundle
      * has been built, this runs after every successful build. This plugin
      * always reports frontend hotdeploy as enabled, so even a build that reuses
@@ -259,7 +258,6 @@ public final class VaadinPlugin {
      * into the project directory. Skipping the cleanup for those builds would
      * leave the files behind.
      * <p>
-     * </p>
      * Errors are logged rather than propagated, including unchecked ones. This
      * method runs as a Quarkus build closeable, which cannot fail the build and
      * logs anything thrown out of here at debug level only, so an error that is
