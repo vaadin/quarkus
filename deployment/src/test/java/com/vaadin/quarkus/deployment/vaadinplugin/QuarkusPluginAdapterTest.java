@@ -17,6 +17,8 @@ package com.vaadin.quarkus.deployment.vaadinplugin;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +41,12 @@ import static org.mockito.Mockito.when;
 
 class QuarkusPluginAdapterTest {
 
+    // A real filesystem root, so the fixtures below are absolute on Windows
+    // too, where a path like /project has no drive letter and is therefore
+    // relative. The directories need not exist, buildFolder() never touches
+    // the filesystem.
+    private static final Path ROOT = Paths.get("").toAbsolutePath().getRoot();
+
     private VaadinBuildTimeConfig config;
     private ApplicationModel model;
     private WorkspaceModule appModule;
@@ -48,8 +56,10 @@ class QuarkusPluginAdapterTest {
     void setUp() {
         config = mock(VaadinBuildTimeConfig.class);
         appModule = mock(WorkspaceModule.class);
-        when(appModule.getModuleDir()).thenReturn(new File("/project"));
-        when(appModule.getBuildDir()).thenReturn(new File("/project/target"));
+        when(appModule.getModuleDir())
+                .thenReturn(ROOT.resolve("project").toFile());
+        when(appModule.getBuildDir()).thenReturn(
+                ROOT.resolve(Paths.get("project", "target")).toFile());
         when(appModule.hasMainSources()).thenReturn(false);
 
         model = mock(ApplicationModel.class);
@@ -144,14 +154,16 @@ class QuarkusPluginAdapterTest {
 
     @Test
     void buildFolder_insideProjectDirectory_relativeToProject() {
-        when(appModule.getBuildDir()).thenReturn(new File("/project/target"));
+        when(appModule.getBuildDir()).thenReturn(
+                ROOT.resolve(Paths.get("project", "target")).toFile());
 
         assertEquals("target", createAdapter().buildFolder());
     }
 
     @Test
     void buildFolder_outsideProjectDirectory_parentRelativePath() {
-        when(appModule.getBuildDir()).thenReturn(new File("/builds/target"));
+        when(appModule.getBuildDir()).thenReturn(
+                ROOT.resolve(Paths.get("builds", "target")).toFile());
 
         // Must be relative, since consumers resolve it against the project
         // folder with new File(npmFolder(), buildFolder())
