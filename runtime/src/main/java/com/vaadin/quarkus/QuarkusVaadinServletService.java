@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
+import io.quarkus.arc.Arc;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.Context;
 import jakarta.enterprise.context.spi.CreationalContext;
@@ -51,6 +52,8 @@ import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SessionDestroyEvent;
 import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.SystemMessagesProvider;
+import com.vaadin.flow.server.UIInitEvent;
+import com.vaadin.flow.server.UIInitListener;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
@@ -91,12 +94,6 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         lookup(SystemMessagesProvider.class)
                 .ifPresent(this::setSystemMessagesProvider);
         super.init();
-    }
-
-    @Override
-    public void fireUIInitListeners(UI ui) {
-        addUIListeners(ui);
-        super.fireUIInitListeners(ui);
     }
 
     @Override
@@ -169,7 +166,7 @@ public class QuarkusVaadinServletService extends VaadinServletService {
 
     private void addEventListeners() {
         addServiceDestroyListener(this::fireCdiDestroyEvent);
-        addUIInitListener(event -> getBeanManager().getEvent().fire(event));
+        addUIInitListener(uiEventListener);
         addSessionInitListener(this::sessionInit);
         addSessionDestroyListener(this::sessionDestroy);
     }
@@ -195,13 +192,6 @@ public class QuarkusVaadinServletService extends VaadinServletService {
             getLogger().warn("Error at destroy event distribution with CDI.",
                     e);
         }
-    }
-
-    private void addUIListeners(UI ui) {
-        ui.addAfterNavigationListener(uiEventListener);
-        ui.addBeforeLeaveListener(uiEventListener);
-        ui.addBeforeEnterListener(uiEventListener);
-        ui.addPollListener(uiEventListener);
     }
 
     /**
@@ -241,14 +231,26 @@ public class QuarkusVaadinServletService extends VaadinServletService {
      * Static listener class, to avoid registering the whole service instance.
      */
     @ListenerPriority(-100) // navigation event listeners are last by default
-    private static class UIEventListener
-            implements AfterNavigationListener, BeforeEnterListener,
-            BeforeLeaveListener, ComponentEventListener<PollEvent> {
+    private static class UIEventListener implements UIInitListener,
+            AfterNavigationListener, BeforeEnterListener, BeforeLeaveListener,
+            ComponentEventListener<PollEvent> {
 
-        private BeanManager beanManager;
+        // Not serializable, but can be looked up again from the container
+        // after deserialization
+        private transient BeanManager beanManager;
 
         UIEventListener(BeanManager beanManager) {
             this.beanManager = beanManager;
+        }
+
+        @Override
+        public void uiInit(UIInitEvent event) {
+            UI ui = event.getUI();
+            ui.addAfterNavigationListener(this);
+            ui.addBeforeLeaveListener(this);
+            ui.addBeforeEnterListener(this);
+            ui.addPollListener(this);
+            getBeanManager().getEvent().fire(event);
         }
 
         @Override
@@ -272,6 +274,9 @@ public class QuarkusVaadinServletService extends VaadinServletService {
         }
 
         private BeanManager getBeanManager() {
+            if (beanManager == null) {
+                beanManager = Arc.container().beanManager();
+            }
             return beanManager;
         }
     }

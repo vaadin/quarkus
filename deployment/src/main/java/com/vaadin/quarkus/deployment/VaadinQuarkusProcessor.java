@@ -39,12 +39,13 @@ import io.quarkus.arc.deployment.ValidationPhaseBuildItem;
 import io.quarkus.arc.processor.BeanInfo;
 import io.quarkus.bootstrap.model.ApplicationModel;
 import io.quarkus.builder.BuildException;
-import io.quarkus.deployment.IsNormal;
+import io.quarkus.deployment.IsProduction;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.ArchiveRootBuildItem;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
@@ -353,14 +354,19 @@ class VaadinQuarkusProcessor {
         return new CustomScopeBuildItem(RouteScoped.class);
     }
 
-    @BuildStep(onlyIf = IsNormal.class)
+    @BuildStep(onlyIf = IsProduction.class)
     void buildFrontendTask(CurateOutcomeBuildItem outcomeBuildItem,
             OutputTargetBuildItem outputTarget,
+            ArchiveRootBuildItem archiveRoot,
             VaadinBuildTimeConfig vaadinConfig,
             QuarkusBuildCloseablesBuildItem closeablesBuildItem,
 
-            // Parameter used only to make sure the build step gets executed
-            @SuppressWarnings("unused") BuildProducer<GeneratedResourceBuildItem> producer)
+            // Declaring this parameter is what orders this build step before
+            // the packaging one, which consumes GeneratedResourceBuildItem. It
+            // is required even when no file ends up being emitted, otherwise
+            // the application is packaged while the frontend build is still
+            // running.
+            BuildProducer<GeneratedResourceBuildItem> producer)
             throws BuildException {
         if (vaadinConfig.enabled()) {
             VaadinPlugin vaadinPlugin = VaadinPlugin.of(vaadinConfig,
@@ -370,8 +376,9 @@ class VaadinQuarkusProcessor {
 
             // Allows the build to register additional files to be packaged into
             // the application
-            BiConsumer<String, byte[]> emitter = (path, content) -> producer
-                    .produce(new GeneratedResourceBuildItem(path, content));
+            BiConsumer<String, byte[]> emitter = vaadinPlugin
+                    .createGeneratedResourceEmitter(
+                            archiveRoot.getRootDirectories(), producer);
             vaadinPlugin.buildFrontend(emitter);
 
             // Register a task to clean the generated files

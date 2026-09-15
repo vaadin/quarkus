@@ -41,7 +41,9 @@ final class CodestartTestUtils {
                 .filteredOn(dep -> "com.vaadin".equals(dep.getGroupId())
                         && "vaadin-quarkus-extension"
                                 .equals(dep.getArtifactId()))
-                .hasSize(1);
+                .hasSize(1).element(0)
+                .satisfies(dep -> soft.assertThat(dep.getVersion())
+                        .contains("${vaadin.version}"));
     }
 
     static void assertThatHasProductionProfile(Model pom, SoftAssertions soft) {

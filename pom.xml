@@ -32,12 +32,12 @@
     <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <spotless.plugin.version>3.6.0</spotless.plugin.version>
+    <spotless.plugin.version>3.10.2</spotless.plugin.version>
     <spotless.license-header>${maven.multiModuleProjectDirectory}/eclipse/apache2-license-header.txt</spotless.license-header>
 
-    <compiler-plugin.version>3.15.0</compiler-plugin.version>
-    <surefire-plugin.version>3.5.6</surefire-plugin.version>
-    <failsafe-plugin.version>3.5.6</failsafe-plugin.version>
+    <compiler-plugin.version>3.16.0</compiler-plugin.version>
+    <surefire-plugin.version>3.6.0</surefire-plugin.version>
+    <failsafe-plugin.version>3.6.0</failsafe-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
 
     <vaadin.flow.version>25.2-SNAPSHOT</vaadin.flow.version>
@@ -139,6 +139,13 @@
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${failsafe-plugin.version}</version>
           <configuration>
+            <!-- The integration tests are JUnit 5, but inherit @RunWith from
+                 the TestBench base class. JUnit 4 is on the test classpath, so
+                 the Vintage engine also discovers them and reports "No runnable
+                 methods". Run them with the Jupiter engine only. -->
+            <excludeJUnit5Engines>
+              <engine>junit-vintage</engine>
+            </excludeJUnit5Engines>
             <systemPropertyVariables>
               <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
               <maven.home>${maven.home}</maven.home>
