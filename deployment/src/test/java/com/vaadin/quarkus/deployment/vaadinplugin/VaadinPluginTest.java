@@ -154,7 +154,6 @@ class VaadinPluginTest {
      * {@link VaadinPlugin#removeTokenFile()} deletes the copy in the build
      * output directory right after.
      * <p>
-     * </p>
      * The assertion needs a file the build cannot read, which the test is not
      * always able to produce. It is skipped when the file cannot be made
      * unreadable, as on Windows, where {@link File#setReadable(boolean)}

@@ -28,7 +28,6 @@ import com.vaadin.flow.internal.FrontendUtils;
  * Registers the files produced by the Vaadin build with the Quarkus
  * application, skipping the ones packaging already picks up on its own.
  * <p>
- * </p>
  * Quarkus packages the application from the archive root. When that root is the
  * directory the Vaadin build writes into, packaging walks the directory at the
  * time the artifact is assembled and therefore already contains everything the
@@ -37,7 +36,6 @@ import com.vaadin.flow.internal.FrontendUtils;
  * Quarkus augmentation started, packaging cannot see anything written
  * afterwards and emitting is the only way the files reach the application.
  * <p>
- * </p>
  * Files that the build removes from the output directory once it is done are
  * the exception: packaging cannot pick those up from the directory either, so
  * they are always emitted. {@link #ALWAYS_EMITTED} is the list of them.
@@ -49,7 +47,6 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
      * because the build deletes them from the output directory once the
      * frontend build is done.
      * <p>
-     * </p>
      * Add an entry here when a generated file gains that treatment, otherwise
      * it silently stops being packaged. Paths are relative to the generated
      * resources directory.

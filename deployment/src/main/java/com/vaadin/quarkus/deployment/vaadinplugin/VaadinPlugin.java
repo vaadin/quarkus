@@ -150,7 +150,6 @@ public final class VaadinPlugin {
      * <li>Update {@link FrontendUtils#VITE_CONFIG} file.</li>
      * </ul>
      * <p>
-     * </p>
      * Once the build is done the generated files are handed to the emitter and
      * the build info token file is deleted from the build output directory. A
      * file that cannot be read fails the build, so that the token file is never
@@ -213,7 +212,6 @@ public final class VaadinPlugin {
      * Creates the emitter that registers the generated Vaadin files with the
      * application.
      * <p>
-     * </p>
      * The emitter skips the files that packaging already copies into the
      * artifact by itself, so that they are not added a second time.
      *
@@ -237,7 +235,6 @@ public final class VaadinPlugin {
     /**
      * Deletes the build info token file from the build output directory.
      * <p>
-     * </p>
      * The token file has already been added to the application as a generated
      * resource, so the copy on disk is not needed to package it. Leaving it
      * there adds the same file to the artifact twice, which makes Flow log a
@@ -246,7 +243,6 @@ public final class VaadinPlugin {
      * from the same output directory, starting the application in production
      * mode. The Vaadin Maven plugin deletes the file for the same reasons.
      * <p>
-     * </p>
      * Deleting it here is why {@link GeneratedResourceEmitter} emits the token
      * file whichever way the application is packaged: once it is gone from the
      * output directory, emitting is the only way it reaches the application.
@@ -267,7 +263,6 @@ public final class VaadinPlugin {
     /**
      * Hands every file the Vaadin build produced to the emitter.
      * <p>
-     * </p>
      * A file that cannot be read fails the build instead of being skipped with
      * a warning. The emitter is the only way some of those files reach the
      * application, the build info token file in particular, which
