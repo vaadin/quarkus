@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -199,6 +200,53 @@ class VaadinPluginTest {
                 "Nothing should be emitted when the Vaadin build produced no files");
     }
 
+    @Test
+    void verifyAlwaysEmitted_tokenFileEmitted_doesNotFail() throws Exception {
+        writeGeneratedFile(FrontendUtils.TOKEN_FILE,
+                "{ \"productionMode\": true }");
+        GeneratedResourceEmitter emitter = emitterForOutputDirectory();
+
+        emitter.accept(
+                Constants.VAADIN_SERVLET_RESOURCES + FrontendUtils.TOKEN_FILE,
+                "{ \"productionMode\": true }"
+                        .getBytes(StandardCharsets.UTF_8));
+
+        assertDoesNotThrow(() -> plugin.verifyAlwaysEmitted(emitter),
+                "Everything that has to reach the application did, so the "
+                        + "token file can be deleted from the output directory");
+    }
+
+    @Test
+    void verifyAlwaysEmitted_tokenFileNotEmitted_failsBuild() throws Exception {
+        writeGeneratedFile(FrontendUtils.TOKEN_FILE,
+                "{ \"productionMode\": true }");
+        GeneratedResourceEmitter emitter = emitterForOutputDirectory();
+
+        emitter.accept(
+                Constants.VAADIN_SERVLET_RESOURCES + "build/indexhtml-1234.js",
+                "console.log('hi');".getBytes(StandardCharsets.UTF_8));
+
+        BuildException exception = assertThrows(BuildException.class,
+                () -> plugin.verifyAlwaysEmitted(emitter),
+                "A token file that did not reach the application must fail the "
+                        + "build, because it is deleted from the output "
+                        + "directory right after and the application would be "
+                        + "packaged without it while the build reports success");
+        assertTrue(exception.getMessage().contains(tokenFile.getName()),
+                "Failure should name the file that was not emitted, was: "
+                        + exception.getMessage());
+    }
+
+    @Test
+    void verifyAlwaysEmitted_callerSuppliedEmitter_doesNotFail() {
+        BiConsumer<String, byte[]> emitter = (path, content) -> {
+        };
+
+        assertDoesNotThrow(() -> plugin.verifyAlwaysEmitted(emitter),
+                "An emitter this plugin did not create keeps no track of what "
+                        + "it emitted, so there is nothing to check");
+    }
+
     /**
      * Asserts that the build fails when the given generated file cannot be
      * read, whichever file it is: skipping any of them packages an application
@@ -268,6 +316,19 @@ class VaadinPluginTest {
         when(config.cleanFrontendFiles()).thenReturn(false);
 
         return VaadinPlugin.of(config, model, buildDir.toPath());
+    }
+
+    /**
+     * Creates an emitter for an application Quarkus packages from the build
+     * output directory, which is the shape that skips what packaging covers.
+     *
+     * @return the emitter to exercise.
+     */
+    private GeneratedResourceEmitter emitterForOutputDirectory() {
+        Path outputDir = buildDir.toPath().resolve("classes");
+        return GeneratedResourceEmitter.of(List.of(outputDir),
+                generatedResourcesDir, outputDir, item -> {
+                });
     }
 
     private void writeGeneratedFile(String relativePath, String content)

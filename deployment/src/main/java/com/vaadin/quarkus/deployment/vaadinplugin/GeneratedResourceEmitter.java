@@ -20,6 +20,8 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -66,6 +68,7 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
     private final boolean packagedFromOutputDirectory;
     private final Path buildOutputDirectory;
     private final Set<Path> alwaysEmittedFiles;
+    private final Set<Path> emittedFiles = new LinkedHashSet<>();
 
     private GeneratedResourceEmitter(
             BuildProducer<GeneratedResourceBuildItem> producer,
@@ -122,7 +125,9 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
      */
     @Override
     public void accept(String path, byte[] content) {
-        if (!packagedFromOutputDirectory || isAlwaysEmitted(path)) {
+        Optional<Path> alwaysEmitted = alwaysEmitted(path);
+        alwaysEmitted.ifPresent(emittedFiles::add);
+        if (!packagedFromOutputDirectory || alwaysEmitted.isPresent()) {
             producer.produce(new GeneratedResourceBuildItem(path, content));
         }
     }
@@ -136,6 +141,26 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
      */
     boolean isPackagedFromOutputDirectory() {
         return packagedFromOutputDirectory;
+    }
+
+    /**
+     * The files that have to reach the application whichever way it is packaged
+     * and have not been handed over.
+     * <p>
+     * Recognizing those files is this class' job, and it asks the file system
+     * rather than compare paths so that it holds on every file system. This
+     * reports what was missed anyway, so that a file system answering in a way
+     * nobody anticipated fails the build rather than the application being
+     * packaged without the file.
+     *
+     * @return the files of {@link #ALWAYS_EMITTED} that were not emitted, empty
+     *         when everything that had to be emitted was.
+     * @see VaadinPlugin#removeTokenFile()
+     */
+    Set<Path> notEmitted() {
+        Set<Path> notEmitted = new LinkedHashSet<>(alwaysEmittedFiles);
+        notEmitted.removeAll(emittedFiles);
+        return notEmitted;
     }
 
     private static Set<Path> alwaysEmittedFiles(
@@ -158,10 +183,23 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
         return false;
     }
 
-    private boolean isAlwaysEmitted(String path) {
+    /**
+     * The file that has to be emitted whichever way the application is packaged
+     * that the given name is, if it is one of them.
+     * <p>
+     * Asked for every file, and not only for the ones that would otherwise be
+     * skipped, so that {@link #notEmitted()} knows what reached the application
+     * whichever way it was packaged.
+     *
+     * @param path
+     *            the name a generated file is added to the application under.
+     * @return the file it is, or empty when it is not one of them.
+     */
+    private Optional<Path> alwaysEmitted(String path) {
         Path emittedFile = buildOutputDirectory.resolve(path);
-        return alwaysEmittedFiles.stream().anyMatch(
-                alwaysEmitted -> isSameFile(emittedFile, alwaysEmitted));
+        return alwaysEmittedFiles.stream()
+                .filter(alwaysEmitted -> isSameFile(emittedFile, alwaysEmitted))
+                .findFirst();
     }
 
     private static boolean isSameFile(Path emittedFile, Path alwaysEmitted) {

@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 import io.quarkus.bootstrap.model.ApplicationModel;
@@ -151,11 +152,13 @@ public final class VaadinPlugin {
      * </ul>
      * <p>
      * Once the build is done the generated files are handed to the emitter and
-     * the build info token file is deleted from the build output directory. A
-     * file that cannot be read fails the build, so that the token file is never
-     * deleted after failing to reach the application: that would package an
-     * application without a {@literal flow-build-info.json} while the build
-     * reports success.
+     * the build info token file is deleted from the build output directory.
+     * Nothing is deleted before the files that have to reach the application
+     * whichever way it is packaged are known to have reached it: a file that
+     * cannot be read fails the build, and so does one that was not emitted.
+     * Deleting the token file after it failed to reach the application would
+     * package an application without a {@literal flow-build-info.json} while
+     * the build reports success.
      *
      * @param emitter
      *            generated files emitter.
@@ -205,7 +208,50 @@ public final class VaadinPlugin {
         pluginAdapter.logInfo("Build frontend completed in " + ms + " ms.");
 
         emitGeneratedFiles(emitter);
+        verifyAlwaysEmitted(emitter);
         removeTokenFile();
+    }
+
+    /**
+     * Fails the build when a file that has to reach the application whichever
+     * way it is packaged did not.
+     * <p>
+     * {@link #removeTokenFile()} runs right after this and deletes the build
+     * info token file from the build output directory, so a token file that did
+     * not reach the application is gone for good: the application is packaged
+     * without a {@literal flow-build-info.json}, Flow cannot find the
+     * production bundle at run time, and the build reports success. Stopping
+     * here leaves the file where it is and says what happened.
+     * <p>
+     * Telling which generated file is the token file is
+     * {@link GeneratedResourceEmitter}'s job, and it asks the file system so
+     * that the answer holds wherever the build runs. This is the check that the
+     * answer was what it had to be, so that a file system behaving in a way
+     * nobody anticipated fails the build instead of shipping an application
+     * that cannot start in production mode.
+     * <p>
+     * Only the emitter this plugin creates keeps track of what it emitted. A
+     * caller passing its own emitter decides for itself what reaches the
+     * application, and nothing is checked.
+     *
+     * @param emitter
+     *            the emitter the generated files were handed to.
+     * @throws BuildException
+     *             if a file that has to be emitted was not.
+     */
+    void verifyAlwaysEmitted(BiConsumer<String, byte[]> emitter)
+            throws BuildException {
+        if (!(emitter instanceof GeneratedResourceEmitter generatedResources)) {
+            return;
+        }
+        Set<Path> notEmitted = generatedResources.notEmitted();
+        if (!notEmitted.isEmpty()) {
+            throw new BuildException(
+                    "The Vaadin build produced files that have to be added to the application because the build deletes them from the build output directory, but they were not added: "
+                            + notEmitted
+                            + ". The application would be packaged without them and would not start in production mode.",
+                    List.of());
+        }
     }
 
     /**

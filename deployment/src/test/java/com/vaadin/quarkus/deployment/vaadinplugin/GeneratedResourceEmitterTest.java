@@ -264,6 +264,61 @@ class GeneratedResourceEmitterTest {
                         + "has to be emitted whatever name the walk reported");
     }
 
+    @Test
+    void notEmitted_everythingEmitted_reportsNothing() throws IOException {
+        GeneratedResourceEmitter emitter = emitterFor(List.of(classesDir),
+                classesDir);
+
+        emitAll(emitter);
+
+        assertIterableEquals(List.of(), emitter.notEmitted(),
+                "The token file was emitted, so nothing is missing from the "
+                        + "application");
+    }
+
+    @Test
+    void notEmitted_tokenFileNotEmitted_reportsTokenFile() throws IOException {
+        // What a file system answering in a way nobody anticipated looks like
+        // from here: the walk found the token file, but it was not recognized
+        // as one and so reached neither the application nor the artifact
+        GeneratedResourceEmitter emitter = emitterFor(List.of(classesDir),
+                classesDir);
+
+        emitter.accept(BUNDLE, content());
+
+        assertIterableEquals(
+                List.of(generatedResourcesDirectory(classesDir)
+                        .resolve(FrontendUtils.TOKEN_FILE)),
+                emitter.notEmitted(),
+                "The token file is deleted from the output directory right "
+                        + "after this, so not emitting it has to be reported "
+                        + "rather than leave the application without it");
+    }
+
+    @Test
+    void notEmitted_outputDirectoryIsNotPackaged_reportsNothing()
+            throws IOException {
+        // Everything is emitted here without being recognized one by one, and
+        // the token file still has to be accounted for
+        Path archive = tempDir.resolve("application.jar");
+        try (ZipOutputStream zip = new ZipOutputStream(
+                Files.newOutputStream(archive))) {
+            zip.putNextEntry(new ZipEntry("README"));
+            zip.closeEntry();
+        }
+
+        try (FileSystem archiveFs = FileSystems.newFileSystem(
+                URI.create("jar:" + archive.toUri()), Map.of())) {
+            GeneratedResourceEmitter emitter = emitterFor(
+                    archiveFs.getRootDirectories(), classesDir);
+
+            emitAll(emitter);
+
+            assertIterableEquals(List.of(), emitter.notEmitted(),
+                    "The token file was emitted with everything else");
+        }
+    }
+
     /**
      * The directory the Vaadin build writes its generated resources into,
      * {@literal META-INF/VAADIN} below the resources output directory.
