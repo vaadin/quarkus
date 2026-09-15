@@ -228,8 +228,9 @@ public final class VaadinPlugin {
             Iterable<Path> packagedRootDirectories,
             BuildProducer<GeneratedResourceBuildItem> producer) {
         return GeneratedResourceEmitter.of(packagedRootDirectories,
-                pluginAdapter.servletResourceOutputDirectory().toPath(),
-                producer);
+                pluginAdapter.servletResourceOutputDirectory().toPath()
+                        .normalize(),
+                pluginAdapter.buildDir().normalize(), producer);
     }
 
     /**
@@ -284,7 +285,7 @@ public final class VaadinPlugin {
      * @throws BuildException
      *             if the generated resources directory is outside the build
      *             output directory, cannot be walked, or one of the files in it
-     *             cannot be read.
+     *             cannot be read or handed to the emitter.
      */
     void emitGeneratedFiles(BiConsumer<String, byte[]> emitter)
             throws BuildException {
@@ -340,7 +341,17 @@ public final class VaadinPlugin {
                         + ", a file produced by the Vaadin build in the META-INF/VAADIN directory. The application would be packaged without it.",
                         e, List.of());
             }
-            emitter.accept(relativePath.toString().replace('\\', '/'), content);
+            try {
+                emitter.accept(relativePath.toString().replace('\\', '/'),
+                        content);
+            } catch (UncheckedIOException e) {
+                // The emitter asks the file system which of the generated
+                // files it has to add whichever way the application is
+                // packaged, and cannot answer that here.
+                throw new BuildException("Failed to add " + filePath
+                        + ", a file produced by the Vaadin build, to the application. "
+                        + e.getMessage(), e, List.of());
+            }
 
             pluginAdapter.logDebug("Added Vaadin resource: " + relativePath);
         }

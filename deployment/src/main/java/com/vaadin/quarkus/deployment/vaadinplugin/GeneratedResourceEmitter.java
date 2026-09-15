@@ -15,9 +15,14 @@
  */
 package com.vaadin.quarkus.deployment.vaadinplugin;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
@@ -49,21 +54,27 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
      * <p>
      * Add an entry here when a generated file gains that treatment, otherwise
      * it silently stops being packaged. Paths are relative to the generated
-     * resources directory.
+     * resources directory, and a file is recognized as one of them by asking
+     * the file system, never by comparing its path.
      *
      * @see VaadinPlugin#removeTokenFile()
      */
-    private static final Set<Path> ALWAYS_EMITTED = Set
-            .of(Path.of(FrontendUtils.TOKEN_FILE));
+    private static final Set<String> ALWAYS_EMITTED = Set
+            .of(FrontendUtils.TOKEN_FILE);
 
     private final BuildProducer<GeneratedResourceBuildItem> producer;
     private final boolean packagedFromOutputDirectory;
+    private final Path buildOutputDirectory;
+    private final Set<Path> alwaysEmittedFiles;
 
     private GeneratedResourceEmitter(
             BuildProducer<GeneratedResourceBuildItem> producer,
-            boolean packagedFromOutputDirectory) {
+            boolean packagedFromOutputDirectory, Path buildOutputDirectory,
+            Set<Path> alwaysEmittedFiles) {
         this.producer = producer;
         this.packagedFromOutputDirectory = packagedFromOutputDirectory;
+        this.buildOutputDirectory = buildOutputDirectory;
+        this.alwaysEmittedFiles = alwaysEmittedFiles;
     }
 
     /**
@@ -76,15 +87,21 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
      * @param generatedResourcesDirectory
      *            the directory the Vaadin build writes its generated resources
      *            into.
+     * @param buildOutputDirectory
+     *            the build output directory the emitted names are relative to,
+     *            used to find the file a name was read from.
      * @param producer
      *            the producer registering the files with the application.
      * @return an emitter that skips what packaging already covers.
      */
     static GeneratedResourceEmitter of(Iterable<Path> packagedRootDirectories,
-            Path generatedResourcesDirectory,
+            Path generatedResourcesDirectory, Path buildOutputDirectory,
             BuildProducer<GeneratedResourceBuildItem> producer) {
-        return new GeneratedResourceEmitter(producer, isPackagedFromDirectory(
-                packagedRootDirectories, generatedResourcesDirectory));
+        return new GeneratedResourceEmitter(producer,
+                isPackagedFromDirectory(packagedRootDirectories,
+                        generatedResourcesDirectory),
+                buildOutputDirectory,
+                alwaysEmittedFiles(generatedResourcesDirectory));
     }
 
     /**
@@ -99,6 +116,9 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
      *            over.
      * @param content
      *            the content of the file.
+     * @throws UncheckedIOException
+     *             if it cannot be told whether the file is one of the
+     *             {@link #ALWAYS_EMITTED} ones.
      */
     @Override
     public void accept(String path, byte[] content) {
@@ -118,6 +138,12 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
         return packagedFromOutputDirectory;
     }
 
+    private static Set<Path> alwaysEmittedFiles(
+            Path generatedResourcesDirectory) {
+        return ALWAYS_EMITTED.stream().map(generatedResourcesDirectory::resolve)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
     private static boolean isPackagedFromDirectory(
             Iterable<Path> packagedRootDirectories,
             Path generatedResourcesDirectory) {
@@ -132,19 +158,39 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
         return false;
     }
 
-    private static boolean isAlwaysEmitted(String path) {
-        // Compared as paths rather than as strings, because the question is
-        // whether this is the file the build deletes from the output
-        // directory, which is a question about the file system the build runs
-        // on. Path answers it with that file system's own rules: name
-        // elements match exactly on Linux, where config and Config are two
-        // directories, and ignoring case on Windows, where they are one and
-        // the walk reports whichever casing is on disk. Matching whole name
-        // elements also keeps a file such as backup-config/flow-build-info.json
-        // from being taken for the token file.
-        // The separator in the path is '/' whatever the platform, which
-        // Path.of reads as a separator on Windows as well as on Linux.
-        Path resource = Path.of(path);
-        return ALWAYS_EMITTED.stream().anyMatch(resource::endsWith);
+    private boolean isAlwaysEmitted(String path) {
+        Path emittedFile = buildOutputDirectory.resolve(path);
+        return alwaysEmittedFiles.stream().anyMatch(
+                alwaysEmitted -> isSameFile(emittedFile, alwaysEmitted));
+    }
+
+    private static boolean isSameFile(Path emittedFile, Path alwaysEmitted) {
+        // Whether two names are one file is for the file system to answer, so
+        // it is asked rather than told: comparing the paths instead would
+        // read a name the build did not choose as a different file, which is
+        // what a file system that ignores case reports when the directory was
+        // already there under another casing. Path comparison only follows the
+        // file system on Windows, and on macOS the JDK gives a volume that
+        // ignores case the case sensitive semantics of Unix.
+        //
+        // The file names are compared first only to keep this from opening
+        // every file the build produced. Two names for one file can differ
+        // only by case, so ignoring case there rules out nothing that the
+        // file system would have matched.
+        if (!emittedFile.getFileName().toString()
+                .equalsIgnoreCase(alwaysEmitted.getFileName().toString())) {
+            return false;
+        }
+        try {
+            return Files.isSameFile(emittedFile, alwaysEmitted);
+        } catch (NoSuchFileException e) {
+            // The build produced no such file, so nothing it did produce is it
+            return false;
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to tell whether "
+                    + emittedFile + " is " + alwaysEmitted
+                    + ", a file that has to be added to the application because the Vaadin build deletes it from the build output directory.",
+                    e);
+        }
     }
 }
