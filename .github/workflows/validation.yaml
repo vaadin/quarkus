@@ -62,26 +62,21 @@ jobs:
         # again: the production and development test modules each carry a
         # frontend bundle, so a rebuild per job costs minutes that the
         # download does not.
-        #
-        # Not for forks: every job that would restore it is skipped there, and
-        # cleanup-artifacts cannot delete it either, because a pull request
-        # from a fork only gets a read-only token.
-        if: ${{ !github.event.pull_request.head.repo.fork }}
         run: |
           VERSION=$(mvn -N -q -DforceStdout help:evaluate -Dexpression='project.version')
           echo "Saving com.vaadin artifacts at $VERSION"
           tar cf workspace.tar -C ~/ $(cd ~/ && echo .m2/repository/com/vaadin/*/$VERSION)
           tar rf workspace.tar $(find . -d -name target)
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ${{ !github.event.pull_request.head.repo.fork }}
         with:
           name: saved-workspace
           path: workspace.tar
   unit-tests:
     # Unit tests and the codestarts tests drive no browser and need no
-    # TestBench licence, so they are one cheap job rather than a matrix.
+    # TestBench licence, so they are one cheap job rather than a matrix — and
+    # they run for pull requests from forks, which the licence-bound jobs
+    # below cannot.
     needs: build
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     timeout-minutes: 20
     runs-on: ubuntu-24.04
     steps:
@@ -137,8 +132,8 @@ jobs:
     #
     # Builds its own reactor: saved-workspace comes from a Linux runner, and
     # only what these three modules need is installed, so the frontend bundles
-    # of the browser test modules are not built here.
-    if: ${{ !github.event.pull_request.head.repo.fork }}
+    # of the browser test modules are not built here. Needs no secrets, so it
+    # runs for pull requests from forks too.
     timeout-minutes: 30
     runs-on: windows-2025
     defaults:
@@ -325,12 +320,18 @@ jobs:
       pull-requests: write
     # Use always() so this job runs on cancellation too. With
     # failure() || success() it would be skipped when any matrix entry was
-    # cancelled, and a skipped required check satisfies branch protection.
-    if: ${{ always() && !github.event.pull_request.head.repo.fork }}
-    needs: [unit-tests, windows-tests, it-tests, native-tests]
+    # cancelled, and branch protection counts a skipped required check as a
+    # passing one. For the same reason this job is not skipped for forks: the
+    # licence-bound jobs are, and if the only job left to require were skipped
+    # as well, a pull request from a fork would look validated with the
+    # integration tests never having run. Only the steps that write back to
+    # the pull request are skipped there, since a fork gets a read-only token.
+    if: ${{ always() }}
+    needs: [build, unit-tests, windows-tests, it-tests, native-tests]
     runs-on: ubuntu-24.04
     steps:
       - name: Merge Artifacts
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         uses: actions/upload-artifact/merge@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: tests-output
@@ -338,28 +339,41 @@ jobs:
       # No checkout: the reports come from the artifacts, and nothing here
       # runs code from the repository.
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         with:
           name: tests-output
       - name: extract downloaded files
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         # One directory per archive: the embedded-plugin module runs the same
         # IT classes in the matrix leg and under -Dnative, so both archives
         # carry the same failsafe report paths and extracting them side by
         # side would drop the JVM results. junit_files matches either way.
         run: for i in *.tgz; do d="${i%.tgz}"; mkdir -p "$d" && tar xf "$i" -C "$d"; done
       - name: Publish Unit Test Results
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
         with:
           junit_files: '**/target/*-reports/TEST*.xml'
           check_run_annotations: all tests, skipped tests
       - name: Set Failure Status
-        if: ${{ always() && (needs.unit-tests.result != 'success' || needs.windows-tests.result != 'success' || needs.it-tests.result != 'success' || needs.native-tests.result != 'success') }}
+        if: ${{ always() && (needs.build.result != 'success' || needs.unit-tests.result != 'success' || needs.windows-tests.result != 'success' || needs.it-tests.result != 'success' || needs.native-tests.result != 'success') }}
+        env:
+          IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
         run: |
-          echo "🚫 THERE ARE TEST MODULES WITH FAILURES or BEEN CANCELLED" | tee -a $GITHUB_STEP_SUMMARY
+          if [ "$IS_FORK" = "true" ]; then
+            echo "🚫 THE INTEGRATION TESTS DID NOT RUN: they need the TestBench licence, which a pull request from a fork has no access to. Push the branch to this repository and open the pull request from there to validate it." \
+              | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "🚫 THERE ARE TEST MODULES WITH FAILURES or BEEN CANCELLED" | tee -a $GITHUB_STEP_SUMMARY
+          fi
           exit 1
   cleanup-artifacts:
     permissions:
       actions: write
-    if: ${{ always() && !github.event.pull_request.head.repo.fork }}
+    # Not skipped for forks either: unit-tests restores the workspace there,
+    # so there is an artifact to remove. Deletion goes through the artifact
+    # service rather than the API token, so the read-only token is no obstacle.
+    if: ${{ always() }}
     needs: [test-results]
     runs-on: ubuntu-24.04
     steps:
