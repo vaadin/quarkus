@@ -101,6 +101,37 @@ class VaadinPluginTest {
     }
 
     @Test
+    void removeTokenFile_tokenFileCannotBeDeleted_doesNotFailBuild()
+            throws Exception {
+        Files.createDirectories(tokenFile.getParentFile().toPath());
+        Files.writeString(tokenFile.toPath(), "{ \"productionMode\": true }");
+        File configDir = tokenFile.getParentFile();
+        // A file to probe the deletion with, so that the probe does not consume
+        // the token file the assertion needs
+        File probe = new File(configDir, "probe.txt");
+        Files.writeString(probe.toPath(), "probe");
+
+        assumeTrue(configDir.setWritable(false),
+                "A directory cannot be made read only on this file system");
+        try {
+            assumeFalse(probe.delete(),
+                    "Test runs as a user that can delete from a read only "
+                            + "directory, likely root");
+
+            assertDoesNotThrow(() -> plugin.removeTokenFile(),
+                    "A token file that cannot be deleted must not fail a build "
+                            + "whose frontend build succeeded: the token file "
+                            + "has already been added to the application, so "
+                            + "the copy left behind is a duplicate and not a "
+                            + "missing file");
+            assertTrue(tokenFile.exists(),
+                    "Test setup should have prevented the deletion");
+        } finally {
+            configDir.setWritable(true);
+        }
+    }
+
+    @Test
     void emitGeneratedFiles_generatedResources_emittedRelativeToOutputDirectory()
             throws Exception {
         writeGeneratedFile(FrontendUtils.TOKEN_FILE,

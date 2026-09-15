@@ -246,17 +246,26 @@ public final class VaadinPlugin {
      * Deleting it here is why {@link GeneratedResourceEmitter} emits the token
      * file whichever way the application is packaged: once it is gone from the
      * output directory, emitting is the only way it reaches the application.
-     *
-     * @throws BuildException
-     *             if the token file cannot be deleted.
+     * <p>
+     * A failure to delete it is reported as a warning rather than failing the
+     * build. By the time this runs the token file has already been added to the
+     * application, so the copy left behind costs the duplicate warning and the
+     * stale dev mode read described above, which are a nuisance and not a
+     * broken artifact. Deleting a file that another process holds open fails on
+     * Windows, where locking is mandatory, so a build whose frontend build
+     * fully succeeded would otherwise fail there for a leftover file.
      */
-    void removeTokenFile() throws BuildException {
+    void removeTokenFile() {
         try {
             BuildFrontendUtil.removeBuildFile(pluginAdapter);
         } catch (IOException e) {
-            throw new BuildException(
-                    "Failed to delete the Vaadin build info token file from the build output directory.",
-                    e, List.of());
+            pluginAdapter.logWarn(
+                    "Failed to delete the Vaadin build info token file from the build output directory. "
+                            + "It is packaged with the application anyway, but the copy left behind is packaged as well, "
+                            + "so Flow may warn that it cannot tell which flow-build-info.json is the correct one, "
+                            + "and a later dev mode run on the same output directory starts in production mode. "
+                            + "Another process holding the file open, such as a virus scanner, is a likely cause.",
+                    e);
         }
     }
 
