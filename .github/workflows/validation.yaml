@@ -291,10 +291,13 @@ jobs:
         with:
           java-version: ${{ env.GRAALVM_VERSION }}
           distribution: 'graalvm'
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@d6af6abeda15e98926a57b5aa970a96bb37f97d1 # v5
-        with:
-          maven-version: 3.8.7
+      # No Maven version pinned, unlike before: quarkus-maven-plugin 3.33.0
+      # declares requiredMavenVersion 3.9.12, and under the 3.8.7 this job used
+      # to install its build extension was not wired into the session, so the
+      # extension half of the plugin — the build setting checks and the
+      # surefire tuning — silently did nothing and every build logged a warning
+      # about <extensions>true</extensions> not being enabled. The runner image
+      # ships 3.9.16, which is what the other jobs use as well.
       - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.m2/repository
