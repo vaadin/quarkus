@@ -282,19 +282,37 @@ public final class VaadinPlugin {
      * @param emitter
      *            generated files emitter.
      * @throws BuildException
-     *             if the generated resources directory cannot be walked, or one
-     *             of the files in it cannot be read.
+     *             if the generated resources directory is outside the build
+     *             output directory, cannot be walked, or one of the files in it
+     *             cannot be read.
      */
     void emitGeneratedFiles(BiConsumer<String, byte[]> emitter)
             throws BuildException {
         Path vaadinMetaInfDir = pluginAdapter.servletResourceOutputDirectory()
-                .toPath();
-        Path buildFolder = pluginAdapter.buildDir();
+                .toPath().normalize();
+        Path buildFolder = pluginAdapter.buildDir().normalize();
 
         if (!Files.exists(vaadinMetaInfDir)) {
             pluginAdapter.logInfo(
                     "No META-INF/VAADIN directory found, skipping resource addition");
             return;
+        }
+
+        // Files are added to the application under their path relative to the
+        // build output directory, which only names a resource when they are
+        // below it. Path.startsWith is false for a path of another file
+        // system, and on Windows for a path on another drive, where
+        // Path.relativize would throw. On a file system that can express the
+        // relative path anyway, it would come out prefixed with '..' and name
+        // no resource the application can load.
+        if (!vaadinMetaInfDir.startsWith(buildFolder)) {
+            throw new BuildException("The Vaadin build writes into "
+                    + vaadinMetaInfDir
+                    + ", which is outside the build output directory "
+                    + buildFolder
+                    + ". The files it produces cannot be added to the application from there. "
+                    + "Set 'vaadin.build.generated-resource-output-directory' to a directory inside the build output directory.",
+                    List.of());
         }
 
         List<Path> generatedFiles;

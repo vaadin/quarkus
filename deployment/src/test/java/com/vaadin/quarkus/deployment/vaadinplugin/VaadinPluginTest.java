@@ -52,27 +52,22 @@ class VaadinPluginTest {
     private VaadinPlugin plugin;
     private File tokenFile;
     private Path generatedResourcesDir;
+    private File buildDir;
+    private ApplicationModel model;
 
     @BeforeEach
     void setUp() throws Exception {
-        File buildDir = projectDir.resolve("target").toFile();
+        buildDir = projectDir.resolve("target").toFile();
 
         WorkspaceModule module = mock(WorkspaceModule.class);
         when(module.getModuleDir()).thenReturn(projectDir.toFile());
         when(module.getBuildDir()).thenReturn(buildDir);
         when(module.hasMainSources()).thenReturn(false);
 
-        ApplicationModel model = mock(ApplicationModel.class);
+        model = mock(ApplicationModel.class);
         when(model.getApplicationModule()).thenReturn(module);
 
-        VaadinBuildTimeConfig config = mock(VaadinBuildTimeConfig.class);
-        when(config.generatedResourceOutputDirectory())
-                .thenReturn(new File(Constants.VAADIN_SERVLET_RESOURCES));
-        // Prevents the clean frontend files task from being created, it is not
-        // needed to exercise the token file removal.
-        when(config.cleanFrontendFiles()).thenReturn(false);
-
-        plugin = VaadinPlugin.of(config, model, buildDir.toPath());
+        plugin = createPlugin(new File(Constants.VAADIN_SERVLET_RESOURCES));
         generatedResourcesDir = buildDir.toPath()
                 .resolve("classes/" + Constants.VAADIN_SERVLET_RESOURCES);
         tokenFile = new File(generatedResourcesDir.toFile(),
@@ -129,6 +124,33 @@ class VaadinPluginTest {
         } finally {
             configDir.setWritable(true);
         }
+    }
+
+    @Test
+    void emitGeneratedFiles_outputDirectoryOutsideBuildDirectory_failsBuild()
+            throws Exception {
+        // An absolute generated resource output directory is taken as it is, so
+        // it can end up outside the build output directory, and then the path
+        // the files would be added to the application under names no resource
+        Path outsideDir = projectDir.resolve("outside");
+        Files.createDirectories(
+                outsideDir.resolve(FrontendUtils.TOKEN_FILE).getParent());
+        Files.writeString(outsideDir.resolve(FrontendUtils.TOKEN_FILE),
+                "{ \"productionMode\": true }");
+        VaadinPlugin outsidePlugin = createPlugin(outsideDir.toFile());
+
+        BiConsumer<String, byte[]> emitter = (path, content) -> {
+        };
+        BuildException exception = assertThrows(BuildException.class,
+                () -> outsidePlugin.emitGeneratedFiles(emitter),
+                "A generated resources directory outside the build output "
+                        + "directory must fail the build, otherwise the files "
+                        + "are added to the application under a name relative "
+                        + "to nothing, or Path.relativize throws where the two "
+                        + "directories have different roots");
+        assertTrue(exception.getMessage().contains(outsideDir.toString()),
+                "Failure should name the directory the Vaadin build writes "
+                        + "into, was: " + exception.getMessage());
     }
 
     @Test
@@ -226,6 +248,26 @@ class VaadinPluginTest {
         } finally {
             unreadableFile.setReadable(true);
         }
+    }
+
+    /**
+     * Creates a plugin whose Vaadin build writes into the given directory,
+     * relative to the build output directory or absolute.
+     *
+     * @param generatedResourceOutputDirectory
+     *            the configured generated resource output directory.
+     * @return the plugin to exercise.
+     */
+    private VaadinPlugin createPlugin(File generatedResourceOutputDirectory)
+            throws Exception {
+        VaadinBuildTimeConfig config = mock(VaadinBuildTimeConfig.class);
+        when(config.generatedResourceOutputDirectory())
+                .thenReturn(generatedResourceOutputDirectory);
+        // Prevents the clean frontend files task from being created, it is not
+        // needed to exercise the token file removal.
+        when(config.cleanFrontendFiles()).thenReturn(false);
+
+        return VaadinPlugin.of(config, model, buildDir.toPath());
     }
 
     private void writeGeneratedFile(String relativePath, String content)
