@@ -31,6 +31,9 @@ import java.util.zip.ZipOutputStream;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.vaadin.flow.internal.FrontendUtils;
@@ -184,6 +187,49 @@ class GeneratedResourceEmitterTest {
         assertIterableEquals(List.of(TOKEN), emittedNames(),
                 "Only the token file itself is emitted, not the files whose "
                         + "path happens to end like it");
+    }
+
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void emit_tokenFilePathInAnotherCaseOnWindows_emitsTokenFile() {
+        // Where the file system ignores case there is only one config
+        // directory, whatever casing the walk reports for it, so the file the
+        // walk found is the token file the build deletes afterwards. Missing
+        // it would leave the application with no flow-build-info.json at all.
+        Path classesDir = tempDir.resolve("classes");
+        String mixedCaseToken = Constants.VAADIN_SERVLET_RESOURCES
+                + "Config/Flow-Build-Info.json";
+
+        GeneratedResourceEmitter emitter = GeneratedResourceEmitter.of(
+                List.of(classesDir), generatedResourcesDirectory(classesDir),
+                producer);
+
+        emitter.accept(mixedCaseToken, content());
+
+        assertIterableEquals(List.of(mixedCaseToken), emittedNames(),
+                "The token file has to be recognized whatever casing the walk "
+                        + "reports for it on a file system that ignores case");
+    }
+
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void emit_tokenFilePathInAnotherCaseOnCaseSensitiveFileSystem_emitsNothing() {
+        // Where the file system is case sensitive this is a different file
+        // that the build neither wrote nor deletes, so packaging picks it up
+        // from the output directory like any other generated file
+        Path classesDir = tempDir.resolve("classes");
+
+        GeneratedResourceEmitter emitter = GeneratedResourceEmitter.of(
+                List.of(classesDir), generatedResourcesDirectory(classesDir),
+                producer);
+
+        emitter.accept(Constants.VAADIN_SERVLET_RESOURCES
+                + "Config/Flow-Build-Info.json", content());
+
+        assertIterableEquals(List.of(), emittedNames(),
+                "A file whose name only differs from the token file by case is "
+                        + "a different file here, and emitting it would add a "
+                        + "second copy of it to the artifact");
     }
 
     /**

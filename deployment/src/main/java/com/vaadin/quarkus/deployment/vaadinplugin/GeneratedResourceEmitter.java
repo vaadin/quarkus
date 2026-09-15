@@ -53,8 +53,8 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
      *
      * @see VaadinPlugin#removeTokenFile()
      */
-    private static final Set<String> ALWAYS_EMITTED = Set
-            .of(FrontendUtils.TOKEN_FILE);
+    private static final Set<Path> ALWAYS_EMITTED = Set
+            .of(Path.of(FrontendUtils.TOKEN_FILE));
 
     private final BuildProducer<GeneratedResourceBuildItem> producer;
     private final boolean packagedFromOutputDirectory;
@@ -87,6 +87,19 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
                 packagedRootDirectories, generatedResourcesDirectory));
     }
 
+    /**
+     * Registers a file the Vaadin build produced, unless packaging already
+     * picks it up from the output directory.
+     *
+     * @param path
+     *            the name the file is added to the application under, its path
+     *            relative to the build output directory, with {@literal /} as
+     *            the separator whatever the platform, as
+     *            {@link VaadinPlugin#emitGeneratedFiles(BiConsumer)} hands it
+     *            over.
+     * @param content
+     *            the content of the file.
+     */
     @Override
     public void accept(String path, byte[] content) {
         if (!packagedFromOutputDirectory || isAlwaysEmitted(path)) {
@@ -120,8 +133,18 @@ final class GeneratedResourceEmitter implements BiConsumer<String, byte[]> {
     }
 
     private static boolean isAlwaysEmitted(String path) {
-        return ALWAYS_EMITTED.stream()
-                .anyMatch(resource -> path.equals(resource)
-                        || path.endsWith("/" + resource));
+        // Compared as paths rather than as strings, because the question is
+        // whether this is the file the build deletes from the output
+        // directory, which is a question about the file system the build runs
+        // on. Path answers it with that file system's own rules: name
+        // elements match exactly on Linux, where config and Config are two
+        // directories, and ignoring case on Windows, where they are one and
+        // the walk reports whichever casing is on disk. Matching whole name
+        // elements also keeps a file such as backup-config/flow-build-info.json
+        // from being taken for the token file.
+        // The separator in the path is '/' whatever the platform, which
+        // Path.of reads as a separator on Windows as well as on Linux.
+        Path resource = Path.of(path);
+        return ALWAYS_EMITTED.stream().anyMatch(resource::endsWith);
     }
 }
