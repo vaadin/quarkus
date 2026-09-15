@@ -1,3 +1,6 @@
+Dummy change to create a PR and trigger the validation
+
+
 # vaadin-quarkus
 An extension to Quarkus to support Vaadin Flow.
 
