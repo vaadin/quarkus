@@ -1,4 +1,5 @@
 Dummy change to create a PR and trigger the validation
+Dummy change to create a PR and trigger the validation
 
 
 # vaadin-quarkus
