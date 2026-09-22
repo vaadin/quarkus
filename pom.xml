@@ -40,7 +40,7 @@
     <failsafe-plugin.version>3.6.0</failsafe-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
 
-    <vaadin.flow.version>25.2-SNAPSHOT</vaadin.flow.version>
+    <vaadin.flow.version>25.4-SNAPSHOT</vaadin.flow.version>
     <quarkus.version>3.33.0</quarkus.version>
 
     <surefire.excludedGroups>slow</surefire.excludedGroups>
