@@ -16,12 +16,16 @@
 package com.vaadin.quarkus.deployment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBuildItem;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.Index;
 import org.jboss.jandex.Indexer;
@@ -170,6 +174,31 @@ class VaadinQuarkusNativeProcessorTest {
         // TestComponent which extends Component
         assertTrue(result.stream().anyMatch(containsClass(NestedDto.class)),
                 "Should detect NestedDto from multi-level Component subclass");
+    }
+
+    @Test
+    void testVaadinNativeSupport_registersRuntimeLoadedClientHelpers() {
+        List<NativeImageResourcePatternsBuildItem> resources = new ArrayList<>();
+
+        processor.vaadinNativeSupport(new CombinedIndexBuildItem(index, index),
+                item -> {
+                }, resources::add, item -> {
+                }, item -> {
+                });
+
+        assertTrue(isIncluded(resources, "META-INF/frontend/FlowShortcut.js"),
+                "Shortcut client helper should be included in the image");
+        assertTrue(isIncluded(resources, "META-INF/frontend/FlowWebPush.js"),
+                "Web push client helper should be included in the image");
+    }
+
+    private static boolean isIncluded(
+            List<NativeImageResourcePatternsBuildItem> resources,
+            String resource) {
+        return resources.stream()
+                .flatMap(item -> item.getIncludePatterns().stream())
+                .anyMatch(pattern -> Pattern.compile(pattern).matcher(resource)
+                        .matches());
     }
 
     private static Predicate<ClassInfo> containsClass(Class<?> expectedClass) {
