@@ -26,7 +26,7 @@ env:
 jobs:
   build:
     timeout-minutes: 30
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - run: echo "Concurrency Group = $GITHUB_WORKFLOW-${_HEAD_REF:-$_REF_NAME}"
       - name: Check secrets
@@ -78,7 +78,7 @@ jobs:
     # below cannot.
     needs: build
     timeout-minutes: 20
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
@@ -192,7 +192,7 @@ jobs:
             module: integration-tests/embedded-plugin
           - name: push-dispatch
             module: integration-tests/push-dispatch-it
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
@@ -273,7 +273,7 @@ jobs:
     # packaged, so there is nothing in the JDK 21 workspace worth reusing.
     if: ${{ !github.event.pull_request.head.repo.fork }}
     timeout-minutes: 40
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
@@ -328,7 +328,7 @@ jobs:
     # the pull request are skipped there, since a fork gets a read-only token.
     if: ${{ always() }}
     needs: [build, unit-tests, windows-tests, it-tests, native-tests]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Merge Artifacts
         if: ${{ !github.event.pull_request.head.repo.fork }}
@@ -375,7 +375,7 @@ jobs:
     # service rather than the API token, so the read-only token is no obstacle.
     if: ${{ always() }}
     needs: [test-results]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: geekyeggo/delete-artifact@176a747ab7e287e3ff4787bf8a148716375ca118 # v6.0.0
         with:
