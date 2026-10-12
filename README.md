@@ -23,7 +23,8 @@ for the versions listed below.
 
 Vaadin 25.3 and earlier are still served from this repository:
 
-* `main` holds the 3.2 line, for Vaadin 25.2 and 25.3 and Quarkus 3.33 (LTS)
+* `main` holds the 3.3 line, for Vaadin 25.3 Quarkus 3.33 (LTS)
+* 3.2 for Vaadin 25.2 and Quarkus 3.33 (LTS)
 * 3.1 for Vaadin 25.1 and Quarkus 3.32
 * 3.0 for Vaadin 25.0 and Quarkus 3.32
 * 2.2 for Vaadin 24 and Quarkus 3.20
