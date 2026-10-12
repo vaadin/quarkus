@@ -470,7 +470,7 @@ public final class VaadinPlugin {
         return new FrontendDependenciesScanner.FrontendDependenciesScannerFactory()
                 .createScanner(!pluginAdapter.optimizeBundle(), classFinder,
                         pluginAdapter.generateEmbeddableWebComponents(),
-                        featureFlags, reactEnabled);
+                        featureFlags, reactEnabled, true);
     }
 
 }

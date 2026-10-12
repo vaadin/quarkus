@@ -10,7 +10,7 @@
 
   <groupId>com.vaadin</groupId>
   <artifactId>vaadin-quarkus-parent</artifactId>
-  <version>3.2-SNAPSHOT</version>
+  <version>3.3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Vaadin Quarkus - Parent</name>
@@ -40,7 +40,7 @@
     <failsafe-plugin.version>3.6.0</failsafe-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
 
-    <vaadin.flow.version>25.2-SNAPSHOT</vaadin.flow.version>
+    <vaadin.flow.version>25.3-SNAPSHOT</vaadin.flow.version>
     <quarkus.version>3.33.0</quarkus.version>
 
     <surefire.excludedGroups>slow</surefire.excludedGroups>
